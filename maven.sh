@@ -7,7 +7,7 @@ fi
 
 if [ "$1" = "main" ]; then
     mvn clean compile 
-    mvn exec:java -Dexec.mainClass="scheduler.Main"
+    mvn javafx:run
 elif [ "$1" = "package" ]; then
     mvn clean package
     java -jar target/scheduler.jar
