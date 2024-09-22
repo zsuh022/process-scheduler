@@ -2,12 +2,8 @@ package scheduler;
 
 import java.io.IOException;
 
-import org.apache.commons.cli.ParseException;
-
-import scheduler.models.GraphModel;
 import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
-import scheduler.parsers.InputOutputParser;
 import scheduler.visualiser.Visualiser;
 
 public class Main {

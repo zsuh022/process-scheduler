@@ -24,6 +24,9 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>scheduler.Main</mainClass>
+                    <args>
+                        ${exec.args}
+                    </args>
                 </configuration>
             </plugin>
             <plugin>
