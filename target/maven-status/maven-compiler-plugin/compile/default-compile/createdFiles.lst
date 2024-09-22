@@ -1,5 +1,8 @@
-scheduler/models/NodeModel.class
+scheduler/parsers/InputOutputParser.class
 scheduler/models/GraphModel.class
-scheduler/parser/InputOutputParser.class
+scheduler/visualiser/Visualiser.class
+scheduler/parsers/CLIParser.class
+scheduler/models/NodeModel.class
 scheduler/Main.class
 scheduler/models/EdgeModel.class
+scheduler/parsers/Arguments.class
