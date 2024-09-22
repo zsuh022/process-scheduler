@@ -17,7 +17,7 @@ public class GraphModel {
     private Map<String, EdgeModel> edges;
 
     public GraphModel(String filename) throws IOException {
-        this.graph = InputOutputParser.readDotFile(filename);
+        this.graph = InputOutputParser.readDOTFile(filename);
 
         this.setNodes();
         this.setEdges();
@@ -51,6 +51,10 @@ public class GraphModel {
         });
 
         this.edges = edges;
+    }
+
+    public String getId() {
+        return this.graph.getId();
     }
 
     public NodeModel getNode(String id) {
