@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.graphstream.graph.Graph;
 
-import scheduler.parser.InputOutputParser;
+import scheduler.parsers.InputOutputParser;
 
 public class GraphModel {
     private Graph graph;

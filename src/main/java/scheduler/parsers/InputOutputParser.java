@@ -1,4 +1,4 @@
-package scheduler.parser;
+package scheduler.parsers;
 
 import java.io.File;
 import java.io.FileWriter;

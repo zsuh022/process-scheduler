@@ -2,29 +2,27 @@ package scheduler;
 
 import java.io.IOException;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
+import org.apache.commons.cli.ParseException;
+
 import scheduler.models.GraphModel;
-import scheduler.parser.InputOutputParser;
+import scheduler.parsers.Arguments;
+import scheduler.parsers.CLIParser;
+import scheduler.parsers.InputOutputParser;
+import scheduler.visualiser.Visualiser;
 
-public class Main extends Application {
-    @Override
-    public void start(Stage stage) {
-        String javaVersion = System.getProperty("java.version");
-        String javafxVersion = System.getProperty("javafx.version");
-        Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        Scene scene = new Scene(new StackPane(l), 640, 480);
-        stage.setScene(scene);
-        stage.show();
-    }
+public class Main {
+    public static void main(String[] CLIArguments) throws IOException {
+        Arguments arguments;
 
-    public static void main(String[] args) throws IOException {
-        launch();
+        try {
+            arguments = CLIParser.parseCLIArguments(CLIArguments);
+        } catch (ParseException parseException) {
+            CLIParser.displayUsage(parseException.getMessage());
+            return;
+        }
 
         GraphModel graph = new GraphModel("src/main/resources/dotfiles/input/Nodes_10_Random.dot");
-        InputOutputParser.outputDOTFile(graph, "src/main/resources/dotfiles/output/Nodes_10_Random_Output.dot");
+
+        Visualiser.run();
     }
 }
