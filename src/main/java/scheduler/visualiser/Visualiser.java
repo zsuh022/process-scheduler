@@ -5,9 +5,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import scheduler.parsers.Arguments;
 
 public class Visualiser extends Application {
-    public static void run() {
+    private static Arguments arguments;
+
+    public static void run(Arguments arguments) {
         launch();
     }
 

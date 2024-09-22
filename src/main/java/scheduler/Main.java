@@ -16,13 +16,11 @@ public class Main {
 
         try {
             arguments = CLIParser.parseCLIArguments(CLIArguments);
-        } catch (ParseException parseException) {
-            CLIParser.displayUsage(parseException.getMessage());
+        } catch (Exception exception) {
+            CLIParser.displayUsage(exception.getMessage());
             return;
         }
 
-        GraphModel graph = new GraphModel("src/main/resources/dotfiles/input/Nodes_10_Random.dot");
-
-        Visualiser.run();
+        Visualiser.run(arguments);
     }
 }

@@ -10,7 +10,7 @@ import org.apache.commons.cli.ParseException;
 public class CLIParser {
     private static Options options = new Options();
 
-    public static Arguments parseCLIArguments(String[] CLIArguments) throws ParseException {
+    public static Arguments parseCLIArguments(String[] CLIArguments) throws ParseException, NumberFormatException {
         options.addOption("p", true, "Use N cores for execution in parallel (default is sequential)");
         options.addOption("v", false, "Visualise the search");
         options.addOption("o", true, "Output file (default is INPUT-output.dot)");
@@ -18,7 +18,8 @@ public class CLIParser {
         return parseOptions(options, CLIArguments);
     }
 
-    private static Arguments parseOptions(Options options, String[] CLIArguments) throws ParseException {
+    private static Arguments parseOptions(Options options, String[] CLIArguments)
+            throws ParseException, NumberFormatException {
         Arguments arguments = new Arguments();
         CommandLineParser parser = new DefaultParser();
 
@@ -35,7 +36,8 @@ public class CLIParser {
         return arguments;
     }
 
-    private static void parseRequiredArguments(Arguments arguments, String[] remainingArguments) {
+    private static void parseRequiredArguments(Arguments arguments, String[] remainingArguments)
+            throws NumberFormatException {
         arguments.setInputDOTFilePath(remainingArguments[0]);
         arguments.setProcessors(Integer.parseInt(remainingArguments[1]));
     }
@@ -69,7 +71,7 @@ public class CLIParser {
 
     private static void displayRequiredArguments() {
         System.out.println("Required arguments:");
-        System.out.println(String.format(" %-10s %s", "INPUT.dot", "The path to the input dot file"));
-        System.out.println(String.format(" %-10s %s", "P", "The number of processors to use\n"));
+        System.out.println(String.format(" %-10s %s %s", "INPUT.dot", "<String>", "The path to the input dot file"));
+        System.out.println(String.format(" %-10s %s %s", "P", "<int>", "The number of processors to use\n"));
     }
 }
