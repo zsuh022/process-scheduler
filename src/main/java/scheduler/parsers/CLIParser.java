@@ -10,7 +10,7 @@ import org.apache.commons.cli.ParseException;
 public class CLIParser {
     private static Options options = new Options();
 
-    public static Arguments parseCLIArguments(String[] CLIArguments) throws ParseException, NumberFormatException {
+    public static Arguments parseCLIArguments(String[] CLIArguments) throws ParseException {
         options.addOption("p", true, "Use N cores for execution in parallel (default is sequential)");
         options.addOption("v", false, "Visualise the search");
         options.addOption("o", true, "Output file (default is INPUT-output.dot)");
@@ -18,8 +18,7 @@ public class CLIParser {
         return parseOptions(options, CLIArguments);
     }
 
-    private static Arguments parseOptions(Options options, String[] CLIArguments)
-            throws ParseException, NumberFormatException {
+    private static Arguments parseOptions(Options options, String[] CLIArguments) throws ParseException {
         Arguments arguments = new Arguments();
         CommandLineParser parser = new DefaultParser();
 
@@ -36,8 +35,7 @@ public class CLIParser {
         return arguments;
     }
 
-    private static void parseRequiredArguments(Arguments arguments, String[] remainingArguments)
-            throws NumberFormatException {
+    private static void parseRequiredArguments(Arguments arguments, String[] remainingArguments) {
         arguments.setInputDOTFilePath(remainingArguments[0]);
         arguments.setProcessors(Integer.parseInt(remainingArguments[1]));
     }
