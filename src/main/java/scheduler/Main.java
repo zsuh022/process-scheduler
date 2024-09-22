@@ -1,10 +1,14 @@
 package scheduler;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import scheduler.models.GraphModel;
+import scheduler.parser.InputOutputParser;
 
 public class Main extends Application {
     @Override
@@ -17,7 +21,10 @@ public class Main extends Application {
         stage.show();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         launch();
+
+        GraphModel graph = new GraphModel("src/main/resources/dotfiles/input/Nodes_10_Random.dot");
+        InputOutputParser.outputDOTFile(graph, "src/main/resources/dotfiles/output/Nodes_10_Random_Output.dot");
     }
 }

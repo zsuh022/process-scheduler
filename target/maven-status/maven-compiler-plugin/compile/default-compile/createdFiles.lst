@@ -1,1 +1,5 @@
+scheduler/models/NodeModel.class
+scheduler/models/GraphModel.class
+scheduler/parser/InputOutputParser.class
 scheduler/Main.class
+scheduler/models/EdgeModel.class
