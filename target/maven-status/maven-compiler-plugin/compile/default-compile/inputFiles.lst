@@ -5,4 +5,6 @@
 /home/duckyshine04/Documents/work/projects/java-projects/softeng-306/project-2-13-gallon-and-friends/src/main/java/scheduler/parsers/Arguments.java
 /home/duckyshine04/Documents/work/projects/java-projects/softeng-306/project-2-13-gallon-and-friends/src/main/java/scheduler/parsers/CLIParser.java
 /home/duckyshine04/Documents/work/projects/java-projects/softeng-306/project-2-13-gallon-and-friends/src/main/java/scheduler/parsers/InputOutputParser.java
+/home/duckyshine04/Documents/work/projects/java-projects/softeng-306/project-2-13-gallon-and-friends/src/main/java/scheduler/schedulers/RoundRobinScheduler.java
+/home/duckyshine04/Documents/work/projects/java-projects/softeng-306/project-2-13-gallon-and-friends/src/main/java/scheduler/schedulers/SequentialScheduler.java
 /home/duckyshine04/Documents/work/projects/java-projects/softeng-306/project-2-13-gallon-and-friends/src/main/java/scheduler/visualiser/Visualiser.java

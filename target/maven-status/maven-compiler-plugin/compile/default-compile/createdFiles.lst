@@ -1,6 +1,7 @@
 scheduler/parsers/InputOutputParser.class
 scheduler/models/GraphModel.class
 scheduler/visualiser/Visualiser.class
+scheduler/schedulers/RoundRobinScheduler.class
 scheduler/parsers/CLIParser.class
 scheduler/models/NodeModel.class
 scheduler/Main.class

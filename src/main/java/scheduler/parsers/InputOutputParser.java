@@ -35,7 +35,7 @@ public class InputOutputParser {
 
         FileSinkDOT fileSinkDOT = new FileSinkDOT();
         fileSinkDOT.setDirected(true);
-        
+
         fileSinkDOT.writeAll(graphStream, new FileWriter(new File(filename)));
     }
 
