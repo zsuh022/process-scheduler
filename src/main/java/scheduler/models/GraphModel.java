@@ -48,6 +48,10 @@ public class GraphModel {
             int weight = (int) Math.round((Double) edge.getAttribute("Weight"));
 
             edges.put(id, new EdgeModel(source, destination, weight));
+
+            source.getSuccessors().add(destination);
+            destination.getPredecessors().add(source);
+            
         });
 
         this.edges = edges;

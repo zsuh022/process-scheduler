@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-readonly INPUT_DOT_FILE=src/main/resources/Nodes_10_Random.dot
+readonly INPUT_DOT_FILE=src/main/resources/dotfiles/input/Nodes_10_Random.dot
 readonly PROCESSORS=1
 
 if [ "$1" = "main" ]; then
@@ -14,7 +14,7 @@ if [ "$1" = "main" ]; then
     if [ $# -eq 3 ]; then
         java -jar target/scheduler.jar "$2" "$3"
     else
-        java -jar target/scheduler.jar "${DOT_FILE}" "${PROCESSORS}"
+        java -jar target/scheduler.jar "${INPUT_DOT_FILE}" "${PROCESSORS}"
     fi
 else
     echo "Invalid command"

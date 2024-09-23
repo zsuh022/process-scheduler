@@ -35,7 +35,7 @@ public class InputOutputParser {
 
         FileSinkDOT fileSinkDOT = new FileSinkDOT();
         fileSinkDOT.setDirected(true);
-
+        
         fileSinkDOT.writeAll(graphStream, new FileWriter(new File(filename)));
     }
 
@@ -55,6 +55,12 @@ public class InputOutputParser {
         nodes.forEach((id, node) -> {
             graph.addNode(id);
             graph.getNode(id).setAttribute("Weight", node.getWeight());
+
+            // Add scheduling attributes if they are set
+            if (node.getStartTime() >= 0 && node.getProcessor() > 0) {
+                graph.getNode(id).setAttribute("Start", node.getStartTime());
+                graph.getNode(id).setAttribute("Processor", node.getProcessor());
+            }
         });
     }
 
