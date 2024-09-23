@@ -19,8 +19,8 @@ public class GraphModel {
     public GraphModel(String filename) throws IOException {
         this.graph = InputOutputParser.readDOTFile(filename);
 
-        this.setNodes();
-        this.setEdges();
+        setNodes();
+        setEdges();
     }
 
     private void setNodes() {
@@ -40,18 +40,18 @@ public class GraphModel {
         Map<String, EdgeModel> edges = new HashMap<>();
 
         graph.edges().forEach(edge -> {
-            String id = edge.getId();
-
             NodeModel source = getNode(edge.getSourceNode().getId());
             NodeModel destination = getNode(edge.getTargetNode().getId());
 
+            String id = source.getId().concat(destination.getId());
+
             int weight = (int) Math.round((Double) edge.getAttribute("Weight"));
 
-            edges.put(id, new EdgeModel(source, destination, weight));
+            edges.put(id, new EdgeModel(id, source, destination, weight));
 
             source.getSuccessors().add(destination);
             destination.getPredecessors().add(source);
-            
+
         });
 
         this.edges = edges;
@@ -69,8 +69,17 @@ public class GraphModel {
         return this.edges.get(id);
     }
 
-    public List<Integer> getAdjacencyList() {
-        return new ArrayList<>();
+    public HashMap<String, List<String>> getAdjacencyList() {
+        HashMap<String, List<String>> adjacencyList = new HashMap<>();
+
+        for (EdgeModel edge : this.edges.values()) {
+            NodeModel source = edge.getSource();
+            NodeModel destination = edge.getDestination();
+
+            adjacencyList.get(source.getId()).add(destination.getId());
+        }
+
+        return adjacencyList;
     }
 
     public Map<String, NodeModel> getNodes() {
