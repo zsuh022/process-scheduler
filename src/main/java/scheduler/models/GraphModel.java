@@ -1,7 +1,6 @@
 package scheduler.models;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,14 +12,22 @@ import scheduler.parsers.InputOutputParser;
 public class GraphModel {
     private Graph graph;
 
+    private String rootId;
+
+    private int numberOfNodes;
+
     private Map<String, NodeModel> nodes;
     private Map<String, EdgeModel> edges;
 
     public GraphModel(String filename) throws IOException {
         this.graph = InputOutputParser.readDOTFile(filename);
 
+        this.numberOfNodes = 0;
+
         setNodes();
         setEdges();
+
+        setRoot();
     }
 
     private void setNodes() {
@@ -31,6 +38,8 @@ public class GraphModel {
             int weight = (int) Math.round((Double) node.getAttribute("Weight"));
 
             nodes.put(id, new NodeModel(id, weight));
+
+            this.numberOfNodes++;
         });
 
         this.nodes = nodes;
@@ -57,8 +66,25 @@ public class GraphModel {
         this.edges = edges;
     }
 
+    public void setRoot() {
+        for (NodeModel node : this.nodes.values()) {
+            if (node.getPredecessors().size() == 0) {
+                this.rootId = node.getId();
+                break;
+            }
+        }
+    }
+
     public String getId() {
         return this.graph.getId();
+    }
+
+    public int getNumberOfNodes() {
+        return this.numberOfNodes;
+    }
+
+    public NodeModel getRoot() {
+        return this.nodes.get(this.rootId);
     }
 
     public NodeModel getNode(String id) {

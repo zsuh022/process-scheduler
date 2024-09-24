@@ -13,8 +13,10 @@ public class NodeModel {
     private int startTime;
     private int processor;
 
-    private List<NodeModel> successors = new ArrayList<>();
-    private List<NodeModel> predecessors = new ArrayList<>();
+    private byte byteId;
+
+    private List<NodeModel> successors;
+    private List<NodeModel> predecessors;
 
     public NodeModel(String id, int weight) {
         this.id = id;
@@ -24,18 +26,25 @@ public class NodeModel {
         this.outDegree = 0;
         this.startTime = -1;
         this.processor = -1;
+
+        this.successors = new ArrayList<>();
+        this.predecessors = new ArrayList<>();
     }
 
     public String getId() {
-        return id;
+        return this.id;
+    }
+
+    public byte getByteId() {
+        return this.byteId;
     }
 
     public int getWeight() {
-        return weight;
+        return this.weight;
     }
 
     public int getStartTime() {
-        return startTime;
+        return this.startTime;
     }
 
     public void setStartTime(int startTime) {
@@ -43,7 +52,7 @@ public class NodeModel {
     }
 
     public int getProcessor() {
-        return processor;
+        return this.processor;
     }
 
     public void setProcessor(int processor) {
@@ -51,11 +60,11 @@ public class NodeModel {
     }
 
     public List<NodeModel> getPredecessors() {
-        return predecessors;
+        return this.predecessors;
     }
 
     public List<NodeModel> getSuccessors() {
-        return successors;
+        return this.successors;
     }
 
     public void addSuccessor(NodeModel node) {
@@ -74,6 +83,10 @@ public class NodeModel {
 
     public int getOutDegree() {
         return this.outDegree;
+    }
+
+    public void setByteId(byte id) {
+        this.byteId = id;
     }
 
     @Override

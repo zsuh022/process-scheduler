@@ -1,8 +1,11 @@
+scheduler/schedulers/Scheduler.class
 scheduler/parsers/InputOutputParser.class
 scheduler/models/GraphModel.class
+scheduler/constants/Constants.class
 scheduler/visualiser/Visualiser.class
 scheduler/schedulers/RoundRobinScheduler.class
 scheduler/parsers/CLIParser.class
+scheduler/schedulers/SequentialScheduler.class
 scheduler/models/NodeModel.class
 scheduler/Main.class
 scheduler/models/EdgeModel.class
