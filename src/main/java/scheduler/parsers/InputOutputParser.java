@@ -27,6 +27,8 @@ public class InputOutputParser {
             fileSourceDOT.removeSink(graph);
         }
 
+        visualiseGraph(graph);
+
         return graph;
     }
 
@@ -49,6 +51,19 @@ public class InputOutputParser {
         addEdgeModelsToGraphStream(graphStream, edges);
 
         return graphStream;
+    }
+
+    public static void visualiseGraph(Graph graph) {
+        System.setProperty("org.graphstream.ui", "javafx");
+        String styleSheet = "node { size: 20px, 20px; fill-color: red; text-color: black; }" +
+                "edge { fill-color: black; size: 1px; }";
+
+        graph.setAttribute("ui.stylesheet", styleSheet);
+        graph.setAttribute("ui.quality");
+        graph.setAttribute("ui.antialias");
+
+        // Automatically layout the graph
+        // graph.display();
     }
 
     private static void addNodeModelsToGraphStream(Graph graph, Map<String, NodeModel> nodes) {
