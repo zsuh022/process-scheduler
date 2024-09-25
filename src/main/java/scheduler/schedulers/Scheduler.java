@@ -39,6 +39,7 @@ public abstract class Scheduler {
 
     protected NodeModel[] getSortedNodes(Map<String, NodeModel> nodes) {
         int numberOfNodes = nodes.size();
+
         int nodeIndex = 0;
         int sortedIndex = 0;
 
