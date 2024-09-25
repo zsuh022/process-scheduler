@@ -1,28 +1,40 @@
 package scheduler.models;
 
-import java.time.ZoneId;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
 
 public class StateModel {
     private NodeModel lastScheduledNode;
 
-    private int finishTime;
     private int numberOfNodes;
     private int numberOfScheduledNodes;
 
-    private int[] processorTimes;
+    private int[] startTimes; // start times for processors
+    private int[] finishTimes; // finish times for processors
+    private int[] nodeStartTimes;
 
+    private byte[] nodeProcessors; // node maps to processor index
     private byte[] scheduledNodes;
 
     public StateModel(int numberOfProcessors, int numberOfNodes) {
-        this.finishTime = 0;
         this.numberOfScheduledNodes = 0;
         this.numberOfNodes = numberOfNodes;
 
-        this.processorTimes = new int[numberOfProcessors];
+        this.startTimes = new int[numberOfProcessors];
+        this.finishTimes = new int[numberOfProcessors];
+        this.nodeStartTimes = new int[numberOfNodes];
 
+        this.nodeProcessors = new byte[numberOfNodes];
         this.scheduledNodes = new byte[numberOfNodes];
+
+        Arrays.fill(this.nodeProcessors, (byte) -1);
+    }
+
+    public void addNode(NodeModel node, int processor, int startTime) {
+        this.nodeProcessors[node.getByteId()] = (byte) processor;
+        this.nodeStartTimes[node.getByteId()] = startTime;
+        this.finishTimes[processor] = startTime + node.getWeight();
+        this.numberOfScheduledNodes++;
+        this.scheduleNode(node.getByteId());
     }
 
     public NodeModel getLastScheduledNode() {
@@ -31,14 +43,6 @@ public class StateModel {
 
     public void setLastScheduledNode(NodeModel lastScheduledNode) {
         this.lastScheduledNode = lastScheduledNode;
-    }
-
-    public int getFinishTime() {
-        return this.finishTime;
-    }
-
-    public void setFinishTime(int finishTime) {
-        this.finishTime = finishTime;
     }
 
     public int getNumberOfNodes() {
@@ -57,20 +61,16 @@ public class StateModel {
         this.numberOfScheduledNodes = numberOfScheduledNodes;
     }
 
-    public int[] getProcessorTimes() {
-        return this.processorTimes;
-    }
-
-    public void setProcessorTimes(int[] processorTimes) {
-        this.processorTimes = processorTimes;
-    }
-
     public byte[] getScheduledNodes() {
         return this.scheduledNodes;
     }
 
     public void scheduleNode(byte nodeId) {
         this.scheduledNodes[nodeId] = 1;
+    }
+
+    public int getNodeStartTime(NodeModel node) {
+        return this.nodeStartTimes[node.getByteId()];
     }
 
     public void setScheduledNodes(byte[] scheduledNodes) {
@@ -99,5 +99,33 @@ public class StateModel {
         if (getClass() != obj.getClass())
             return false;
         return true;
+    }
+
+    public int[] getStartTimes() {
+        return startTimes;
+    }
+
+    public void setStartTimes(int[] startTimes) {
+        this.startTimes = startTimes;
+    }
+
+    public int[] getFinishTimes() {
+        return finishTimes;
+    }
+
+    public void setFinishTimes(int[] finishTimes) {
+        this.finishTimes = finishTimes;
+    }
+
+    public byte getNodeProcessor(NodeModel node) {
+        return this.nodeProcessors[node.getByteId()];
+    }
+
+    public int getFinishTime(int processor) {
+        return this.finishTimes[processor];
+    }
+
+    public int getStartTime(NodeModel node) {
+        return this.startTimes[node.getByteId()];
     }
 }

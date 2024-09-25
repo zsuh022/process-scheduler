@@ -6,8 +6,10 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
+import scheduler.models.EdgeModel;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
+import scheduler.models.StateModel;
 
 import static scheduler.constants.Constants.INF_32;
 
@@ -31,10 +33,18 @@ public abstract class Scheduler {
         this.bottomLevelPathLengths = getBottomLevelPathLengths();
     }
 
+    public abstract StateModel getAStarSchedule();
+
     protected void setNodeByteIds() {
         for (int i = 0; i < this.nodes.length; i++) {
             this.nodes[i].setByteId((byte) i);
         }
+    }
+
+    protected EdgeModel getEdge(NodeModel source, NodeModel destination) {
+        String edgeId = source.getId().concat(destination.getId());
+
+        return this.graph.getEdge(edgeId);
     }
 
     protected NodeModel[] getSortedNodes(Map<String, NodeModel> nodes) {
@@ -97,10 +107,6 @@ public abstract class Scheduler {
             }
         }
 
-        for (int i = 0; i < this.numberOfNodes; i++) {
-
-            System.out.println(this.nodes[i].getId() + ", " + String.valueOf(bottomLevelPathLengths[i]));
-        }
         return bottomLevelPathLengths;
     }
 

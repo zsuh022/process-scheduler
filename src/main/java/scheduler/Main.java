@@ -1,8 +1,10 @@
 package scheduler;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import scheduler.models.GraphModel;
+import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
@@ -33,6 +35,8 @@ public class Main {
             // arguments.getOutputDOTFilePath());
 
             Scheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
+            StateModel state = scheduler.getAStarSchedule();
+            System.out.println(Arrays.stream(state.getFinishTimes()).max().getAsInt());
 
             System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());
         } catch (IOException e) {

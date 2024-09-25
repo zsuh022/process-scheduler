@@ -5,6 +5,7 @@ scheduler/constants/Constants.class
 scheduler/visualiser/Visualiser.class
 scheduler/schedulers/RoundRobinScheduler.class
 scheduler/parsers/CLIParser.class
+scheduler/models/StateModel.class
 scheduler/schedulers/SequentialScheduler.class
 scheduler/models/NodeModel.class
 scheduler/Main.class
