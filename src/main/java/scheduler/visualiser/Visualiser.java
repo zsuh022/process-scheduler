@@ -18,16 +18,19 @@ public class Visualiser extends Application {
         launch();
     }
 
-    private static Parent loadFxml(final String fxml) throws IOException {
-    return new FXMLLoader(Visualiser.class.getResource("/fxml/" + fxml + ".fxml")).load();
-  }
+    //for milestone 2
+    // private static Parent loadFxml(final String fxml) throws IOException {
+    // return new FXMLLoader(Visualiser.class.getResource("/fxml/" + fxml + ".fxml")).load();
+    // }
 
     @Override
     public void start(Stage stage) throws IOException {
-        //String javaVersion = System.getProperty("java.version");
-        //String javafxVersion = System.getProperty("javafx.version");
-        //Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        Scene scene = new Scene(loadFxml("visualiser"), 1280, 720);
+        String javaVersion = System.getProperty("java.version");
+        String javafxVersion = System.getProperty("javafx.version");
+        Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
+        //Scene scene = new Scene(loadFxml("visualiser"), 1280, 720);
+        //above is for milestone 2
+        Scene scene = new Scene(new StackPane(l), 640, 480);
         stage.setScene(scene);
         stage.show();
     }
