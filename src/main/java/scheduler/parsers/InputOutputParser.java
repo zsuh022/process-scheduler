@@ -38,7 +38,7 @@ public class InputOutputParser {
         FileSinkDOT fileSinkDOT = new FileSinkDOT();
         fileSinkDOT.setDirected(true);
 
-        fileSinkDOT.writeAll(graphStream, new FileWriter(new File(filename)));
+        fileSinkDOT.writeAll(graphStream, new FileWriter(filename));
     }
 
     private static Graph convertGraphModelToGraphStream(GraphModel graph) {

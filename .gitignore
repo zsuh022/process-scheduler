@@ -44,3 +44,6 @@ buildNumber.properties
 
 # Settings
 .settings/
+
+# Jetbrains
+.idea

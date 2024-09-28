@@ -1,10 +1,6 @@
 package scheduler.schedulers;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import scheduler.models.EdgeModel;
 import scheduler.models.GraphModel;
@@ -33,7 +29,12 @@ public abstract class Scheduler {
         this.bottomLevelPathLengths = getBottomLevelPathLengths();
     }
 
-    public abstract StateModel getAStarSchedule();
+    public StateModel getAStarSchedule() {
+        return null;
+    }
+
+    public void getDFSSchedule(StateModel state) {
+    }
 
     protected void setNodeByteIds() {
         for (int i = 0; i < this.nodes.length; i++) {
@@ -127,5 +128,56 @@ public abstract class Scheduler {
         if (distances[destinationId] > cost) {
             distances[destinationId] = cost;
         }
+    }
+
+    protected int getEarliestStartTime(StateModel state, NodeModel node, int processor) {
+        if (state.isEmptyState()) {
+            return 0;
+        }
+
+        // Get the earliest start time for the current processor
+        int earliestStartTime = state.getFinishTime(processor);
+
+        for (NodeModel predecessor : node.getPredecessors()) {
+            int finishTime = state.getNodeStartTime(node) + predecessor.getWeight();
+
+            // If we are scheduling on the same processor, we can ignore the communication
+            // time, otherwise, we include the communication time, which is the edge weight
+            // between predecessor and node
+            if (state.getNodeProcessor(predecessor) == processor) {
+                earliestStartTime = Math.max(earliestStartTime, finishTime);
+            } else {
+                EdgeModel edge = getEdge(predecessor, node);
+                earliestStartTime = Math.max(earliestStartTime, finishTime + edge.getWeight());
+            }
+        }
+
+        return earliestStartTime;
+    }
+
+    // available nodes all have their predecessors processed and is not visited
+    // already
+    protected List<NodeModel> getAvailableNodes(StateModel state) {
+        List<NodeModel> availableNodes = new ArrayList<>();
+
+        for (NodeModel node : this.graph.getNodes().values()) {
+            if (!state.isNodeScheduled(node) && arePredecessorsScheduled(state, node)) {
+                availableNodes.add(node);
+            }
+        }
+
+        return availableNodes;
+    }
+
+    // Check for the current state, the current task, if its predecessors were
+    // scheduled already
+    protected boolean arePredecessorsScheduled(StateModel state, NodeModel node) {
+        for (NodeModel predecessor : node.getPredecessors()) {
+            if (!state.isNodeScheduled(predecessor)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

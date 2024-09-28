@@ -1,6 +1,7 @@
 package scheduler.models;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class StateModel {
     private NodeModel lastScheduledNode;
@@ -35,6 +36,14 @@ public class StateModel {
         this.finishTimes[processor] = startTime + node.getWeight();
         this.numberOfScheduledNodes++;
         this.scheduleNode(node.getByteId());
+    }
+
+    public boolean isEmptyNode(NodeModel node, int processor, int startTime) {
+        return (node == null && processor == -1 && startTime == -1);
+    }
+
+    public boolean isEmptyState() {
+        return (this.numberOfScheduledNodes == 0);
     }
 
     public NodeModel getLastScheduledNode() {
@@ -86,19 +95,16 @@ public class StateModel {
     }
 
     @Override
-    public int hashCode() {
-        return super.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StateModel that = (StateModel) o;
+        return numberOfNodes == that.numberOfNodes && numberOfScheduledNodes == that.numberOfScheduledNodes && Objects.equals(lastScheduledNode, that.lastScheduledNode) && Objects.deepEquals(startTimes, that.startTimes) && Objects.deepEquals(finishTimes, that.finishTimes) && Objects.deepEquals(nodeStartTimes, that.nodeStartTimes) && Objects.deepEquals(nodeProcessors, that.nodeProcessors) && Objects.deepEquals(scheduledNodes, that.scheduledNodes);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        return true;
+    public int hashCode() {
+        return Objects.hash(lastScheduledNode, numberOfNodes, numberOfScheduledNodes, Arrays.hashCode(startTimes), Arrays.hashCode(finishTimes), Arrays.hashCode(nodeStartTimes), Arrays.hashCode(nodeProcessors), Arrays.hashCode(scheduledNodes));
     }
 
     public int[] getStartTimes() {

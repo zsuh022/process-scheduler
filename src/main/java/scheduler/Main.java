@@ -42,6 +42,7 @@ public class Main {
             System.err.println("ERROR");
             e.printStackTrace();
         }
+
         Visualiser.run(arguments);
     }
 }

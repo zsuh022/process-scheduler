@@ -1,15 +1,11 @@
 package scheduler.schedulers;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import scheduler.models.EdgeModel;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
@@ -19,6 +15,7 @@ public class SequentialScheduler extends Scheduler {
         super(graph, processors);
     }
 
+    @Override
     public StateModel getAStarSchedule() {
         // 1. create opened list of partial schedules
         PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(this::f));
@@ -30,7 +27,7 @@ public class SequentialScheduler extends Scheduler {
                 for (int i = 0; i < this.processors; i++) {
                     StateModel state = new StateModel(this.processors, this.numberOfNodes);
                     state.addNode(node, i, 0); // Schedule root node on processor i
-                    openedStates.add(state); // Add the initialized state to OPEN list
+                    openedStates.add(state); // Add the initialised state to OPEN list
                 }
             }
         }
@@ -76,63 +73,54 @@ public class SequentialScheduler extends Scheduler {
     }
 
     public int f(StateModel state) {
-        int g = Arrays.stream(state.getFinishTimes()).max().getAsInt(); // Current makespan (g(s))
-        int h = 0;
+//        int g = Arrays.stream(state.getFinishTimes()).max().getAsInt();
+//        int h = 0;
+//
+//        // Heuristic: max bottom-level path length for unscheduled nodes
+//        for (NodeModel node : this.nodes) {
+//            if (!state.isNodeScheduled(node)) {
+//                h = Math.max(h, bottomLevelPathLengths[node.getByteId()]);
+//            }
+//        }
+//
+//        return g + h;
+        int fbl = fBL(state);
+        int fdrt = fDRT(state);
 
-        // Heuristic: max bottom-level path length for unscheduled nodes
-        for (NodeModel node : this.nodes) {
-            if (!state.isNodeScheduled(node)) {
-                h = Math.max(h, bottomLevelPathLengths[node.getByteId()]);
-            }
-        }
-
-        return g + h;
+        return Math.max(fbl, fdrt);
     }
 
-    public int getEarliestStartTime(StateModel state, NodeModel node, int processor) {
-        // Get the earliest start time for the current processor
-        int earliestStartTime = state.getFinishTime(processor);
+    public int fDRT(StateModel state) {
+        int maxDRT = 0;
 
-        for (NodeModel predecessor : node.getPredecessors()) {
-            int finishTime = state.getNodeStartTime(node) + node.getWeight();
+        for (NodeModel node : getAvailableNodes(state)) {
+            int earliestStartTime = getEarliestStartTime(state, node);
+            maxDRT = Math.max(maxDRT, earliestStartTime + bottomLevelPathLengths[node.getByteId()]);
+        }
 
-            // If we are scheduling on the same processor, we can ignore the communication
-            // time, otherwise, we include the communication time, which is the edge weight
-            // between predecessor and node
-            if (state.getNodeProcessor(predecessor) == processor) {
-                earliestStartTime = Math.max(earliestStartTime, finishTime);
-            } else {
-                EdgeModel edge = getEdge(predecessor, node);
-                earliestStartTime = Math.max(earliestStartTime, finishTime + edge.getWeight());
-            }
+        return maxDRT;
+    }
+
+    public int fBL(StateModel state) {
+        int maxBL = 0;
+
+        for (byte nodeId : state.getScheduledNodes()) {
+            NodeModel node = this.nodes[nodeId];
+            int earliestStartTime = getEarliestStartTime(state, node);
+            maxBL = Math.max(maxBL, earliestStartTime + bottomLevelPathLengths[nodeId]);
+        }
+
+        return maxBL;
+    }
+
+    public int getEarliestStartTime(StateModel state, NodeModel node) {
+        int earliestStartTime = Integer.MAX_VALUE;
+
+        for (int processor = 0; processor < processors; processor++) {
+            int est = getEarliestStartTime(state, node, processor);
+            earliestStartTime = Math.min(est, earliestStartTime);
         }
 
         return earliestStartTime;
-    }
-
-    // available nodes all have their predecessors processed and is not visited
-    // already
-    public List<NodeModel> getAvailableNodes(StateModel state) {
-        List<NodeModel> availableNodes = new ArrayList<>();
-
-        for (NodeModel node : this.graph.getNodes().values()) {
-            if (!state.isNodeScheduled(node) && arePredecessorsScheduled(state, node)) {
-                availableNodes.add(node);
-            }
-        }
-
-        return availableNodes;
-    }
-
-    // Check for the current state, the current task, if its predecessors were
-    // scheduled already
-    public boolean arePredecessorsScheduled(StateModel state, NodeModel node) {
-        for (NodeModel predecessor : node.getPredecessors()) {
-            if (!state.isNodeScheduled(predecessor)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

@@ -60,7 +60,6 @@ public class GraphModel {
 
             source.getSuccessors().add(destination);
             destination.getPredecessors().add(source);
-
         });
 
         this.edges = edges;
