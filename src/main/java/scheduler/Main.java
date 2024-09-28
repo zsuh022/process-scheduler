@@ -27,12 +27,11 @@ public class Main {
         try {
             GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
 
-            // RoundRobinScheduler scheduler = new RoundRobinScheduler(grpahModel,
+            // RoundRobinScheduler scheduler = new RoundRobinScheduler(graph,
             // arguments.getProcessors());
             // scheduler.schedule();
 
-            // InputOutputParser.outputDOTFile(grpahModel,
-            // arguments.getOutputDOTFilePath());
+            // InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
 
             Scheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
             StateModel state = scheduler.getAStarSchedule();
