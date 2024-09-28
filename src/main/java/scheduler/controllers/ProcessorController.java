@@ -1,10 +1,19 @@
 package scheduler.controllers;
 
+import java.io.IOException;
+import java.util.Map;
+
+import org.graphstream.graph.Graph;
+
 import javafx.fxml.FXML;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
+import scheduler.models.GraphModel;
+import scheduler.models.NodeModel;
+import scheduler.parsers.Arguments;
 
 
 public class ProcessorController {
@@ -17,6 +26,8 @@ public class ProcessorController {
     private int processors;
 
     private int latestLength;
+
+    private Arguments arguments;
     
     int unitLengths = 50;
 
@@ -24,10 +35,22 @@ public class ProcessorController {
     public void initialize() {
         gc = canvas.getGraphicsContext2D();
         processors = 2;
-        drawInitial(gc);
         latestLength = 80;
-        
+    }
 
+    @FXML
+    public void drawAllTasks() throws IOException {
+        String tasks = arguments.getOutputDOTFilePath();
+        GraphModel graphModel = new GraphModel(tasks);
+        for (NodeModel node : graphModel.getNodes().values()) {
+            drawTask(gc, node.getStartTime(), node.getWeight(), node.getProcessor(), node.getId());
+        }
+    }
+
+    public void setArguments(Arguments args) {
+        this.arguments = args;
+        processors = args.getProcessors();
+        drawInitial(gc);
     }
 
     private void drawInitial(GraphicsContext gc) {
@@ -53,12 +76,9 @@ public class ProcessorController {
             gc.strokeLine(latestLength, y, length, y);
         }
         extendTimeAxis(gc, length);
-
-
     }
-    private void drawTask(GraphicsContext gc, int delay, int length, int processor) {
 
-
+    private void drawTask(GraphicsContext gc, int delay, int length, int processor, String id) {
         int startX = 80 + delay*unitLengths;
         int startY = unitLengths * processor - unitLengths;
 
@@ -79,7 +99,10 @@ public class ProcessorController {
         gc.setLineWidth(2);
         gc.strokeRect(startX, startY, taskWidth, taskHeight);
 
-
+        String taskNumber = id;  // You can replace weight with another identifier
+        gc.setFill(Color.LIGHTGREEN);  // Set text color
+        gc.setTextBaseline(VPos.CENTER);
+        gc.fillText(taskNumber, startX + taskWidth / 2, startY + taskHeight / 2);
     }
 
     private void extendTimeAxis(GraphicsContext gc, int length) {
