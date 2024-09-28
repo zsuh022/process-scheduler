@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="674.0" prefWidth="1084.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="scheduler.controllers.ProcessorController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="591.0" prefWidth="1367.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="scheduler.controllers.ProcessorController">
    <children>
-      <ScrollPane layoutX="20.0" layoutY="68.0" pannable="true" prefHeight="537.0" prefWidth="1004.0">
+      <ScrollPane layoutX="20.0" layoutY="68.0" pannable="true" prefHeight="450.0" prefWidth="1280.0">
          <content>
-            <Canvas fx:id="canvas" height="516.0" width="998.0" />
+            <Canvas fx:id="canvas" height="419.0" width="1176.0" />
          </content>
       </ScrollPane>
+      <Button layoutX="633.0" layoutY="24.0" mnemonicParsing="false" onAction="#drawAllTasks" text="Button" />
    </children>
 </Pane>
