@@ -30,6 +30,17 @@ public class StateModel {
         Arrays.fill(this.nodeProcessors, (byte) -1);
     }
 
+    public StateModel(StateModel state) {
+        this.numberOfNodes = state.numberOfNodes;
+        this.numberOfScheduledNodes = state.numberOfScheduledNodes;
+
+        this.startTimes = state.startTimes.clone();
+        this.finishTimes = state.finishTimes.clone();
+        this.nodeStartTimes = state.nodeStartTimes.clone();
+        this.nodeProcessors = state.nodeProcessors.clone();
+        this.scheduledNodes = state.scheduledNodes.clone();
+    }
+
     public void addNode(NodeModel node, int processor, int startTime) {
         this.nodeProcessors[node.getByteId()] = (byte) processor;
         this.nodeStartTimes[node.getByteId()] = startTime;
@@ -122,6 +133,10 @@ public class StateModel {
         return result;
     }
 
+    @Override
+    public StateModel clone() {
+        return new StateModel(this);
+    }
 
     public int[] getStartTimes() {
         return startTimes;

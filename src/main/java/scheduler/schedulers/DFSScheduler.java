@@ -11,6 +11,8 @@ public class DFSScheduler extends Scheduler {
 
     private StateModel bestState;
 
+    private Set<StateModel> closedStates;
+
     public DFSScheduler(GraphModel graph, int processors) {
         super(graph, processors);
 
@@ -18,11 +20,17 @@ public class DFSScheduler extends Scheduler {
 
         this.bestState = null;
 
-        getDFSSchedule(new StateModel(processors, this.numberOfNodes), new HashSet<>());
+        this.closedStates = new HashSet<>();
+
+
+
+        getDFSSchedule(new StateModel(processors, this.numberOfNodes));
     }
 
     @Override
-    public void getDFSSchedule(StateModel state, Set<StateModel> closedStates) {
+    public void getDFSSchedule(StateModel state) {
+        System.out.println(state.getNumberOfScheduledNodes());
+
         if (state.areAllNodesScheduled()) {
             int finishTime = Arrays.stream(state.getFinishTimes()).max().getAsInt();
             System.out.println(finishTime);
@@ -35,29 +43,24 @@ public class DFSScheduler extends Scheduler {
             return;
         }
 
-        if (closedStates.contains(state)) {
+        if (this.closedStates.contains(state)) {
            return;
         }
 
-        closedStates.add(state);
+        this.closedStates.add(state);
 
         // For each available node
         for (NodeModel node : getAvailableNodes(state)) {
             // For each processor
             for (int processor = 0; processor < processors; processor++) {
-                StateModel nextState = new StateModel(this.processors, this.numberOfNodes);
-
-                System.arraycopy(state.getFinishTimes(), 0, nextState.getFinishTimes(), 0, processors);
-                nextState.setScheduledNodes(state.getScheduledNodes().clone());
+                StateModel nextState = state.clone();
 
                 int earliestStartTime = getEarliestStartTime(state, node, processor);
 
                 nextState.addNode(node, processor, earliestStartTime);
-                getDFSSchedule(nextState, closedStates);
+                getDFSSchedule(nextState);
             }
         }
-
-        closedStates.remove(state);
     }
 
     public StateModel getSchedule() {

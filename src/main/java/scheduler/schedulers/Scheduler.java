@@ -33,7 +33,7 @@ public abstract class Scheduler {
         return null;
     }
 
-    public void getDFSSchedule(StateModel state, Set<StateModel> closedStates) {
+    public void getDFSSchedule(StateModel state) {
     }
 
     protected void setNodeByteIds() {
