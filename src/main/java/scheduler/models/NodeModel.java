@@ -90,15 +90,18 @@ public class NodeModel {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        NodeModel nodeModel = (NodeModel) o;
-        return weight == nodeModel.weight && inDegree == nodeModel.inDegree && outDegree == nodeModel.outDegree && startTime == nodeModel.startTime && processor == nodeModel.processor && byteId == nodeModel.byteId && Objects.equals(id, nodeModel.id) && Objects.equals(successors, nodeModel.successors) && Objects.equals(predecessors, nodeModel.predecessors);
+    public int hashCode() {
+        return Objects.hash(id, weight);
     }
 
+
     @Override
-    public int hashCode() {
-        return Objects.hash(id, weight, inDegree, outDegree, startTime, processor, byteId, successors, predecessors);
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof NodeModel))
+            return false;
+        NodeModel other = (NodeModel) obj;
+        return this.id.equals(other.id);
     }
 }

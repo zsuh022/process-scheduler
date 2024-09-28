@@ -94,18 +94,34 @@ public class StateModel {
         return (this.numberOfScheduledNodes == this.numberOfNodes);
     }
 
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof StateModel))
+            return false;
         StateModel that = (StateModel) o;
-        return numberOfNodes == that.numberOfNodes && numberOfScheduledNodes == that.numberOfScheduledNodes && Objects.equals(lastScheduledNode, that.lastScheduledNode) && Objects.deepEquals(startTimes, that.startTimes) && Objects.deepEquals(finishTimes, that.finishTimes) && Objects.deepEquals(nodeStartTimes, that.nodeStartTimes) && Objects.deepEquals(nodeProcessors, that.nodeProcessors) && Objects.deepEquals(scheduledNodes, that.scheduledNodes);
+        return numberOfNodes == that.numberOfNodes &&
+                numberOfScheduledNodes == that.numberOfScheduledNodes &&
+                Arrays.equals(startTimes, that.startTimes) &&
+                Arrays.equals(finishTimes, that.finishTimes) &&
+                Arrays.equals(nodeStartTimes, that.nodeStartTimes) &&
+                Arrays.equals(nodeProcessors, that.nodeProcessors) &&
+                Arrays.equals(scheduledNodes, that.scheduledNodes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lastScheduledNode, numberOfNodes, numberOfScheduledNodes, Arrays.hashCode(startTimes), Arrays.hashCode(finishTimes), Arrays.hashCode(nodeStartTimes), Arrays.hashCode(nodeProcessors), Arrays.hashCode(scheduledNodes));
+        int result = Objects.hash(numberOfNodes, numberOfScheduledNodes);
+        result = 31 * result + Arrays.hashCode(startTimes);
+        result = 31 * result + Arrays.hashCode(finishTimes);
+        result = 31 * result + Arrays.hashCode(nodeStartTimes);
+        result = 31 * result + Arrays.hashCode(nodeProcessors);
+        result = 31 * result + Arrays.hashCode(scheduledNodes);
+        return result;
     }
+
 
     public int[] getStartTimes() {
         return startTimes;

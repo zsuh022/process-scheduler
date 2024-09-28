@@ -11,8 +11,6 @@ public class DFSScheduler extends Scheduler {
 
     private StateModel bestState;
 
-    private Set<StateModel> closedStates;
-
     public DFSScheduler(GraphModel graph, int processors) {
         super(graph, processors);
 
@@ -20,13 +18,11 @@ public class DFSScheduler extends Scheduler {
 
         this.bestState = null;
 
-        this.closedStates = new HashSet<>();
-
-        getDFSSchedule(new StateModel());
+        getDFSSchedule(new StateModel(processors, this.numberOfNodes), new HashSet<>());
     }
 
     @Override
-    public void getDFSSchedule(StateModel state) {
+    public void getDFSSchedule(StateModel state, Set<StateModel> closedStates) {
         if (state.areAllNodesScheduled()) {
             int finishTime = Arrays.stream(state.getFinishTimes()).max().getAsInt();
             System.out.println(finishTime);
@@ -39,11 +35,11 @@ public class DFSScheduler extends Scheduler {
             return;
         }
 
-        if (this.closedStates.contains(state)) {
+        if (closedStates.contains(state)) {
            return;
         }
 
-        this.closedStates.add(state);
+        closedStates.add(state);
 
         // For each available node
         for (NodeModel node : getAvailableNodes(state)) {
@@ -57,10 +53,11 @@ public class DFSScheduler extends Scheduler {
                 int earliestStartTime = getEarliestStartTime(state, node, processor);
 
                 nextState.addNode(node, processor, earliestStartTime);
+                getDFSSchedule(nextState, closedStates);
             }
         }
 
-        this.closedStates.remove(state);
+        closedStates.remove(state);
     }
 
     public StateModel getSchedule() {
