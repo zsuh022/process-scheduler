@@ -14,6 +14,7 @@ import scheduler.parsers.Arguments;
 
 public class Visualiser extends Application {
     private static Arguments arguments;
+    private static Scene scene;
 
     public static void run(Arguments arguments) {
         Visualiser.arguments = arguments;
@@ -23,9 +24,15 @@ public class Visualiser extends Application {
         FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/fxml/" + fxml + ".fxml"));
         Parent root = loader.load();
         
-        ProcessorController controller = loader.getController();
-        controller.setArguments(arguments);
+        if (fxml.equals("processor")){
+            ProcessorController controller = loader.getController();
+            controller.setArguments(arguments);
+        }
         return root;
+    }
+
+    public static void setScreen(String fxml) throws IOException{
+        scene.setRoot(loadFxml(fxml));
     }
 
     @Override
@@ -37,7 +44,7 @@ public class Visualiser extends Application {
         //above is for milestone 2
         //Scene scene = new Scene(new StackPane(l), 640, 480);
         
-        Scene scene = new Scene(loadFxml("processor"), 1280, 720);
+        scene = new Scene(loadFxml("visualiser"), 1280, 720);
         // Used for milestone 2
         stage.setScene(scene);
         stage.show();
