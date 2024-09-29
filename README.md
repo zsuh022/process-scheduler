@@ -3,22 +3,29 @@
 This is Team 13's repository.
 
 ## Running the project
+> [!NOTE]
+> When running the `scheduler.jar` file, ensure that you specify both the input file location and the number of processors.
 
-To run the project, simply follow the instructions as listed below:
-
-1. Clone the repository
-2. Run the following command:  `java -jar scheduler.jar INPUT.dot P [OPTION]`
-
-- `INPUT.dot`: A task graph with integer weights in DOT format.
-- `P`: Number of processors to schedule the INPUT graph on.
+### Steps to Run the Project
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/SoftEng306-2024/project-2-13-gallon-and-friends
+    ```
+2. Use the following command to run the project:
+    ```sh
+    java -jar scheduler.jar INPUT.dot P [OPTION]
+   ```
+- `INPUT.dot`: A task graph in DOT format.
+- `P`: The number of processors to schedule the input graph on.
 
 Optional Parameters:
 - `-p N`: Use N cores for execution in parallel (default is sequential).
-- `-v`: Visualize the search.
+- `-v`: Visualise the search.
 - `-o` OUTPUT: The output file is named OUTPUT (default is INPUT-output.dot).
 
 ## Algorithm progress
-The `SequentialScheduler.java` file contains our A* algorithm which is in progress. Instead, `DFSScheduler.java` contains an algorithm that produces a valid and optimal graph.
+- The A* algorithm is currently being developed in the `SequentialScheduler.java` file.
+- Meanwhile, the `DFSScheduler.java` file contains a working algorithm that produces valid and optimal task schedules.
 
 ## Team
 
