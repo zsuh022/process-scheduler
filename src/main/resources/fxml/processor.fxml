@@ -1,17 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="591.0" prefWidth="1367.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="scheduler.controllers.ProcessorController">
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="scheduler.controllers.ProcessorController">
    <children>
-      <ScrollPane layoutX="20.0" layoutY="68.0" pannable="true" prefHeight="450.0" prefWidth="1280.0">
-         <content>
-            <Canvas fx:id="canvas" height="419.0" width="1176.0" />
-         </content>
-      </ScrollPane>
-      <Button layoutX="633.0" layoutY="24.0" mnemonicParsing="false" onAction="#drawAllTasks" text="Button" />
+      <VBox layoutX="30.0" layoutY="240.0" style="-fx-background-color: #e0e0e0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="90.0" prefWidth="1280.0" style="-fx-background-color: #001840;">
+               <children>
+                  <ImageView fitHeight="90.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/jonklerlogo.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule Visualisation">
+                     <font>
+                        <Font name="System Bold" size="40.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="20.0" />
+                     </HBox.margin>
+                  </Text>
+               </children>
+            </HBox>
+            <ScrollPane pannable="true" prefHeight="450.0" prefWidth="1280.0" VBox.vgrow="ALWAYS">
+               <content>
+                  <Canvas fx:id="canvas" height="419.0" width="1176.0" />
+               </content>
+               <VBox.margin>
+                  <Insets bottom="45.0" left="45.0" right="45.0" top="45.0" />
+               </VBox.margin>
+            </ScrollPane>
+         </children>
+      </VBox>
+      <Button layoutX="643.0" layoutY="34.0" mnemonicParsing="false" onAction="#drawAllTasks" text="Button" />
    </children>
-</Pane>
+</AnchorPane>
