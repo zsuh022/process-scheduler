@@ -41,6 +41,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        Visualiser.run(arguments);
+        //Visualiser.run(arguments);
+        //Uncomment after milestone 1
     }
 }
