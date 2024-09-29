@@ -98,7 +98,8 @@ public class CLIParser {
      */
     private static void setDefaultOutputDOTFilePath(Arguments arguments) {
         String inputDOTFilePath = arguments.getInputDOTFilePath();
-        String outputDirectory = "src/main/resources/dotfiles/output/";
+//        String outputDirectory = "src/main/resources/dotfiles/output/";
+        String outputDirectory = inputDOTFilePath;
         String inputFileName = new File(inputDOTFilePath).getName();
         String outputFileName = inputFileName.replace(".dot", "-output.dot");
 
