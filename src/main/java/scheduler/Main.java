@@ -15,7 +15,7 @@ import scheduler.schedulers.SequentialScheduler;
 import scheduler.visualiser.Visualiser;
 
 public class Main {
-    public static void main(String[] CLIArguments) throws IOException {
+    public static void main(String[] CLIArguments) {
         Arguments arguments;
 
         try {
@@ -37,10 +37,9 @@ public class Main {
 
             System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());
         } catch (IOException e) {
-            System.err.println("ERROR");
             e.printStackTrace();
         }
 
-        Visualiser.run(arguments);
+//        Visualiser.run(arguments);
     }
 }

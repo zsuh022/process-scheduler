@@ -6,6 +6,10 @@ import scheduler.models.StateModel;
 
 import java.util.*;
 
+/**
+ *  d f s scheduler
+ *
+ */
 public class DFSScheduler extends Scheduler {
     private int bestFinishTime;
 
