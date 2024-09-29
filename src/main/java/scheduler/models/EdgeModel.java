@@ -4,12 +4,12 @@ package scheduler.models;
  * Represents an edge in the graph with a source node, a destination node, and a weight.
  */
 public class EdgeModel {
-    String id;
+    private final String id;
 
-    private int weight;
+    private final int weight;
 
-    private NodeModel source;
-    private NodeModel destination;
+    private final NodeModel source;
+    private final NodeModel destination;
 
     /**
      * Constructs an {@code EdgeModel} with the specified id, source node, destination node, and weight.
@@ -21,7 +21,7 @@ public class EdgeModel {
      */
     public EdgeModel(String id, NodeModel source, NodeModel destination, int weight) {
         this.id = id;
-
+        
         this.weight = weight;
 
         this.source = source;
@@ -50,5 +50,15 @@ public class EdgeModel {
      */
     public int getWeight() {
         return weight;
+    }
+    
+    /**
+     * Returns the id assigned to the edge.
+     *
+     * @return {@link String} the id of the edge
+     * @see String
+     */
+    public String getId() {
+        return this.id; 
     }
 }

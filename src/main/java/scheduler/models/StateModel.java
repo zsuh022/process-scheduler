@@ -9,16 +9,14 @@ import java.util.Objects;
  * Used in algorithms like branch-and-bound to keep track of the current scheduling state.
  */
 public class StateModel {
-    private NodeModel lastScheduledNode;
-
     private int numberOfNodes;
     private int maximumFinishTime;
     private int numberOfScheduledNodes;
 
     private int[] finishTimes;
-    private int[] nodeStartTimes;
+    private final int[] nodeStartTimes;
 
-    private byte[] nodeProcessors;
+    private final byte[] nodeProcessors;
     private byte[] scheduledNodes;
 
     /**
@@ -101,23 +99,6 @@ public class StateModel {
         return (this.numberOfScheduledNodes == 0);
     }
 
-    /**
-     * Returns the last node that was scheduled in this state.
-     *
-     * @return the last scheduled node
-     */
-    public NodeModel getLastScheduledNode() {
-        return this.lastScheduledNode;
-    }
-
-    /**
-     * Sets the last scheduled node for this state.
-     *
-     * @param lastScheduledNode the node to set as the last scheduled
-     */
-    public void setLastScheduledNode(NodeModel lastScheduledNode) {
-        this.lastScheduledNode = lastScheduledNode;
-    }
     /**
      * Returns the total number of nodes to schedule.
      *
@@ -256,10 +237,9 @@ public class StateModel {
     }
 
     /**
-     * Returns the finish time of a specific processor.
+     * Returns the finish times of the processors.
      *
-     * @param processor the processor index
-     * @return the finish time of the processor
+     * @return the finish time of the processors
      */
     public int[] getFinishTimes() {
         return finishTimes;
@@ -283,9 +263,9 @@ public class StateModel {
     }
 
     /**
-     * Returns the finish times of all processors.
+     * Returns the finish time for a specific processor.
      *
-     * @return an array of finish times for each processor
+     * @return the finish time for a specific processor
      */
     public int getFinishTime(int processor) {
         return this.finishTimes[processor];
