@@ -108,8 +108,8 @@ public class ProcessorController {
         gc.setLineWidth(2);
         gc.strokeRect(startX, startY, taskWidth, taskHeight);
 
-        String taskNumber = id;  // You can replace weight with another identifier
-        gc.setFill(Color.LIGHTGREEN);  // Set text color
+        String taskNumber = id; 
+        gc.setFill(Color.LIGHTGREEN); 
         gc.setTextBaseline(VPos.CENTER);
         gc.fillText(taskNumber, startX + taskWidth / 2, startY + taskHeight / 2);
     }

@@ -1,15 +1,20 @@
 package scheduler.models;
 
 public class EdgeModel {
-    private NodeModel source;
-    private NodeModel destination;
+    String id;
 
     private int weight;
 
-    public EdgeModel(NodeModel source, NodeModel destination, int weight) {
+    private NodeModel source;
+    private NodeModel destination;
+
+    public EdgeModel(String id, NodeModel source, NodeModel destination, int weight) {
+        this.id = id;
+
+        this.weight = weight;
+
         this.source = source;
         this.destination = destination;
-        this.weight = weight;
     }
 
     public NodeModel getSource() {
