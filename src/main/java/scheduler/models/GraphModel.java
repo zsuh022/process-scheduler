@@ -12,8 +12,6 @@ import scheduler.parsers.InputOutputParser;
 public class GraphModel {
     private Graph graph;
 
-    private String rootId;
-
     private int numberOfNodes;
 
     private Map<String, NodeModel> nodes;
@@ -26,8 +24,6 @@ public class GraphModel {
 
         setNodes();
         setEdges();
-
-        setRoot();
     }
 
     private void setNodes() {
@@ -77,12 +73,10 @@ public class GraphModel {
         this.edges = edges;
     }
 
-    public void setRoot() {
+    public void setNodesAndEdgesForState(StateModel state) {
         for (NodeModel node : this.nodes.values()) {
-            if (node.getPredecessors().size() == 0) {
-                this.rootId = node.getId();
-                break;
-            }
+            node.setProcessor(state.getNodeProcessor(node) + 1);
+            node.setStartTime(state.getNodeStartTime(node));
         }
     }
 
@@ -94,29 +88,12 @@ public class GraphModel {
         return this.numberOfNodes;
     }
 
-    public NodeModel getRoot() {
-        return this.nodes.get(this.rootId);
-    }
-
     public NodeModel getNode(String id) {
         return this.nodes.get(id);
     }
 
     public EdgeModel getEdge(String id) {
         return this.edges.get(id);
-    }
-
-    public HashMap<String, List<String>> getAdjacencyList() {
-        HashMap<String, List<String>> adjacencyList = new HashMap<>();
-
-        for (EdgeModel edge : this.edges.values()) {
-            NodeModel source = edge.getSource();
-            NodeModel destination = edge.getDestination();
-
-            adjacencyList.get(source.getId()).add(destination.getId());
-        }
-
-        return adjacencyList;
     }
 
     public Map<String, NodeModel> getNodes() {

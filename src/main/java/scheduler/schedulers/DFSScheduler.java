@@ -27,14 +27,11 @@ public class DFSScheduler extends Scheduler {
 
     @Override
     public void getDFSSchedule(StateModel state) {
-        System.out.println(state.getNumberOfScheduledNodes());
-
         if (state.areAllNodesScheduled()) {
-            int finishTime = Arrays.stream(state.getFinishTimes()).max().getAsInt();
-            System.out.println(finishTime);
+            int maximumFinishTime = state.getMaximumFinishTime();
 
-            if (this.bestFinishTime > finishTime) {
-                this.bestFinishTime = finishTime;
+            if (this.bestFinishTime > maximumFinishTime) {
+                this.bestFinishTime = maximumFinishTime;
                 this.bestState = state;
             }
 
@@ -56,6 +53,11 @@ public class DFSScheduler extends Scheduler {
                 int earliestStartTime = getEarliestStartTime(state, node, processor);
 
                 nextState.addNode(node, processor, earliestStartTime);
+
+                if (nextState.getMaximumFinishTime() >= this.bestFinishTime) {
+                    continue;
+                }
+
                 getDFSSchedule(nextState);
             }
         }

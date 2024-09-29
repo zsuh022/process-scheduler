@@ -32,7 +32,7 @@ public class CLIParser {
         }
 
         parseRequiredArguments(arguments, remainingArguments);
-        parseOptionalArguments(arguments, commandPrompt, remainingArguments);
+        parseOptionalArguments(arguments, commandPrompt);
 
         return arguments;
     }
@@ -42,8 +42,7 @@ public class CLIParser {
         arguments.setProcessors(Integer.parseInt(remainingArguments[1]));
     }
 
-    private static void parseOptionalArguments(Arguments arguments, CommandLine commandPrompt,
-            String[] remainingArguments) {
+    private static void parseOptionalArguments(Arguments arguments, CommandLine commandPrompt) {
         if (commandPrompt.hasOption("p")) {
             arguments.setCores(Integer.parseInt(commandPrompt.getOptionValue("p")));
         }
@@ -77,6 +76,10 @@ public class CLIParser {
         formatter.printHelp("java -jar scheduler.jar INPUT.dot P [OPTION]", options);
     }
 
+    /**
+     * If
+     *
+     */
     private static void displayRequiredArguments() {
         System.out.println("Required arguments:");
         System.out.println(String.format(" %-10s %s %s", "INPUT.dot", "<String>", "The path to the input dot file"));

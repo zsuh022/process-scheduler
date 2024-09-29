@@ -7,20 +7,20 @@ public class StateModel {
     private NodeModel lastScheduledNode;
 
     private int numberOfNodes;
+    private int maximumFinishTime;
     private int numberOfScheduledNodes;
 
-    private int[] startTimes; // start times for processors
-    private int[] finishTimes; // finish times for processors
+    private int[] finishTimes;
     private int[] nodeStartTimes;
 
-    private byte[] nodeProcessors; // node maps to processor index
+    private byte[] nodeProcessors;
     private byte[] scheduledNodes;
 
     public StateModel(int numberOfProcessors, int numberOfNodes) {
-        this.numberOfScheduledNodes = 0;
         this.numberOfNodes = numberOfNodes;
+        this.maximumFinishTime = 0;
+        this.numberOfScheduledNodes = 0;
 
-        this.startTimes = new int[numberOfProcessors];
         this.finishTimes = new int[numberOfProcessors];
         this.nodeStartTimes = new int[numberOfNodes];
 
@@ -32,21 +32,27 @@ public class StateModel {
 
     public StateModel(StateModel state) {
         this.numberOfNodes = state.numberOfNodes;
+        this.maximumFinishTime = state.maximumFinishTime;
         this.numberOfScheduledNodes = state.numberOfScheduledNodes;
 
-        this.startTimes = state.startTimes.clone();
         this.finishTimes = state.finishTimes.clone();
         this.nodeStartTimes = state.nodeStartTimes.clone();
+
         this.nodeProcessors = state.nodeProcessors.clone();
         this.scheduledNodes = state.scheduledNodes.clone();
     }
 
     public void addNode(NodeModel node, int processor, int startTime) {
-        this.nodeProcessors[node.getByteId()] = (byte) processor;
-        this.nodeStartTimes[node.getByteId()] = startTime;
+        byte nodeId = node.getByteId();
+
+        this.nodeProcessors[nodeId] = (byte) processor;
+        this.nodeStartTimes[nodeId] = startTime;
         this.finishTimes[processor] = startTime + node.getWeight();
-        this.numberOfScheduledNodes++;
+
         this.scheduleNode(node.getByteId());
+
+        this.numberOfScheduledNodes++;
+        this.maximumFinishTime = Math.max(this.maximumFinishTime, this.finishTimes[processor]);
     }
 
     public boolean isEmptyNode(NodeModel node, int processor, int startTime) {
@@ -105,6 +111,9 @@ public class StateModel {
         return (this.numberOfScheduledNodes == this.numberOfNodes);
     }
 
+    public int getMaximumFinishTime() {
+        return this.maximumFinishTime;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -115,7 +124,6 @@ public class StateModel {
         StateModel that = (StateModel) o;
         return numberOfNodes == that.numberOfNodes &&
                 numberOfScheduledNodes == that.numberOfScheduledNodes &&
-                Arrays.equals(startTimes, that.startTimes) &&
                 Arrays.equals(finishTimes, that.finishTimes) &&
                 Arrays.equals(nodeStartTimes, that.nodeStartTimes) &&
                 Arrays.equals(nodeProcessors, that.nodeProcessors) &&
@@ -125,7 +133,6 @@ public class StateModel {
     @Override
     public int hashCode() {
         int result = Objects.hash(numberOfNodes, numberOfScheduledNodes);
-        result = 31 * result + Arrays.hashCode(startTimes);
         result = 31 * result + Arrays.hashCode(finishTimes);
         result = 31 * result + Arrays.hashCode(nodeStartTimes);
         result = 31 * result + Arrays.hashCode(nodeProcessors);
@@ -136,14 +143,6 @@ public class StateModel {
     @Override
     public StateModel clone() {
         return new StateModel(this);
-    }
-
-    public int[] getStartTimes() {
-        return startTimes;
-    }
-
-    public void setStartTimes(int[] startTimes) {
-        this.startTimes = startTimes;
     }
 
     public int[] getFinishTimes() {
@@ -160,9 +159,5 @@ public class StateModel {
 
     public int getFinishTime(int processor) {
         return this.finishTimes[processor];
-    }
-
-    public int getStartTime(NodeModel node) {
-        return this.startTimes[node.getByteId()];
     }
 }
