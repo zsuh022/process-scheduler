@@ -66,10 +66,10 @@ public class ProcessorController {
         gc.setFill(Color.web("#777777"));
         gc.setFont(Font.font("System", FontWeight.BOLD, 16));
         for (int i = 2; i <= processors; i++) {
-            gc.strokeLine(unitLengths + 50, 2*unitLengths*i-unitLengths, 130, unitLengths*i-unitLengths);
+            gc.strokeLine(130, 2*unitLengths*i-unitLengths, 130, unitLengths*i-unitLengths);
         }
         for (int i = 0; i < processors; i++) {
-            int y = unitLengths + i * unitLengths;
+            int y = (i+1)*unitLengths*2 - unitLengths;
             gc.fillText("PROCESSOR " + (i+1), 10, y-((double) unitLengths / 2) + 18 );
         }
     }
@@ -84,7 +84,6 @@ public class ProcessorController {
             gc.strokeLine(latestLength, y, length, y);
         }
         extendTimeAxis(gc, length);
-        System.out.println("extend griddy " + length);
     }
 
     private void drawTask(GraphicsContext gc, int delay, int length, int processor, String id) {
