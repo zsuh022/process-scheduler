@@ -86,6 +86,13 @@ public class GraphModel {
         }
     }
 
+    public void setNodesAndEdgesForState(StateModel state) {
+        for (NodeModel node : this.nodes.values()) {
+            node.setProcessor(state.getNodeProcessor(node));
+            node.setStartTime(state.getNodeStartTime(node));
+        }
+    }
+
     public String getId() {
         return this.graph.getId();
     }
