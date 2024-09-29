@@ -91,6 +91,11 @@ public class GraphModel {
         this.edges = edges;
     }
 
+    /**
+     * Method sets the nodes and edges for the state.
+     *
+     * @param state represents the current state of the schedule.
+     */
     public void setNodesAndEdgesForState(StateModel state) {
         for (NodeModel node : this.nodes.values()) {
             node.setProcessor(state.getNodeProcessor(node) + 1);
@@ -116,6 +121,11 @@ public class GraphModel {
         return this.numberOfNodes;
     }
 
+    /**
+     *
+     * @param id represents the ID of the node.
+     * @return the edge with the given ID.
+     */
     public NodeModel getNode(String id) {
         return this.nodes.get(id);
     }
