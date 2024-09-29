@@ -96,19 +96,6 @@ public class GraphModel {
         return this.edges.get(id);
     }
 
-    public HashMap<String, List<String>> getAdjacencyList() {
-        HashMap<String, List<String>> adjacencyList = new HashMap<>();
-
-        for (EdgeModel edge : this.edges.values()) {
-            NodeModel source = edge.getSource();
-            NodeModel destination = edge.getDestination();
-
-            adjacencyList.get(source.getId()).add(destination.getId());
-        }
-
-        return adjacencyList;
-    }
-
     public Map<String, NodeModel> getNodes() {
         return this.nodes;
     }
