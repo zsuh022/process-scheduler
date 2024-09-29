@@ -12,9 +12,9 @@ if [ "$1" = "main" ]; then
     mvn clean compile package
     
     if [ $# -eq 3 ]; then
-        java -jar target/scheduler.jar "$2" "$3"
+        java -jar -Xmx4G target/scheduler.jar "$2" "$3"
     else
-        java -jar target/scheduler.jar "${INPUT_DOT_FILE}" "${PROCESSORS}"
+        java -jar -Xmx4G target/scheduler.jar "${INPUT_DOT_FILE}" "${PROCESSORS}"
     fi
 else
     echo "Invalid command"
