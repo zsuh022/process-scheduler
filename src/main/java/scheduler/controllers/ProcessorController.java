@@ -10,10 +10,15 @@ import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontSmoothingType;
+import javafx.scene.text.FontWeight;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.parsers.Arguments;
+import scheduler.visualiser.Visualiser;
 
 
 public class ProcessorController {
@@ -35,7 +40,7 @@ public class ProcessorController {
     public void initialize() {
         gc = canvas.getGraphicsContext2D();
         processors = 2;
-        latestLength = 80;
+        latestLength = 130;
     }
 
     @FXML
@@ -56,37 +61,39 @@ public class ProcessorController {
     private void drawInitial(GraphicsContext gc) {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
-        gc.strokeLine(80, 1, 80, unitLengths*processors+1);
+        gc.strokeLine(130, 1, 130, 2*unitLengths*processors+1);
+        gc.setFontSmoothingType(FontSmoothingType.LCD);
+        gc.setFill(Color.web("#777777"));
+        gc.setFont(Font.font("System", FontWeight.BOLD, 16));
         for (int i = 2; i <= processors; i++) {
-            gc.strokeLine(unitLengths, unitLengths*i-unitLengths, 80, unitLengths*i-unitLengths);
+            gc.strokeLine(unitLengths + 50, 2*unitLengths*i-unitLengths, 130, unitLengths*i-unitLengths);
         }
         for (int i = 0; i < processors; i++) {
             int y = unitLengths + i * unitLengths;
-            gc.fillText("Processor " + (i+1), 10, y-((double) unitLengths /2) );
+            gc.fillText("PROCESSOR " + (i+1), 10, y-((double) unitLengths / 2) + 18 );
         }
     }
 
     private void extendGrid(GraphicsContext gc, int length) {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
-        length = length - 80;
         length = ((length + (unitLengths-1)) / unitLengths) * unitLengths;
-        length += 80;
         gc.strokeLine(latestLength, 0, length, 0);
         for (int i = 0; i < processors; i++) {
-            int y = unitLengths + i * unitLengths;
+            int y = 2*unitLengths + i * unitLengths;
             gc.strokeLine(latestLength, y, length, y);
         }
         extendTimeAxis(gc, length);
+        System.out.println("extend griddy " + length);
     }
 
     private void drawTask(GraphicsContext gc, int delay, int length, int processor, String id) {
-        int startX = 80 + delay*unitLengths;
+        int startX = 130 + delay*unitLengths;
         int startY = unitLengths * processor - unitLengths;
 
         int taskWidth = length*unitLengths;
 
-        int taskHeight = unitLengths;
+        int taskHeight = unitLengths*2;
         int totalLength = startX + taskWidth;
         if (totalLength >= latestLength) {
             canvas.setWidth(totalLength+unitLengths*2);
@@ -110,10 +117,21 @@ public class ProcessorController {
     private void extendTimeAxis(GraphicsContext gc, int length) {
         gc.setFill(Color.BLACK);
         gc.setLineWidth(2);
+        gc.setTextBaseline(VPos.CENTER);
         for (int i = latestLength; i <= length; i += unitLengths) {
-            gc.strokeLine(i, processors * unitLengths, i, processors * unitLengths + 10);
-            gc.fillText(Integer.toString((i - 80)/unitLengths), i - 3, processors * unitLengths + 25);
+            gc.strokeLine(i, processors * unitLengths * 2, i, processors * unitLengths * 2 + 10);
+            int offset = -5;
+            if ((i - 130)/unitLengths>=10){
+                offset = -9;
+            }
+            gc.fillText(Integer.toString((i - 130)/unitLengths), i + offset, processors * unitLengths * 2 + 23);
+            latestLength = i;
         }
-        this.latestLength = length;
+        latestLength += unitLengths;
+    }
+
+    @FXML
+    void showMetrics(MouseEvent event) throws IOException{
+        Visualiser.setScreen("visualiser");
     }
 }
