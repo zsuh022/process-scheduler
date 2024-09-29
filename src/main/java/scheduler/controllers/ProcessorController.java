@@ -69,7 +69,9 @@ public class ProcessorController {
     private void extendGrid(GraphicsContext gc, int length) {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
+        length = length - 80;
         length = ((length + (unitLengths-1)) / unitLengths) * unitLengths;
+        length += 80;
         gc.strokeLine(latestLength, 0, length, 0);
         for (int i = 0; i < processors; i++) {
             int y = unitLengths + i * unitLengths;
