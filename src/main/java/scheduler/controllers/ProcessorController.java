@@ -47,6 +47,7 @@ public class ProcessorController {
     public void drawAllTasks() throws IOException {
         String tasks = arguments.getOutputDOTFilePath();
         GraphModel graphModel = new GraphModel(tasks);
+        System.out.println("number of tasks: " + graphModel.getNodes().size());
         for (NodeModel node : graphModel.getNodes().values()) {
             drawTask(gc, node.getStartTime(), node.getWeight(), node.getProcessor(), node.getId());
         }
@@ -84,6 +85,7 @@ public class ProcessorController {
             gc.strokeLine(latestLength, y, length, y);
         }
         extendTimeAxis(gc, length);
+        System.out.println("extend griddy " + length);
     }
 
     private void drawTask(GraphicsContext gc, int delay, int length, int processor, String id) {
@@ -118,9 +120,12 @@ public class ProcessorController {
         gc.setLineWidth(2);
         for (int i = latestLength; i <= length; i += unitLengths) {
             gc.strokeLine(i, processors * unitLengths * 2, i, processors * unitLengths * 2 + 10);
-            gc.fillText(Integer.toString((i - 130)/unitLengths), i - 3, processors * unitLengths * 2 + 25);
+            gc.fillText(Integer.toString((i - 130)/unitLengths), i - 5, processors * unitLengths * 2 + 25);
+            System.out.println("drawing line " + i);
+            latestLength = i;
         }
-        this.latestLength = length;
+        //this.latestLength = length;
+        System.out.println("length " + latestLength);
     }
 
     @FXML
