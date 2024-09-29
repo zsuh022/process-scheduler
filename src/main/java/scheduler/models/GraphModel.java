@@ -12,8 +12,6 @@ import scheduler.parsers.InputOutputParser;
 public class GraphModel {
     private Graph graph;
 
-    private String rootId;
-
     private int numberOfNodes;
 
     private Map<String, NodeModel> nodes;
@@ -26,8 +24,6 @@ public class GraphModel {
 
         setNodes();
         setEdges();
-
-        setRoot();
     }
 
     private void setNodes() {
@@ -77,15 +73,6 @@ public class GraphModel {
         this.edges = edges;
     }
 
-    public void setRoot() {
-        for (NodeModel node : this.nodes.values()) {
-            if (node.getPredecessors().size() == 0) {
-                this.rootId = node.getId();
-                break;
-            }
-        }
-    }
-
     public void setNodesAndEdgesForState(StateModel state) {
         for (NodeModel node : this.nodes.values()) {
             node.setProcessor(state.getNodeProcessor(node));
@@ -99,10 +86,6 @@ public class GraphModel {
 
     public int getNumberOfNodes() {
         return this.numberOfNodes;
-    }
-
-    public NodeModel getRoot() {
-        return this.nodes.get(this.rootId);
     }
 
     public NodeModel getNode(String id) {

@@ -70,8 +70,7 @@ public class InputOutputParser {
             graph.addNode(id);
             graph.getNode(id).setAttribute("Weight", node.getWeight());
 
-            // Add scheduling attributes if they are set
-            if (node.getStartTime() >= 0 && node.getProcessor() > 0) {
+            if (node.getStartTime() >= 0 && node.getProcessor() >= 0) {
                 graph.getNode(id).setAttribute("Start", node.getStartTime());
                 graph.getNode(id).setAttribute("Processor", node.getProcessor());
             }
