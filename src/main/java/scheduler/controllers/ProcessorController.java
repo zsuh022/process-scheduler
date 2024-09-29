@@ -47,7 +47,6 @@ public class ProcessorController {
     public void drawAllTasks() throws IOException {
         String tasks = arguments.getOutputDOTFilePath();
         GraphModel graphModel = new GraphModel(tasks);
-        System.out.println("number of tasks: " + graphModel.getNodes().size());
         for (NodeModel node : graphModel.getNodes().values()) {
             drawTask(gc, node.getStartTime(), node.getWeight(), node.getProcessor(), node.getId());
         }
@@ -118,14 +117,17 @@ public class ProcessorController {
     private void extendTimeAxis(GraphicsContext gc, int length) {
         gc.setFill(Color.BLACK);
         gc.setLineWidth(2);
+        gc.setTextBaseline(VPos.CENTER);
         for (int i = latestLength; i <= length; i += unitLengths) {
             gc.strokeLine(i, processors * unitLengths * 2, i, processors * unitLengths * 2 + 10);
-            gc.fillText(Integer.toString((i - 130)/unitLengths), i - 5, processors * unitLengths * 2 + 25);
-            System.out.println("drawing line " + i);
+            int offset = -5;
+            if ((i - 130)/unitLengths>=10){
+                offset = -9;
+            }
+            gc.fillText(Integer.toString((i - 130)/unitLengths), i + offset, processors * unitLengths * 2 + 23);
             latestLength = i;
         }
-        //this.latestLength = length;
-        System.out.println("length " + latestLength);
+        latestLength += unitLengths;
     }
 
     @FXML
