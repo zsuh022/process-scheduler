@@ -17,7 +17,7 @@ public class RoundRobinScheduler {
 
     public void schedule() {
         // Perform topological sort to respect dependencies
-        List<NodeModel> sortedNodes = topologicalSort();
+        List<NodeModel> sortedNodes = topologicalSort(this.graphModel.getNodes());
 
         // Initialize processor availability times
         int[] processorAvailability = new int[numProcessors];
@@ -67,6 +67,7 @@ public class RoundRobinScheduler {
                 return edge;
             }
         }
+
         return null; // Edge not found
     }
 
@@ -79,8 +80,53 @@ public class RoundRobinScheduler {
                 dfsVisit(node, visited, sortedList);
             }
         }
-        Collections.reverse(sortedList); // Reverse to get correct order
+
+        // Reverse the list to get the correct order
+        Collections.reverse(sortedList);
+
         return sortedList;
+    }
+
+    public List<NodeModel> topologicalSort(Map<String, NodeModel> nodes) {
+        int numberOfNodes = nodes.size();
+        Map<NodeModel, Integer> nodeMap = new HashMap<>();
+
+        NodeModel[] sortedNodes = new NodeModel[numberOfNodes];
+        int[] inDegrees = new int[numberOfNodes];
+        Deque<NodeModel> deque = new ArrayDeque<>();
+        int nodeIndex = 0;
+        int sortedIndex = 0;
+
+        for (NodeModel node : nodes.values()) {
+            nodeMap.put(node, nodeIndex);
+            inDegrees[nodeIndex] = node.getInDegree();
+
+            if (inDegrees[nodeIndex] == 0) {
+                deque.add(node);
+            }
+
+            nodeIndex++;
+        }
+
+        while (!deque.isEmpty()) {
+            int dequeSize = deque.size();
+
+            for (int i = 0; i < dequeSize; i++) {
+                NodeModel node = deque.poll();
+                sortedNodes[sortedIndex++] = node;
+
+                for (NodeModel successor : node.getSuccessors()) {
+                    int index = nodeMap.get(successor);
+                    inDegrees[index]--;
+
+                    if (inDegrees[index] == 0) {
+                        deque.add(successor);
+                    }
+                }
+            }
+        }
+
+        return Arrays.asList(sortedNodes);
     }
 
     private void dfsVisit(NodeModel node, Set<NodeModel> visited, List<NodeModel> sortedList) {
@@ -90,6 +136,7 @@ public class RoundRobinScheduler {
                 dfsVisit(successor, visited, sortedList);
             }
         }
+
         sortedList.add(node);
     }
 }

@@ -1,5 +1,7 @@
 package scheduler.parsers;
 
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -53,9 +55,17 @@ public class CLIParser {
         if (commandPrompt.hasOption("o")) {
             arguments.setOutputDOTFilePath(commandPrompt.getOptionValue("o"));
         } else {
-            String inputDOTFilePath = arguments.getInputDOTFilePath();
-            arguments.setOutputDOTFilePath(inputDOTFilePath.replace(".dot", "-output.dot"));
+            setDefaultOutputDOTFilePath(arguments);
         }
+    }
+
+    private static void setDefaultOutputDOTFilePath(Arguments arguments) {
+        String inputDOTFilePath = arguments.getInputDOTFilePath();
+        String outputDirectory = "src/main/resources/dotfiles/output/";
+        String inputFileName = new File(inputDOTFilePath).getName();
+        String outputFileName = inputFileName.replace(".dot", "-output.dot");
+
+        arguments.setOutputDOTFilePath(outputDirectory.concat(outputFileName));
     }
 
     public static void displayUsage(String errorMessage) {
