@@ -85,7 +85,6 @@ public class StateModel {
      * @param startTime the start time value
      * @return true if the node is null and processor and startTime are -1; false otherwise
      */
-
     public boolean isEmptyNode(NodeModel node, int processor, int startTime) {
         return (node == null && processor == -1 && startTime == -1);
     }
