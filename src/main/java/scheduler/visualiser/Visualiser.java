@@ -27,12 +27,6 @@ public class Visualiser extends Application {
         controller.setArguments(arguments);
         return root;
     }
-    // Used for milestone 2
-
-    //for milestone 2
-    // private static Parent loadFxml(final String fxml) throws IOException {
-    //     return new FXMLLoader(Visualiser.class.getResource("/fxml/" + fxml + ".fxml")).load();
-    // }
 
     @Override
     public void start(Stage stage) throws IOException {

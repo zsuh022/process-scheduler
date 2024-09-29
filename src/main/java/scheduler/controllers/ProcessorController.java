@@ -32,7 +32,7 @@ public class ProcessorController {
 
     private Arguments arguments;
     
-    int unitLengths = 50;
+    int unitLengths = 25;
 
 
     public void initialize() {
@@ -59,26 +59,26 @@ public class ProcessorController {
     private void drawInitial(GraphicsContext gc) {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
-        gc.strokeLine(130, 1, 130, unitLengths*processors+1);
+        gc.strokeLine(130, 1, 130, 2*unitLengths*processors+1);
         gc.setFontSmoothingType(FontSmoothingType.LCD);
         gc.setFill(Color.web("#777777"));
         gc.setFont(Font.font("System", FontWeight.BOLD, 16));
         for (int i = 2; i <= processors; i++) {
-            gc.strokeLine(unitLengths + 50, unitLengths*i-unitLengths, 130, unitLengths*i-unitLengths);
+            gc.strokeLine(unitLengths + 50, 2*unitLengths*i-unitLengths, 130, unitLengths*i-unitLengths);
         }
         for (int i = 0; i < processors; i++) {
             int y = unitLengths + i * unitLengths;
-            gc.fillText("PROCESSOR " + (i+1), 10, y-((double) unitLengths /2) + 8 );
+            gc.fillText("PROCESSOR " + (i+1), 10, y-((double) unitLengths / 2) + 18 );
         }
     }
 
     private void extendGrid(GraphicsContext gc, int length) {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
-        length = ((length + 49) / unitLengths) * unitLengths + 80;
+        length = ((length + (unitLengths-1)) / unitLengths) * unitLengths;
         gc.strokeLine(latestLength, 0, length, 0);
         for (int i = 0; i < processors; i++) {
-            int y = unitLengths + i * unitLengths;
+            int y = 2*unitLengths + i * unitLengths;
             gc.strokeLine(latestLength, y, length, y);
         }
         extendTimeAxis(gc, length);
@@ -90,10 +90,10 @@ public class ProcessorController {
 
         int taskWidth = length*unitLengths;
 
-        int taskHeight = unitLengths;
+        int taskHeight = unitLengths*2;
         int totalLength = startX + taskWidth;
         if (totalLength >= latestLength) {
-            canvas.setWidth(totalLength+10);
+            canvas.setWidth(totalLength+unitLengths*2);
             extendGrid(gc, totalLength);
 
         }
@@ -115,9 +115,9 @@ public class ProcessorController {
         gc.setFill(Color.BLACK);
         gc.setLineWidth(2);
         for (int i = latestLength; i <= length; i += unitLengths) {
-            gc.strokeLine(i, processors * unitLengths, i, processors * unitLengths + 10);
-            gc.fillText(Integer.toString((i - 130)/unitLengths), i - 3, processors * unitLengths + 25);
+            gc.strokeLine(i, processors * unitLengths * 2, i, processors * unitLengths * 2 + 10);
+            gc.fillText(Integer.toString((i - 130)/unitLengths), i - 3, processors * unitLengths * 2 + 25);
         }
-        latestLength = length;
+        this.latestLength = length;
     }
 }
