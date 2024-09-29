@@ -10,6 +10,7 @@ import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontSmoothingType;
@@ -17,6 +18,7 @@ import javafx.scene.text.FontWeight;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.parsers.Arguments;
+import scheduler.visualiser.Visualiser;
 
 
 public class ProcessorController {
@@ -119,5 +121,10 @@ public class ProcessorController {
             gc.fillText(Integer.toString((i - 130)/unitLengths), i - 3, processors * unitLengths * 2 + 25);
         }
         this.latestLength = length;
+    }
+
+    @FXML
+    void showMetrics(MouseEvent event) throws IOException{
+        Visualiser.setScreen("visualiser");
     }
 }
