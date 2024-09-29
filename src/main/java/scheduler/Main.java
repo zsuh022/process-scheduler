@@ -28,18 +28,12 @@ public class Main {
         try {
             GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
 
-            // RoundRobinScheduler scheduler = new RoundRobinScheduler(graph,
-            // arguments.getProcessors());
-            // scheduler.schedule();
-
-            // InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
-
             Scheduler scheduler = new DFSScheduler(graph, arguments.getProcessors());
             StateModel bestState = ((DFSScheduler) scheduler).getSchedule();
 
-//            Scheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
-//            StateModel bestState = scheduler.getAStarSchedule();
-            System.out.println(Arrays.stream(bestState.getFinishTimes()).max().getAsInt());
+            graph.setNodesAndEdgesForState(bestState);
+
+            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
 
             System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());
         } catch (IOException e) {
