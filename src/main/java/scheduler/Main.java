@@ -1,7 +1,6 @@
 package scheduler;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import scheduler.models.GraphModel;
 import scheduler.models.StateModel;
@@ -9,13 +8,19 @@ import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.DFSScheduler;
-import scheduler.schedulers.RoundRobinScheduler;
-import scheduler.schedulers.Scheduler;
-import scheduler.schedulers.SequentialScheduler;
-import scheduler.visualiser.Visualiser;
 
+/**
+ * The Main Class contains the necessary driver code for ensuring our program runs smoothly, and that a valid and
+ * optimal schedule is generated. JavaFX code will also run if the user specifies that they want the schedule to be
+ * visualised.
+ */
 public class Main {
-    public static void main(String[] CLIArguments) throws IOException {
+    /**
+     * The main method for executing the main driver code.
+     *
+     * @param CLIArguments CLIArguments the arguments passed by the user
+     */
+    public static void main(String[] CLIArguments) {
         Arguments arguments;
 
         try {
@@ -28,25 +33,18 @@ public class Main {
         try {
             GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
 
-            // RoundRobinScheduler scheduler = new RoundRobinScheduler(graph,
-            // arguments.getProcessors());
-            // scheduler.schedule();
+            DFSScheduler scheduler = new DFSScheduler(graph, arguments.getProcessors());
+            StateModel bestState = scheduler.getSchedule();
 
-            // InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
+            graph.setNodesAndEdgesForState(bestState);
 
-            Scheduler scheduler = new DFSScheduler(graph, arguments.getProcessors());
-            StateModel bestState = ((DFSScheduler) scheduler).getSchedule();
-
-//            Scheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
-//            StateModel bestState = scheduler.getAStarSchedule();
-            System.out.println(Arrays.stream(bestState.getFinishTimes()).max().getAsInt());
+            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
 
             System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());
         } catch (IOException e) {
-            System.err.println("ERROR");
             e.printStackTrace();
         }
 
-        Visualiser.run(arguments);
+//        Visualiser.run(arguments);
     }
 }

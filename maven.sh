@@ -6,7 +6,7 @@ if [ -z "$1" ]; then
 fi
 
 readonly INPUT_DOT_FILE=src/main/resources/dotfiles/input/Nodes_7_OutTree.dot
-readonly PROCESSORS=2
+readonly PROCESSORS=4
 
 if [ "$1" = "main" ]; then
     mvn clean compile package

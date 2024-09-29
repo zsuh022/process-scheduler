@@ -9,16 +9,18 @@ import java.util.Objects;
  * and connections to predecessor and successor nodes.
  */
 public class NodeModel {
-    private String id;
-    private int weight;
+    private final String id;
+
+    private final int weight;
     private int inDegree;
     private int outDegree;
     private int startTime;
     private int processor;
+
     private byte byteId;
 
-    private List<NodeModel> successors;
-    private List<NodeModel> predecessors;
+    private final List<NodeModel> successors;
+    private final List<NodeModel> predecessors;
 
     /**
      * Constructs a {@code NodeModel} with the specified id and weight.

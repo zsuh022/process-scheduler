@@ -2,7 +2,6 @@ package scheduler.models;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.graphstream.graph.Graph;
@@ -15,8 +14,6 @@ import scheduler.parsers.InputOutputParser;
  */
 public class GraphModel {
     private Graph graph;
-
-    private String rootId;
 
     private int numberOfNodes;
 
@@ -37,8 +34,6 @@ public class GraphModel {
 
         setNodes();
         setEdges();
-
-        setRoot();
     }
 
     /**
@@ -96,15 +91,10 @@ public class GraphModel {
         this.edges = edges;
     }
 
-    /**
-     * Method sets the root node of the graph. Identifies node with no predecessors.
-     */
-    public void setRoot() {
+    public void setNodesAndEdgesForState(StateModel state) {
         for (NodeModel node : this.nodes.values()) {
-            if (node.getPredecessors().size() == 0) {
-                this.rootId = node.getId();
-                break;
-            }
+            node.setProcessor(state.getNodeProcessor(node) + 1);
+            node.setStartTime(state.getNodeStartTime(node));
         }
     }
 
@@ -126,21 +116,6 @@ public class GraphModel {
         return this.numberOfNodes;
     }
 
-    /**
-     * Method returns the root node of the graph.
-     *
-     * @return the root node.
-     */
-    public NodeModel getRoot() {
-        return this.nodes.get(this.rootId);
-    }
-
-    /**
-     * Method returns the node with the given ID.
-     *
-     * @param id represents the ID of the node.
-     * @return the node with the given ID.
-     */
     public NodeModel getNode(String id) {
         return this.nodes.get(id);
     }
@@ -155,29 +130,6 @@ public class GraphModel {
         return this.edges.get(id);
     }
 
-    /**
-     * Method returns an adjacency list representing the graph.
-     *
-     * @return a hashmap with node ID keys and child node ID values.
-     */
-    public HashMap<String, List<String>> getAdjacencyList() {
-        HashMap<String, List<String>> adjacencyList = new HashMap<>();
-
-        for (EdgeModel edge : this.edges.values()) {
-            NodeModel source = edge.getSource();
-            NodeModel destination = edge.getDestination();
-
-            adjacencyList.get(source.getId()).add(destination.getId());
-        }
-
-        return adjacencyList;
-    }
-
-    /**
-     * Method returns a map of nodes in the graph.
-     *
-     * @return a map with node ID keys and node object values.
-     */
     public Map<String, NodeModel> getNodes() {
         return this.nodes;
     }
