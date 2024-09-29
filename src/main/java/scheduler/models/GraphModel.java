@@ -75,7 +75,7 @@ public class GraphModel {
 
     public void setNodesAndEdgesForState(StateModel state) {
         for (NodeModel node : this.nodes.values()) {
-            node.setProcessor(state.getNodeProcessor(node));
+            node.setProcessor(state.getNodeProcessor(node) + 1);
             node.setStartTime(state.getNodeStartTime(node));
         }
     }
