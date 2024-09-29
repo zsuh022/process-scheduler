@@ -139,11 +139,8 @@ public abstract class Scheduler {
         int earliestStartTime = state.getFinishTime(processor);
 
         for (NodeModel predecessor : node.getPredecessors()) {
-            int finishTime = state.getNodeStartTime(node) + predecessor.getWeight();
+            int finishTime = state.getNodeStartTime(predecessor) + predecessor.getWeight();
 
-            // If we are scheduling on the same processor, we can ignore the communication
-            // time, otherwise, we include the communication time, which is the edge weight
-            // between predecessor and node
             if (state.getNodeProcessor(predecessor) == processor) {
                 earliestStartTime = Math.max(earliestStartTime, finishTime);
             } else {

@@ -17,8 +17,8 @@ public class StateModel {
     private byte[] scheduledNodes;
 
     public StateModel(int numberOfProcessors, int numberOfNodes) {
-        this.maximumFinishTime = 0;
         this.numberOfNodes = numberOfNodes;
+        this.maximumFinishTime = 0;
         this.numberOfScheduledNodes = 0;
 
         this.finishTimes = new int[numberOfProcessors];
@@ -32,6 +32,7 @@ public class StateModel {
 
     public StateModel(StateModel state) {
         this.numberOfNodes = state.numberOfNodes;
+        this.maximumFinishTime = state.maximumFinishTime;
         this.numberOfScheduledNodes = state.numberOfScheduledNodes;
 
         this.finishTimes = state.finishTimes.clone();
