@@ -3,6 +3,11 @@ package scheduler.models;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Represents the state of a scheduling process at a given point in time.
+ * Stores information about scheduled nodes, their start times, processors, and finish times.
+ * Used in algorithms like branch-and-bound to keep track of the current scheduling state.
+ */
 public class StateModel {
     private NodeModel lastScheduledNode;
 
@@ -16,6 +21,13 @@ public class StateModel {
     private byte[] nodeProcessors;
     private byte[] scheduledNodes;
 
+    /**
+     * Constructs a new {@code StateModel} with the specified number of processors and nodes.
+     * Initializes arrays to keep track of processors, nodes, and scheduling times.
+     *
+     * @param numberOfProcessors the number of processors available for scheduling
+     * @param numberOfNodes      the total number of nodes to schedule
+     */
     public StateModel(int numberOfProcessors, int numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
         this.maximumFinishTime = 0;
@@ -29,7 +41,11 @@ public class StateModel {
 
         Arrays.fill(this.nodeProcessors, (byte) -1);
     }
-
+    /**
+     * Constructs a new {@code StateModel} as a deep copy of the given state.
+     *
+     * @param state the state to copy
+     */
     public StateModel(StateModel state) {
         this.numberOfNodes = state.numberOfNodes;
         this.maximumFinishTime = state.maximumFinishTime;
@@ -42,6 +58,14 @@ public class StateModel {
         this.scheduledNodes = state.scheduledNodes.clone();
     }
 
+    /**
+     * Adds a node to the current state by scheduling it on a processor at a specific start time.
+     * Updates finish times, scheduled nodes, and maximum finish time accordingly.
+     *
+     * @param node      the node to schedule
+     * @param processor the processor to schedule the node on
+     * @param startTime the start time for the node
+     */
     public void addNode(NodeModel node, int processor, int startTime) {
         byte nodeId = node.getByteId();
 
@@ -55,66 +79,147 @@ public class StateModel {
         this.maximumFinishTime = Math.max(this.maximumFinishTime, this.finishTimes[processor]);
     }
 
+    /**
+     * Checks if the given node, processor, and start time represent an empty or uninitialized node.
+     *
+     * @param node      the node to check
+     * @param processor the processor value
+     * @param startTime the start time value
+     * @return true if the node is null and processor and startTime are -1; false otherwise
+     */
+
     public boolean isEmptyNode(NodeModel node, int processor, int startTime) {
         return (node == null && processor == -1 && startTime == -1);
     }
 
+    /**
+     * Checks if the state has no scheduled nodes.
+     *
+     * @return true if no nodes are scheduled; false otherwise
+     */
     public boolean isEmptyState() {
         return (this.numberOfScheduledNodes == 0);
     }
 
+    /**
+     * Returns the last node that was scheduled in this state.
+     *
+     * @return the last scheduled node
+     */
     public NodeModel getLastScheduledNode() {
         return this.lastScheduledNode;
     }
 
+    /**
+     * Sets the last scheduled node for this state.
+     *
+     * @param lastScheduledNode the node to set as the last scheduled
+     */
     public void setLastScheduledNode(NodeModel lastScheduledNode) {
         this.lastScheduledNode = lastScheduledNode;
     }
-
+    /**
+     * Returns the total number of nodes to schedule.
+     *
+     * @return the number of nodes
+     */
     public int getNumberOfNodes() {
         return this.numberOfNodes;
     }
 
+    /**
+     * Sets the total number of nodes to schedule.
+     *
+     * @param numberOfNodes the number of nodes to set
+     */
     public void setNumberOfNodes(int numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
     }
 
+    /**
+     * Returns the number of nodes that have been scheduled so far.
+     *
+     * @return the number of scheduled nodes
+     */
     public int getNumberOfScheduledNodes() {
         return this.numberOfScheduledNodes;
     }
-
+    /**
+     * Sets the number of nodes that have been scheduled.
+     *
+     * @param numberOfScheduledNodes the number of scheduled nodes to set
+     */
     public void setNumberOfScheduledNodes(int numberOfScheduledNodes) {
         this.numberOfScheduledNodes = numberOfScheduledNodes;
     }
-
+    /**
+     * Returns an array indicating which nodes have been scheduled.
+     *
+     * @return an array of scheduled nodes
+     */
     public byte[] getScheduledNodes() {
         return this.scheduledNodes;
     }
 
+    /**
+     * Marks a node as scheduled using its byte ID.
+     *
+     * @param nodeId the byte ID of the node to mark as scheduled
+     */
     public void scheduleNode(byte nodeId) {
         this.scheduledNodes[nodeId] = 1;
     }
-
+    /**
+     * Returns the start time of the specified node.
+     *
+     * @param node the node whose start time is requested
+     * @return the start time of the node
+     */
     public int getNodeStartTime(NodeModel node) {
         return this.nodeStartTimes[node.getByteId()];
     }
-
+    /**
+     * Sets the array of scheduled nodes.
+     *
+     * @param scheduledNodes the array to set
+     */
     public void setScheduledNodes(byte[] scheduledNodes) {
         this.scheduledNodes = scheduledNodes;
     }
-
+    /**
+     * Checks if a given node has been scheduled.
+     *
+     * @param node the node to check
+     * @return true if the node is scheduled; false otherwise
+     */
     public boolean isNodeScheduled(NodeModel node) {
         return (this.scheduledNodes[node.getByteId()] == 1);
     }
-
+    /**
+     * Checks if all nodes have been scheduled.
+     *
+     * @return true if all nodes are scheduled; false otherwise
+     */
     public boolean areAllNodesScheduled() {
         return (this.numberOfScheduledNodes == this.numberOfNodes);
     }
-
+    /**
+     * Returns the maximum finish time among all processors, representing the total schedule length.
+     *
+     * @return the maximum finish time
+     */
     public int getMaximumFinishTime() {
         return this.maximumFinishTime;
     }
 
+    /**
+     * Checks if this state is equal to another object.
+     * Two states are equal if they have the same number of nodes, scheduled nodes,
+     * finish times, node start times, node processors, and scheduled nodes array.
+     *
+     * @param o the object to compare with
+     * @return true if the states are equal; false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -130,6 +235,11 @@ public class StateModel {
                 Arrays.equals(scheduledNodes, that.scheduledNodes);
     }
 
+    /**
+     * Computes the hash code for this state based on its fields.
+     *
+     * @return the hash code of the state
+     */
     @Override
     public int hashCode() {
         int result = Objects.hash(numberOfNodes, numberOfScheduledNodes);
@@ -145,18 +255,38 @@ public class StateModel {
         return new StateModel(this);
     }
 
+    /**
+     * Returns the finish time of a specific processor.
+     *
+     * @param processor the processor index
+     * @return the finish time of the processor
+     */
     public int[] getFinishTimes() {
         return finishTimes;
     }
-
+    /**
+     * Sets the finish times for all processors.
+     *
+     * @param finishTimes the array of finish times to set
+     */
     public void setFinishTimes(int[] finishTimes) {
         this.finishTimes = finishTimes;
     }
-
+    /**
+     * Returns the processor assigned to the specified node.
+     *
+     * @param node the node whose processor is requested
+     * @return the processor assigned to the node
+     */
     public byte getNodeProcessor(NodeModel node) {
         return this.nodeProcessors[node.getByteId()];
     }
 
+    /**
+     * Returns the finish times of all processors.
+     *
+     * @return an array of finish times for each processor
+     */
     public int getFinishTime(int processor) {
         return this.finishTimes[processor];
     }
