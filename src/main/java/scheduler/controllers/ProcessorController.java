@@ -43,7 +43,6 @@ public class ProcessorController {
         String tasks = arguments.getOutputDOTFilePath();
         GraphModel graphModel = new GraphModel(tasks);
         for (NodeModel node : graphModel.getNodes().values()) {
-            System.out.println(node.getId() + " " + node.getStartTime() + " " + node.getWeight() + " " + node.getProcessor());
             drawTask(gc, node.getStartTime(), node.getWeight(), node.getProcessor(), node.getId());
         }
     }
