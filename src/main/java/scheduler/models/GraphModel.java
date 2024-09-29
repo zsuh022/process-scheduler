@@ -40,6 +40,18 @@ public class GraphModel {
             nodes.put(id, new NodeModel(id, weight));
 
             this.numberOfNodes++;
+
+            NodeModel nodeModel = nodes.get(id);
+
+            if (node.hasAttribute("Start")) {
+                int start = (int) Math.round((Double) node.getAttribute("Start"));
+                nodeModel.setStartTime(start);
+            }
+
+            if (node.hasAttribute("Processor")) {
+                int processor = (int) Math.round((Double) node.getAttribute("Processor"));
+                nodeModel.setProcessor(processor);
+            }
         });
 
         this.nodes = nodes;
