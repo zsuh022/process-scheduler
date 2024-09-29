@@ -9,6 +9,10 @@ import scheduler.models.StateModel;
 
 import static scheduler.constants.Constants.INF_32;
 
+/**
+ * This abstract class is used for scheduling algorithms. There are subclasses such as DFSScheduler and
+ * SequentialScheduler implement specific algorithms.
+ */
 public abstract class Scheduler {
     protected GraphModel graph;
 
@@ -18,6 +22,13 @@ public abstract class Scheduler {
     protected int[] bottomLevelPathLengths;
     protected NodeModel[] nodes;
 
+    /**
+     * Constructor for the Scheduler class. Initialises the graph, number of processors, number of
+     * nodes, computes topological sorting and bottom level path lengths.
+     *
+     * @param graph represents the graph model.
+     * @param processors represents the number of processors for scheduling.
+     */
     protected Scheduler(GraphModel graph, int processors) {
         this.graph = graph;
 
@@ -29,25 +40,52 @@ public abstract class Scheduler {
         this.bottomLevelPathLengths = getBottomLevelPathLengths();
     }
 
+    /**
+     * Returns the A* scheduling algorithm. Method is overridden by SequentialScheduler subclass
+     * (subclass implementing A* search algorithm).
+     *
+     * @return x represents the state from the A* algorithm.
+     */
     public StateModel getAStarSchedule() {
         return null;
     }
 
+    /**
+     * Method is overridden by DFSScheduler subclass.
+     *
+     * @param state represents the current state of the dfs scheduling algorithm.
+     */
     public void getDFSSchedule(StateModel state) {
     }
 
+    /**
+     * Method assigns byte id to each node.
+     */
     protected void setNodeByteIds() {
         for (int i = 0; i < this.nodes.length; i++) {
             this.nodes[i].setByteId((byte) i);
         }
     }
 
+    /**
+     * Method returns the edge between a source node and destination node.
+     *
+     * @param source represents the source node of the edge.
+     * @param destination represents the destination node of the edge.
+     * @return the edge between the source and destination nodes.
+     */
     protected EdgeModel getEdge(NodeModel source, NodeModel destination) {
         String edgeId = source.getId().concat(destination.getId());
 
         return this.graph.getEdge(edgeId);
     }
 
+    /**
+     * Method returns the sorted order of tasks. Uses topological sorting of the nodes in the graph.
+     *
+     * @param nodes represents the graph's nodes in a map.
+     * @return an array of sorted nodes.
+     */
     protected NodeModel[] getSortedNodes(Map<String, NodeModel> nodes) {
         int numberOfNodes = nodes.size();
 
@@ -92,7 +130,12 @@ public abstract class Scheduler {
         return sortedNodes;
     }
 
-    // Start from the bottom and compute way up
+    /**
+     * Method calculates the bottom level path lengths for each node. Start from the bottom and compute
+     * way up. Bottom level path is the longest path from each node to the end of the graph.
+     *
+     * @return integer array of bottom level path lengths for each node.
+     */
     protected int[] getBottomLevelPathLengths() {
         int[] bottomLevelPathLengths = new int[this.numberOfNodes];
 
@@ -111,6 +154,13 @@ public abstract class Scheduler {
         return bottomLevelPathLengths;
     }
 
+    /**
+     * Method updates distance array by relaxing edge between the source and destination nodes.
+     *
+     * @param distances represents the distances in an integer array.
+     * @param source represents the source node.
+     * @param destination represents the destination node.
+     */
     private void setRelaxation(int[] distances, NodeModel source, NodeModel destination) {
         byte sourceId = source.getByteId();
         byte destinationId = destination.getByteId();
@@ -122,6 +172,16 @@ public abstract class Scheduler {
         }
     }
 
+    /**
+     * Method updates distance array by relaxing edge between the source and destination nodes,
+     * including the node and edge weight.
+     *
+     * @param distances represents the distance in an integer array.
+     * @param sourceId represents the byte id of the source node.
+     * @param destinationId represents the byte id of the destination node.
+     * @param nodeWeight represents the weight of the node.
+     * @param edgeWeight represents the weight of the edge between the source and destination nodes.
+     */
     private void setRelaxation(int[] distances, byte sourceId, byte destinationId, int nodeWeight, int edgeWeight) {
         int cost = distances[sourceId] + nodeWeight + edgeWeight;
 
@@ -130,6 +190,14 @@ public abstract class Scheduler {
         }
     }
 
+    /**
+     * Method calculates the earliest start time for a node on a given processor.
+     *
+     * @param state represents the current state of the schedule.
+     * @param node represents the node to schedule.
+     * @param processor represents the processor to schedule the node on.
+     * @return the earliest start time for a node on a given processor.
+     */
     protected int getEarliestStartTime(StateModel state, NodeModel node, int processor) {
         if (state.isEmptyState()) {
             return 0;
@@ -152,8 +220,13 @@ public abstract class Scheduler {
         return earliestStartTime;
     }
 
-    // available nodes all have their predecessors processed and is not visited
-    // already
+    /**
+     * Method returns a list of available nodes that can be scheduled. Available nodes all have their
+     * predecessors processed and is not visited already.
+     *
+     * @param state represents the current state of the schedule.
+     * @return a list of available nodes that can be scheduled.
+     */
     protected List<NodeModel> getAvailableNodes(StateModel state) {
         List<NodeModel> availableNodes = new ArrayList<>();
 
@@ -166,8 +239,13 @@ public abstract class Scheduler {
         return availableNodes;
     }
 
-    // Check for the current state, the current task, if its predecessors were
-    // scheduled already
+    /**
+     * Method checks if all predecessors have been scheduled.
+     *
+     * @param state represents the current state of the schedule.
+     * @param node represents the node to check.
+     * @return boolean (true) for if all predecessors have been scheduled (otherwise false).
+     */
     protected boolean arePredecessorsScheduled(StateModel state, NodeModel node) {
         for (NodeModel predecessor : node.getPredecessors()) {
             if (!state.isNodeScheduled(predecessor)) {

@@ -65,6 +65,7 @@ public class ProcessorController {
         gc.setFontSmoothingType(FontSmoothingType.LCD);
         gc.setFill(Color.web("#777777"));
         gc.setFont(Font.font("System", FontWeight.BOLD, 16));
+
         for (int i = 2; i <= processors; i++) {
             gc.strokeLine(130, 2*unitLengths*i-unitLengths, 130, unitLengths*i-unitLengths);
         }
