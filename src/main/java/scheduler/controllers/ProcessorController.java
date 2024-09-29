@@ -29,7 +29,7 @@ public class ProcessorController {
 
     private Arguments arguments;
     
-    int unitLengths = 50;
+    int unitLengths = 25;
 
 
     public void initialize() {
@@ -69,7 +69,7 @@ public class ProcessorController {
     private void extendGrid(GraphicsContext gc, int length) {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
-        length = ((length + 49) / unitLengths) * unitLengths + 80;
+        length = ((length + (unitLengths-1)) / unitLengths) * unitLengths;
         gc.strokeLine(latestLength, 0, length, 0);
         for (int i = 0; i < processors; i++) {
             int y = unitLengths + i * unitLengths;
@@ -87,7 +87,7 @@ public class ProcessorController {
         int taskHeight = unitLengths;
         int totalLength = startX + taskWidth;
         if (totalLength >= latestLength) {
-            canvas.setWidth(totalLength+10);
+            canvas.setWidth(totalLength+unitLengths*2);
             extendGrid(gc, totalLength);
 
         }
@@ -99,8 +99,8 @@ public class ProcessorController {
         gc.setLineWidth(2);
         gc.strokeRect(startX, startY, taskWidth, taskHeight);
 
-        String taskNumber = id;  // You can replace weight with another identifier
-        gc.setFill(Color.LIGHTGREEN);  // Set text color
+        String taskNumber = id; 
+        gc.setFill(Color.LIGHTGREEN); 
         gc.setTextBaseline(VPos.CENTER);
         gc.fillText(taskNumber, startX + taskWidth / 2, startY + taskHeight / 2);
     }
@@ -112,6 +112,6 @@ public class ProcessorController {
             gc.strokeLine(i, processors * unitLengths, i, processors * unitLengths + 10);
             gc.fillText(Integer.toString((i - 80)/unitLengths), i - 3, processors * unitLengths + 25);
         }
-        latestLength = length;
+        this.latestLength = length;
     }
 }
