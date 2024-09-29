@@ -36,6 +36,9 @@ public class Main {
 
             Scheduler scheduler = new DFSScheduler(graph, arguments.getProcessors());
             StateModel bestState = ((DFSScheduler) scheduler).getSchedule();
+
+//            Scheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
+//            StateModel bestState = scheduler.getAStarSchedule();
             System.out.println(Arrays.stream(bestState.getFinishTimes()).max().getAsInt());
 
             System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());

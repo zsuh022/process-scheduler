@@ -22,8 +22,6 @@ public class DFSScheduler extends Scheduler {
 
         this.closedStates = new HashSet<>();
 
-
-
         getDFSSchedule(new StateModel(processors, this.numberOfNodes));
     }
 
