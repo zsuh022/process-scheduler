@@ -56,6 +56,13 @@ public class DFSScheduler extends Scheduler {
                 int earliestStartTime = getEarliestStartTime(state, node, processor);
 
                 nextState.addNode(node, processor, earliestStartTime);
+
+                int thisFinishTime = Arrays.stream(nextState.getFinishTimes()).max().getAsInt();
+                if (thisFinishTime >= this.bestFinishTime) {
+                    // prune branch
+                    continue;
+                }
+
                 getDFSSchedule(nextState);
             }
         }
