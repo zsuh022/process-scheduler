@@ -1,6 +1,5 @@
 package scheduler.schedulers;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.PriorityQueue;
@@ -16,48 +15,29 @@ public class SequentialScheduler extends Scheduler {
     }
 
     @Override
-    public StateModel getAStarSchedule() {
-        // 1. create opened list of partial schedules
+    public void schedule() {
         PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(this::f));
         Set<StateModel> closedStates = new HashSet<>();
 
-        // 2. Add initial states
-        for (NodeModel node : this.nodes) {
-            if (node.getPredecessors().size() == 0) { // This is a root node
-                for (int i = 0; i < this.processors; i++) {
-                    StateModel state = new StateModel(this.processors, this.numberOfNodes);
-                    state.addNode(node, i, 0); // Schedule root node on processor i
-                    openedStates.add(state); // Add the initialised state to OPEN list
-                }
-            }
-        }
+        openedStates.add(new StateModel(this.processors, this.numberOfNodes));
 
-        // 3. While there are still unexplored states
         while (!openedStates.isEmpty()) {
             StateModel currentState = openedStates.poll();
-            System.out.println(Arrays.stream(currentState.getFinishTimes()).max().getAsInt());
+            System.out.println(currentState.getMaximumFinishTime());
 
-            // 4. Naive pruning, where we exit once all nodes are scheduled
             if (currentState.areAllNodesScheduled()) {
-                return currentState;
+                setBestState(currentState);
+                return;
             }
 
-            // 5. Close the current state (visited)
             closedStates.add(currentState);
 
-            // 6. Expand states by checking available nodes for each processor
             for (NodeModel node : getAvailableNodes(currentState)) {
                 for (int processor = 0; processor < processors; processor++) {
-                    StateModel nextState = new StateModel(this.processors, this.numberOfNodes);
+                    StateModel nextState = currentState.clone();
 
-                    // Copy over the current state's details
-                    System.arraycopy(currentState.getFinishTimes(), 0, nextState.getFinishTimes(), 0, processors);
-                    nextState.setScheduledNodes(currentState.getScheduledNodes().clone());
-
-                    // Set the earliest start time for this task on this processor
                     int earliestStartTime = getEarliestStartTime(currentState, node, processor);
 
-                    // Schedule the task on the next state
                     nextState.addNode(node, processor, earliestStartTime);
 
                     if (!closedStates.contains(nextState)) {
@@ -66,61 +46,63 @@ public class SequentialScheduler extends Scheduler {
                 }
             }
         }
-
-        // No schedule found which is impossible because a valid schedule should be
-        // generated
-        return null;
     }
 
     public int f(StateModel state) {
-//        int g = Arrays.stream(state.getFinishTimes()).max().getAsInt();
-//        int h = 0;
-//
-//        // Heuristic: max bottom-level path length for unscheduled nodes
-//        for (NodeModel node : this.nodes) {
-//            if (!state.isNodeScheduled(node)) {
-//                h = Math.max(h, bottomLevelPathLengths[node.getByteId()]);
-//            }
-//        }
-//
-//        return g + h;
-        int fbl = fBL(state);
-        int fdrt = fDRT(state);
+        if (state.isEmptyState()) {
+            return getLowerBound();
+        }
 
-        return Math.max(fbl, fdrt);
+        int idleTime = getIdleTime(state);
+        int maximumDataReadyTime = getMaximumDataReadyTime(state);
+        int maximumBottomLevelPathLength = getMaximumBottomLevelPathLength(state);
+
+        return Math.max(idleTime, Math.max(maximumBottomLevelPathLength, maximumDataReadyTime));
     }
 
-    public int fDRT(StateModel state) {
-        int maxDRT = 0;
+    public int getLowerBound() {
+        double loadBalancedTime = (double) graph.getTotalNodeWeight() / this.processors;
+
+        return (int) Math.max(Math.ceil(loadBalancedTime), getCriticalPathLength());
+    }
+
+    public int getIdleTime(StateModel state) {
+        double totalWeight = (double) graph.getTotalNodeWeight() + state.getTotalIdleTime();
+
+        return (int) Math.ceil(totalWeight / this.processors);
+    }
+
+    // V2
+    public int getMaximumBottomLevelPathLength(StateModel state) {
+        int maximumBottomLevelPathLength = 0;
+
+        for (NodeModel node : getScheduledNodes(state)) {
+            int cost = state.getNodeStartTime(node) + bottomLevelPathLengths[node.getByteId()];
+            maximumBottomLevelPathLength = Math.max(maximumBottomLevelPathLength, cost);
+        }
+
+        return maximumBottomLevelPathLength;
+    }
+
+    public int getMaximumDataReadyTime(StateModel state) {
+        int maximumDataReadyTime = 0;
 
         for (NodeModel node : getAvailableNodes(state)) {
-            int earliestStartTime = getEarliestStartTime(state, node);
-            maxDRT = Math.max(maxDRT, earliestStartTime + bottomLevelPathLengths[node.getByteId()]);
+            int cost = getMinimumDataReadyTime(state, node) + bottomLevelPathLengths[node.getByteId()];
+            maximumDataReadyTime = Math.max(maximumDataReadyTime, cost);
         }
 
-        return maxDRT;
+        return maximumDataReadyTime;
     }
 
-    public int fBL(StateModel state) {
-        int maxBL = 0;
+    public int getMinimumDataReadyTime(StateModel state, NodeModel node) {
+        int minimumDataReadyTime = Integer.MAX_VALUE;
 
-        for (byte nodeId : state.getScheduledNodes()) {
-            NodeModel node = this.nodes[nodeId];
-            int earliestStartTime = getEarliestStartTime(state, node);
-            maxBL = Math.max(maxBL, earliestStartTime + bottomLevelPathLengths[nodeId]);
+        for (int processor = 0; processor < this.processors; processor++) {
+            int dataReadyTime = getEarliestStartTime(state, node, processor);
+            minimumDataReadyTime = Math.min(minimumDataReadyTime, dataReadyTime);
         }
 
-        return maxBL;
-    }
-
-    public int getEarliestStartTime(StateModel state, NodeModel node) {
-        int earliestStartTime = Integer.MAX_VALUE;
-
-        for (int processor = 0; processor < processors; processor++) {
-            int est = getEarliestStartTime(state, node, processor);
-            earliestStartTime = Math.min(est, earliestStartTime);
-        }
-
-        return earliestStartTime;
+        return minimumDataReadyTime;
     }
 }

@@ -13,8 +13,6 @@ import java.util.*;
 public class DFSScheduler extends Scheduler {
     private int bestFinishTime;
 
-    private StateModel bestState;
-
     private Set<StateModel> closedStates;
 
     /**
@@ -28,11 +26,11 @@ public class DFSScheduler extends Scheduler {
 
         this.bestFinishTime = Integer.MAX_VALUE;
 
-        this.bestState = null;
-
         this.closedStates = new HashSet<>();
+    }
 
-        getDFSSchedule(new StateModel(processors, this.numberOfNodes));
+    public void schedule() {
+        schedule(new StateModel(processors, this.numberOfNodes));
     }
 
     /**
@@ -41,14 +39,13 @@ public class DFSScheduler extends Scheduler {
      *
      * @param state represents the current state of the dfs scheduling algorithm.
      */
-    @Override
-    public void getDFSSchedule(StateModel state) {
+    private void schedule(StateModel state) {
         if (state.areAllNodesScheduled()) {
             int maximumFinishTime = state.getMaximumFinishTime();
 
             if (this.bestFinishTime > maximumFinishTime) {
                 this.bestFinishTime = maximumFinishTime;
-                this.bestState = state;
+                setBestState(bestState);
             }
 
             return;
@@ -60,9 +57,7 @@ public class DFSScheduler extends Scheduler {
 
         this.closedStates.add(state);
 
-        // For each available node
         for (NodeModel node : getAvailableNodes(state)) {
-            // For each processor
             for (int processor = 0; processor < processors; processor++) {
                 StateModel nextState = state.clone();
 
@@ -74,17 +69,8 @@ public class DFSScheduler extends Scheduler {
                     continue;
                 }
 
-                getDFSSchedule(nextState);
+                schedule(nextState);
             }
         }
-    }
-
-    /**
-     * Method returns the best schedule from the DFS scheduler. Used after the DFS search is complete.
-     *
-     * @return the best state found during the DFS search.
-     */
-    public StateModel getSchedule() {
-        return this.bestState;
     }
 }

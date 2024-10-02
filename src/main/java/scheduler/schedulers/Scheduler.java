@@ -18,8 +18,12 @@ public abstract class Scheduler {
 
     protected int processors;
     protected int numberOfNodes;
+    protected int criticalPathLength;
 
     protected int[] bottomLevelPathLengths;
+
+    protected StateModel bestState;
+
     protected NodeModel[] nodes;
 
     /**
@@ -34,29 +38,14 @@ public abstract class Scheduler {
 
         this.processors = processors;
         this.numberOfNodes = graph.getNumberOfNodes();
+        this.criticalPathLength = 0;
 
         this.nodes = getSortedNodes(graph.getNodes());
         setNodeByteIds();
         this.bottomLevelPathLengths = getBottomLevelPathLengths();
     }
 
-    /**
-     * Returns the A* scheduling algorithm. Method is overridden by SequentialScheduler subclass
-     * (subclass implementing A* search algorithm).
-     *
-     * @return x represents the state from the A* algorithm.
-     */
-    public StateModel getAStarSchedule() {
-        return null;
-    }
-
-    /**
-     * Method is overridden by DFSScheduler subclass.
-     *
-     * @param state represents the current state of the dfs scheduling algorithm.
-     */
-    public void getDFSSchedule(StateModel state) {
-    }
+    public abstract void schedule();
 
     /**
      * Method assigns byte id to each node.
@@ -151,7 +140,19 @@ public abstract class Scheduler {
             }
         }
 
+        findCriticalPathLength(bottomLevelPathLengths);
+
         return bottomLevelPathLengths;
+    }
+
+    private void findCriticalPathLength(int[] bottomLevelPathLengths) {
+        for (int bottomLevelPathLength : bottomLevelPathLengths) {
+            this.criticalPathLength = Math.max(this.criticalPathLength, bottomLevelPathLength);
+        }
+    }
+
+    protected int getCriticalPathLength() {
+        return this.criticalPathLength;
     }
 
     /**
@@ -168,24 +169,6 @@ public abstract class Scheduler {
         int cost = distances[sourceId] + destination.getWeight();
 
         if (distances[destinationId] < cost) {
-            distances[destinationId] = cost;
-        }
-    }
-
-    /**
-     * Method updates distance array by relaxing edge between the source and destination nodes,
-     * including the node and edge weight.
-     *
-     * @param distances represents the distance in an integer array.
-     * @param sourceId represents the byte id of the source node.
-     * @param destinationId represents the byte id of the destination node.
-     * @param nodeWeight represents the weight of the node.
-     * @param edgeWeight represents the weight of the edge between the source and destination nodes.
-     */
-    private void setRelaxation(int[] distances, byte sourceId, byte destinationId, int nodeWeight, int edgeWeight) {
-        int cost = distances[sourceId] + nodeWeight + edgeWeight;
-
-        if (distances[destinationId] > cost) {
             distances[destinationId] = cost;
         }
     }
@@ -230,7 +213,7 @@ public abstract class Scheduler {
     protected List<NodeModel> getAvailableNodes(StateModel state) {
         List<NodeModel> availableNodes = new ArrayList<>();
 
-        for (NodeModel node : this.graph.getNodes().values()) {
+        for (NodeModel node : this.nodes) {
             if (!state.isNodeScheduled(node) && arePredecessorsScheduled(state, node)) {
                 availableNodes.add(node);
             }
@@ -238,6 +221,19 @@ public abstract class Scheduler {
 
         return availableNodes;
     }
+
+    protected List<NodeModel> getScheduledNodes(StateModel state) {
+        List<NodeModel> scheduledNodes = new ArrayList<>();
+
+        for (NodeModel node : this.nodes) {
+            if (state.isNodeScheduled(node)) {
+                scheduledNodes.add(node);
+            }
+        }
+
+        return scheduledNodes;
+    }
+
 
     /**
      * Method checks if all predecessors have been scheduled.
@@ -254,5 +250,18 @@ public abstract class Scheduler {
         }
 
         return true;
+    }
+
+    /**
+     * Method returns the best schedule from the DFS scheduler. Used after the DFS search is complete.
+     *
+     * @return the best state found during the DFS search.
+     */
+    public StateModel getBestState() {
+        return this.bestState;
+    }
+
+    protected void setBestState(StateModel state) {
+        this.bestState = state;
     }
 }

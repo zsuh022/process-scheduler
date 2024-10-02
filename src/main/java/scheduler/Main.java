@@ -8,6 +8,8 @@ import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.DFSScheduler;
+import scheduler.schedulers.Scheduler;
+import scheduler.schedulers.SequentialScheduler;
 
 /**
  * The Main Class contains the necessary driver code for ensuring our program runs smoothly, and that a valid and
@@ -33,12 +35,20 @@ public class Main {
         try {
             GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
 
-            DFSScheduler scheduler = new DFSScheduler(graph, arguments.getProcessors());
-            StateModel bestState = scheduler.getSchedule();
+            Scheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
 
-            graph.setNodesAndEdgesForState(bestState);
+            long startTime = System.currentTimeMillis();
+            scheduler.schedule();
+            long endTime = System.currentTimeMillis();
 
-            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
+            double durationInSeconds = (endTime - startTime) / 1000.0;
+
+            System.out.println("Elapsed time: " + durationInSeconds + " seconds");
+
+            StateModel bestState = scheduler.getBestState();
+//            graph.setNodesAndEdgesForState(bestState);
+//
+//            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
 
             System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());
         } catch (IOException e) {
