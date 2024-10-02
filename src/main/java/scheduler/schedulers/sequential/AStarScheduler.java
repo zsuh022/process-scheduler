@@ -1,4 +1,4 @@
-package scheduler.schedulers;
+package scheduler.schedulers.sequential;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -8,9 +8,10 @@ import java.util.Set;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
+import scheduler.schedulers.Scheduler;
 
-public class SequentialScheduler extends Scheduler {
-    public SequentialScheduler(GraphModel graph, int processors) {
+public class AStarScheduler extends Scheduler {
+    public AStarScheduler(GraphModel graph, int processors) {
         super(graph, processors);
     }
 

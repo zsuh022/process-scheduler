@@ -6,10 +6,8 @@ import scheduler.models.GraphModel;
 import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
-import scheduler.parsers.InputOutputParser;
-import scheduler.schedulers.DFSScheduler;
 import scheduler.schedulers.Scheduler;
-import scheduler.schedulers.SequentialScheduler;
+import scheduler.schedulers.sequential.AStarScheduler;
 
 /**
  * The Main Class contains the necessary driver code for ensuring our program runs smoothly, and that a valid and
@@ -35,7 +33,7 @@ public class Main {
         try {
             GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
 
-            Scheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
+            Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
 
             long startTime = System.currentTimeMillis();
             scheduler.schedule();

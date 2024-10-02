@@ -1,8 +1,9 @@
-package scheduler.schedulers;
+package scheduler.schedulers.sequential;
 
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
+import scheduler.schedulers.Scheduler;
 
 import java.util.*;
 
