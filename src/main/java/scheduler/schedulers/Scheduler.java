@@ -18,8 +18,10 @@ public abstract class Scheduler {
 
     protected int processors;
     protected int numberOfNodes;
+    protected int criticalPathLength;
 
     protected int[] bottomLevelPathLengths;
+
     protected NodeModel[] nodes;
 
     /**
@@ -34,6 +36,7 @@ public abstract class Scheduler {
 
         this.processors = processors;
         this.numberOfNodes = graph.getNumberOfNodes();
+        this.criticalPathLength = 0;
 
         this.nodes = getSortedNodes(graph.getNodes());
         setNodeByteIds();
@@ -151,7 +154,19 @@ public abstract class Scheduler {
             }
         }
 
+        findCriticalPathLength(bottomLevelPathLengths);
+
         return bottomLevelPathLengths;
+    }
+
+    private void findCriticalPathLength(int[] bottomLevelPathLengths) {
+        for (int bottomLevelPathLength : bottomLevelPathLengths) {
+            this.criticalPathLength = Math.max(this.criticalPathLength, bottomLevelPathLength);
+        }
+    }
+
+    protected int getCriticalPathLength() {
+        return this.criticalPathLength;
     }
 
     /**
@@ -168,24 +183,6 @@ public abstract class Scheduler {
         int cost = distances[sourceId] + destination.getWeight();
 
         if (distances[destinationId] < cost) {
-            distances[destinationId] = cost;
-        }
-    }
-
-    /**
-     * Method updates distance array by relaxing edge between the source and destination nodes,
-     * including the node and edge weight.
-     *
-     * @param distances represents the distance in an integer array.
-     * @param sourceId represents the byte id of the source node.
-     * @param destinationId represents the byte id of the destination node.
-     * @param nodeWeight represents the weight of the node.
-     * @param edgeWeight represents the weight of the edge between the source and destination nodes.
-     */
-    private void setRelaxation(int[] distances, byte sourceId, byte destinationId, int nodeWeight, int edgeWeight) {
-        int cost = distances[sourceId] + nodeWeight + edgeWeight;
-
-        if (distances[destinationId] > cost) {
             distances[destinationId] = cost;
         }
     }
@@ -230,7 +227,7 @@ public abstract class Scheduler {
     protected List<NodeModel> getAvailableNodes(StateModel state) {
         List<NodeModel> availableNodes = new ArrayList<>();
 
-        for (NodeModel node : this.graph.getNodes().values()) {
+        for (NodeModel node : this.nodes) {
             if (!state.isNodeScheduled(node) && arePredecessorsScheduled(state, node)) {
                 availableNodes.add(node);
             }
@@ -238,6 +235,19 @@ public abstract class Scheduler {
 
         return availableNodes;
     }
+
+    protected List<NodeModel> getScheduledNodes(StateModel state) {
+        List<NodeModel> scheduledNodes = new ArrayList<>();
+
+        for (NodeModel node : this.nodes) {
+            if (state.isNodeScheduled(node)) {
+                scheduledNodes.add(node);
+            }
+        }
+
+        return scheduledNodes;
+    }
+
 
     /**
      * Method checks if all predecessors have been scheduled.

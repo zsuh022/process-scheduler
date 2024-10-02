@@ -10,6 +10,7 @@ import java.util.Objects;
  */
 public class StateModel {
     private int numberOfNodes;
+    private int totalIdleTime;
     private int maximumFinishTime;
     private int numberOfScheduledNodes;
 
@@ -28,6 +29,7 @@ public class StateModel {
      */
     public StateModel(int numberOfProcessors, int numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
+        this.totalIdleTime = 0;
         this.maximumFinishTime = 0;
         this.numberOfScheduledNodes = 0;
 
@@ -46,6 +48,7 @@ public class StateModel {
      */
     public StateModel(StateModel state) {
         this.numberOfNodes = state.numberOfNodes;
+        this.totalIdleTime = state.totalIdleTime;
         this.maximumFinishTime = state.maximumFinishTime;
         this.numberOfScheduledNodes = state.numberOfScheduledNodes;
 
@@ -67,6 +70,8 @@ public class StateModel {
     public void addNode(NodeModel node, int processor, int startTime) {
         byte nodeId = node.getByteId();
 
+        updateTotalIdleTime(processor, startTime);
+
         this.nodeProcessors[nodeId] = (byte) processor;
         this.nodeStartTimes[nodeId] = startTime;
         this.finishTimes[processor] = startTime + node.getWeight();
@@ -87,6 +92,14 @@ public class StateModel {
      */
     public boolean isEmptyNode(NodeModel node, int processor, int startTime) {
         return (node == null && processor == -1 && startTime == -1);
+    }
+
+    public void updateTotalIdleTime(int processor, int startTime) {
+        this.totalIdleTime += Math.max(0, startTime - this.finishTimes[processor]);
+    }
+
+    public int getTotalIdleTime() {
+        return this.totalIdleTime;
     }
 
     /**

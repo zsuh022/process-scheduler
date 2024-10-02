@@ -50,73 +50,60 @@ public class SequentialScheduler extends Scheduler {
     }
 
     public int f(StateModel state) {
-//        int g = Arrays.stream(state.getFinishTimes()).max().getAsInt();
-//        int h = 0;
-//
-//        // Heuristic: max bottom-level path length for unscheduled nodes
-//        for (NodeModel node : this.nodes) {
-//            if (!state.isNodeScheduled(node)) {
-//                h = Math.max(h, bottomLevelPathLengths[node.getByteId()]);
-//            }
-//        }
-//
-//        return g + h;
-        int fbl = fBL(state);
-        int fdrt = fDRT(state);
-
-        return Math.max(fbl, fdrt);
-    }
-
-    public int fDRT(StateModel state) {
-        int maxDRT = 0;
-
-        for (NodeModel node : getAvailableNodes(state)) {
-            int earliestStartTime = getEarliestStartTime(state, node);
-            maxDRT = Math.max(maxDRT, earliestStartTime + bottomLevelPathLengths[node.getByteId()]);
+        if (state.isEmptyState()) {
+            return getLowerBound();
         }
 
-        return maxDRT;
+        int idleTime = getIdleTime(state);
+        int maximumDataReadyTime = getMaximumDataReadyTime(state);
+        int maximumBottomLevelPathLength = getMaximumBottomLevelPathLength(state);
+
+        return Math.max(idleTime, Math.max(maximumBottomLevelPathLength, maximumDataReadyTime));
     }
 
-    public int fBL(StateModel state) {
-        int maxBL = 0;
+    public int getLowerBound() {
+        double loadBalancedTime = (double) graph.getTotalNodeWeight() / this.processors;
 
-        for (byte nodeId : state.getScheduledNodes()) {
-            NodeModel node = this.nodes[nodeId];
-            int earliestStartTime = getEarliestStartTime(state, node);
-            maxBL = Math.max(maxBL, earliestStartTime + bottomLevelPathLengths[nodeId]);
-        }
-
-        return maxBL;
+        return (int) Math.max(Math.ceil(loadBalancedTime), getCriticalPathLength());
     }
 
-    public int getGetIdleTime() {
-        int
+    public int getIdleTime(StateModel state) {
+        double totalWeight = (double) graph.getTotalNodeWeight() + state.getTotalIdleTime();
+
+        return (int) Math.ceil(totalWeight / this.processors);
     }
 
     // V2
-    public int getMaxBottomLevelPathLength(StateModel state) {
-        int maxBottomLevelPathLength = 0;
+    public int getMaximumBottomLevelPathLength(StateModel state) {
+        int maximumBottomLevelPathLength = 0;
 
-        for (NodeModel node : this.nodes) {
-            if (state.isNodeScheduled(node)) {
-                int cost = state.getNodeStartTime(node) + bottomLevelPathLengths[node.getByteId()];
-                maxBottomLevelPathLength = Math.max(maxBottomLevelPathLength, cost);
-            }
+        for (NodeModel node : getScheduledNodes(state)) {
+            int cost = state.getNodeStartTime(node) + bottomLevelPathLengths[node.getByteId()];
+            maximumBottomLevelPathLength = Math.max(maximumBottomLevelPathLength, cost);
         }
 
-        return maxBottomLevelPathLength;
+        return maximumBottomLevelPathLength;
     }
 
+    public int getMaximumDataReadyTime(StateModel state) {
+        int maximumDataReadyTime = 0;
 
-    public int getEarliestStartTime(StateModel state, NodeModel node) {
-        int earliestStartTime = Integer.MAX_VALUE;
-
-        for (int processor = 0; processor < processors; processor++) {
-            int est = getEarliestStartTime(state, node, processor);
-            earliestStartTime = Math.min(est, earliestStartTime);
+        for (NodeModel node : getAvailableNodes(state)) {
+            int cost = getMinimumDataReadyTime(state, node) + bottomLevelPathLengths[node.getByteId()];
+            maximumDataReadyTime = Math.max(maximumDataReadyTime, cost);
         }
 
-        return earliestStartTime;
+        return maximumDataReadyTime;
+    }
+
+    public int getMinimumDataReadyTime(StateModel state, NodeModel node) {
+        int minimumDataReadyTime = Integer.MAX_VALUE;
+
+        for (int processor = 0; processor < this.processors; processor++) {
+            int dataReadyTime = getEarliestStartTime(state, node, processor);
+            minimumDataReadyTime = Math.min(minimumDataReadyTime, dataReadyTime);
+        }
+
+        return minimumDataReadyTime;
     }
 }
