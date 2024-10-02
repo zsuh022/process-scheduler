@@ -60,9 +60,7 @@ public class DFSScheduler extends Scheduler {
 
         this.closedStates.add(state);
 
-        // For each available node
         for (NodeModel node : getAvailableNodes(state)) {
-            // For each processor
             for (int processor = 0; processor < processors; processor++) {
                 StateModel nextState = state.clone();
 
@@ -84,7 +82,7 @@ public class DFSScheduler extends Scheduler {
      *
      * @return the best state found during the DFS search.
      */
-    public StateModel getSchedule() {
+    public StateModel getBestState() {
         return this.bestState;
     }
 }

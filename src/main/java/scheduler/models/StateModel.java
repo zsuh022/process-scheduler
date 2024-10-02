@@ -99,24 +99,6 @@ public class StateModel {
     }
 
     /**
-     * Returns the total number of nodes to schedule.
-     *
-     * @return the number of nodes
-     */
-    public int getNumberOfNodes() {
-        return this.numberOfNodes;
-    }
-
-    /**
-     * Sets the total number of nodes to schedule.
-     *
-     * @param numberOfNodes the number of nodes to set
-     */
-    public void setNumberOfNodes(int numberOfNodes) {
-        this.numberOfNodes = numberOfNodes;
-    }
-
-    /**
      * Returns the number of nodes that have been scheduled so far.
      *
      * @return the number of scheduled nodes

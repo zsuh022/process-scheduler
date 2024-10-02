@@ -16,6 +16,7 @@ public class GraphModel {
     private Graph graph;
 
     private int numberOfNodes;
+    private int totalNodeWeight;
 
     private Map<String, NodeModel> nodes;
     private Map<String, EdgeModel> edges;
@@ -31,6 +32,7 @@ public class GraphModel {
         this.graph = InputOutputParser.readDOTFile(filename);
 
         this.numberOfNodes = 0;
+        this.totalNodeWeight = 0;
 
         setNodes();
         setEdges();
@@ -45,11 +47,9 @@ public class GraphModel {
 
         graph.nodes().forEach(node -> {
             String id = node.getId();
+
             int weight = (int) Math.round((Double) node.getAttribute("Weight"));
-
             nodes.put(id, new NodeModel(id, weight));
-
-            this.numberOfNodes++;
 
             NodeModel nodeModel = nodes.get(id);
 
@@ -62,6 +62,9 @@ public class GraphModel {
                 int processor = (int) Math.round((Double) node.getAttribute("Processor"));
                 nodeModel.setProcessor(processor);
             }
+
+            this.numberOfNodes++;
+            this.totalNodeWeight += weight;
         });
 
         this.nodes = nodes;
@@ -151,6 +154,10 @@ public class GraphModel {
      */
     public Map<String, EdgeModel> getEdges() {
         return this.edges;
+    }
+
+    public int getTotalNodeWeight() {
+        return this.totalNodeWeight;
     }
 
     /**

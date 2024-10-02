@@ -1,6 +1,5 @@
 package scheduler.schedulers;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.PriorityQueue;
@@ -17,47 +16,27 @@ public class SequentialScheduler extends Scheduler {
 
     @Override
     public StateModel getAStarSchedule() {
-        // 1. create opened list of partial schedules
         PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(this::f));
         Set<StateModel> closedStates = new HashSet<>();
 
-        // 2. Add initial states
-        for (NodeModel node : this.nodes) {
-            if (node.getPredecessors().size() == 0) { // This is a root node
-                for (int i = 0; i < this.processors; i++) {
-                    StateModel state = new StateModel(this.processors, this.numberOfNodes);
-                    state.addNode(node, i, 0); // Schedule root node on processor i
-                    openedStates.add(state); // Add the initialised state to OPEN list
-                }
-            }
-        }
+        openedStates.add(new StateModel(this.processors, this.numberOfNodes));
 
-        // 3. While there are still unexplored states
         while (!openedStates.isEmpty()) {
             StateModel currentState = openedStates.poll();
-            System.out.println(Arrays.stream(currentState.getFinishTimes()).max().getAsInt());
+            System.out.println(currentState.getMaximumFinishTime());
 
-            // 4. Naive pruning, where we exit once all nodes are scheduled
             if (currentState.areAllNodesScheduled()) {
                 return currentState;
             }
 
-            // 5. Close the current state (visited)
             closedStates.add(currentState);
 
-            // 6. Expand states by checking available nodes for each processor
             for (NodeModel node : getAvailableNodes(currentState)) {
                 for (int processor = 0; processor < processors; processor++) {
-                    StateModel nextState = new StateModel(this.processors, this.numberOfNodes);
+                    StateModel nextState = currentState.clone();
 
-                    // Copy over the current state's details
-                    System.arraycopy(currentState.getFinishTimes(), 0, nextState.getFinishTimes(), 0, processors);
-                    nextState.setScheduledNodes(currentState.getScheduledNodes().clone());
-
-                    // Set the earliest start time for this task on this processor
                     int earliestStartTime = getEarliestStartTime(currentState, node, processor);
 
-                    // Schedule the task on the next state
                     nextState.addNode(node, processor, earliestStartTime);
 
                     if (!closedStates.contains(nextState)) {
@@ -67,8 +46,6 @@ public class SequentialScheduler extends Scheduler {
             }
         }
 
-        // No schedule found which is impossible because a valid schedule should be
-        // generated
         return null;
     }
 
@@ -112,6 +89,25 @@ public class SequentialScheduler extends Scheduler {
 
         return maxBL;
     }
+
+    public int getGetIdleTime() {
+        int
+    }
+
+    // V2
+    public int getMaxBottomLevelPathLength(StateModel state) {
+        int maxBottomLevelPathLength = 0;
+
+        for (NodeModel node : this.nodes) {
+            if (state.isNodeScheduled(node)) {
+                int cost = state.getNodeStartTime(node) + bottomLevelPathLengths[node.getByteId()];
+                maxBottomLevelPathLength = Math.max(maxBottomLevelPathLength, cost);
+            }
+        }
+
+        return maxBottomLevelPathLength;
+    }
+
 
     public int getEarliestStartTime(StateModel state, NodeModel node) {
         int earliestStartTime = Integer.MAX_VALUE;
