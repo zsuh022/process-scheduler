@@ -36,7 +36,15 @@ public class Main {
             GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
 
             Scheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
+
+            long startTime = System.currentTimeMillis();
             scheduler.schedule();
+            long endTime = System.currentTimeMillis();
+
+            double durationInSeconds = (endTime - startTime) / 1000.0;
+
+            System.out.println("Elapsed time: " + durationInSeconds + " seconds");
+
             StateModel bestState = scheduler.getBestState();
 //            graph.setNodesAndEdgesForState(bestState);
 //

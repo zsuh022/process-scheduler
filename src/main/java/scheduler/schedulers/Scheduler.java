@@ -23,6 +23,7 @@ public abstract class Scheduler {
     protected int[] bottomLevelPathLengths;
 
     protected StateModel bestState;
+
     protected NodeModel[] nodes;
 
     /**
