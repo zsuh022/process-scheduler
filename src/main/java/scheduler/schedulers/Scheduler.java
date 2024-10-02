@@ -22,6 +22,7 @@ public abstract class Scheduler {
 
     protected int[] bottomLevelPathLengths;
 
+    protected StateModel bestState;
     protected NodeModel[] nodes;
 
     /**
@@ -43,23 +44,7 @@ public abstract class Scheduler {
         this.bottomLevelPathLengths = getBottomLevelPathLengths();
     }
 
-    /**
-     * Returns the A* scheduling algorithm. Method is overridden by SequentialScheduler subclass
-     * (subclass implementing A* search algorithm).
-     *
-     * @return x represents the state from the A* algorithm.
-     */
-    public StateModel getAStarSchedule() {
-        return null;
-    }
-
-    /**
-     * Method is overridden by DFSScheduler subclass.
-     *
-     * @param state represents the current state of the dfs scheduling algorithm.
-     */
-    public void getDFSSchedule(StateModel state) {
-    }
+    public abstract void schedule();
 
     /**
      * Method assigns byte id to each node.
@@ -264,5 +249,18 @@ public abstract class Scheduler {
         }
 
         return true;
+    }
+
+    /**
+     * Method returns the best schedule from the DFS scheduler. Used after the DFS search is complete.
+     *
+     * @return the best state found during the DFS search.
+     */
+    public StateModel getBestState() {
+        return this.bestState;
+    }
+
+    protected void setBestState(StateModel state) {
+        this.bestState = state;
     }
 }

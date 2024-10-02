@@ -15,7 +15,7 @@ public class SequentialScheduler extends Scheduler {
     }
 
     @Override
-    public StateModel getAStarSchedule() {
+    public void schedule() {
         PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(this::f));
         Set<StateModel> closedStates = new HashSet<>();
 
@@ -26,7 +26,8 @@ public class SequentialScheduler extends Scheduler {
             System.out.println(currentState.getMaximumFinishTime());
 
             if (currentState.areAllNodesScheduled()) {
-                return currentState;
+                setBestState(currentState);
+                return;
             }
 
             closedStates.add(currentState);
@@ -45,8 +46,6 @@ public class SequentialScheduler extends Scheduler {
                 }
             }
         }
-
-        return null;
     }
 
     public int f(StateModel state) {

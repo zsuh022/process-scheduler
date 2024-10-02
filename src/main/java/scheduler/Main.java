@@ -8,6 +8,7 @@ import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.DFSScheduler;
+import scheduler.schedulers.Scheduler;
 import scheduler.schedulers.SequentialScheduler;
 
 /**
@@ -34,14 +35,12 @@ public class Main {
         try {
             GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
 
-//            DFSScheduler scheduler = new DFSScheduler(graph, arguments.getProcessors());
-//            StateModel bestState = scheduler.getSchedule();
-//
+            Scheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
+            scheduler.schedule();
+            StateModel bestState = scheduler.getBestState();
 //            graph.setNodesAndEdgesForState(bestState);
 //
 //            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
-            SequentialScheduler scheduler = new SequentialScheduler(graph, arguments.getProcessors());
-            StateModel bestState = scheduler.getAStarSchedule();
 
             System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());
         } catch (IOException e) {
