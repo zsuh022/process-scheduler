@@ -11,14 +11,17 @@ import scheduler.models.StateModel;
 import scheduler.schedulers.Scheduler;
 
 public class AStarScheduler extends Scheduler {
+    private Set<StateModel> closedStates;
+
     public AStarScheduler(GraphModel graph, int processors) {
         super(graph, processors);
+
+        this.closedStates = new HashSet<>();
     }
 
     @Override
     public void schedule() {
-        PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(this::f));
-        Set<StateModel> closedStates = new HashSet<>();
+        PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
 
         openedStates.add(new StateModel(this.processors, this.numberOfNodes));
 
@@ -31,7 +34,7 @@ public class AStarScheduler extends Scheduler {
                 return;
             }
 
-            closedStates.add(currentState);
+            this.closedStates.add(currentState);
 
             for (NodeModel node : getAvailableNodes(currentState)) {
                 for (int processor = 0; processor < processors; processor++) {
@@ -41,15 +44,28 @@ public class AStarScheduler extends Scheduler {
 
                     nextState.addNode(node, processor, earliestStartTime);
 
-                    if (!closedStates.contains(nextState)) {
+                    if (!isStatePruned(nextState)) {
                         openedStates.add(nextState);
                     }
+
                 }
             }
         }
     }
 
-    public int f(StateModel state) {
+    private void getValidSchedule() {
+
+    }
+
+    private boolean isStatePruned(StateModel state) {
+        if (closedStates.contains(state)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public int getFCost(StateModel state) {
         if (state.isEmptyState()) {
             return getLowerBound();
         }

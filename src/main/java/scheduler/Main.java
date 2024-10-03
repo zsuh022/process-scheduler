@@ -8,6 +8,7 @@ import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
 import scheduler.schedulers.Scheduler;
 import scheduler.schedulers.sequential.AStarScheduler;
+import scheduler.visualiser.Visualiser;
 
 /**
  * The Main Class contains the necessary driver code for ensuring our program runs smoothly, and that a valid and
@@ -15,6 +16,27 @@ import scheduler.schedulers.sequential.AStarScheduler;
  * visualised.
  */
 public class Main {
+    private static void runScheduler(Arguments arguments) throws IOException {
+        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
+
+        Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
+
+        long startTime = System.currentTimeMillis();
+        scheduler.schedule();
+        long endTime = System.currentTimeMillis();
+
+        double durationInSeconds = (endTime - startTime) / 1000.0;
+
+        System.out.println("Elapsed time: " + durationInSeconds + " seconds");
+
+        StateModel bestState = scheduler.getBestState();
+//            graph.setNodesAndEdgesForState(bestState);
+//
+//            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
+
+        System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());
+    }
+
     /**
      * The main method for executing the main driver code.
      *
@@ -31,28 +53,14 @@ public class Main {
         }
 
         try {
-            GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
-
-            Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
-
-            long startTime = System.currentTimeMillis();
-            scheduler.schedule();
-            long endTime = System.currentTimeMillis();
-
-            double durationInSeconds = (endTime - startTime) / 1000.0;
-
-            System.out.println("Elapsed time: " + durationInSeconds + " seconds");
-
-            StateModel bestState = scheduler.getBestState();
-//            graph.setNodesAndEdgesForState(bestState);
-//
-//            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
-
-            System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());
+            runScheduler(arguments);
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
 
-//        Visualiser.run(arguments);
+        if (arguments.isVisualiseSearch()) {
+            Visualiser.run(arguments);
+        }
     }
 }

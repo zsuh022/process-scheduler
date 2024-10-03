@@ -41,11 +41,14 @@ public abstract class Scheduler {
         this.criticalPathLength = 0;
 
         this.nodes = getSortedNodes(graph.getNodes());
+
         setNodeByteIds();
+
         this.bottomLevelPathLengths = getBottomLevelPathLengths();
     }
 
     public abstract void schedule();
+
 
     /**
      * Method assigns byte id to each node.
@@ -95,7 +98,7 @@ public abstract class Scheduler {
                 deque.add(node);
             }
 
-            nodeIndex++;
+            ++nodeIndex;
         }
 
         while (!deque.isEmpty()) {
@@ -107,7 +110,7 @@ public abstract class Scheduler {
 
                 for (NodeModel successor : node.getSuccessors()) {
                     int index = nodeMap.get(successor);
-                    inDegrees[index]--;
+                    --inDegrees[index];
 
                     if (inDegrees[index] == 0) {
                         deque.add(successor);

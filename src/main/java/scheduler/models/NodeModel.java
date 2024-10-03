@@ -31,11 +31,15 @@ public class NodeModel {
      */
     public NodeModel(String id, int weight) {
         this.id = id;
+
         this.weight = weight;
         this.inDegree = 0;
         this.outDegree = 0;
         this.startTime = -1;
         this.processor = -1;
+
+        this.byteId = (byte) -1;
+
         this.successors = new ArrayList<>();
         this.predecessors = new ArrayList<>();
     }
