@@ -8,7 +8,7 @@ import scheduler.models.StateModel;
 import scheduler.schedulers.Scheduler;
 
 public class AStarScheduler extends Scheduler {
-    private PriorityQueue<StateModel> openedStates;
+    private final PriorityQueue<StateModel> openedStates;
 
     public AStarScheduler(GraphModel graph, int processors) {
         super(graph, processors);
@@ -25,7 +25,8 @@ public class AStarScheduler extends Scheduler {
             System.out.println(currentState.getMaximumFinishTime());
 
             if (currentState.areAllNodesScheduled()) {
-                setBestState(currentState);
+                metrics.setBestState(currentState);
+
                 break;
             }
 
@@ -38,16 +39,13 @@ public class AStarScheduler extends Scheduler {
             }
         }
 
-        updateMetrics();
-    }
-
-    private void updateMetrics() {
         metrics.setNumberOfClosedStates(closedStates.size());
     }
 
+
     private void expandState(StateModel state, NodeModel node, int processor) {
         // Skip tasks that are not in the fixed order defined
-        if (!isFirstAvailableNode(state, node, processor)) {
+        if (!isFirstAvailableNode(state, node)) {
             return;
         }
 
@@ -64,22 +62,18 @@ public class AStarScheduler extends Scheduler {
         }
     }
 
-    private boolean isFirstAvailableNode(StateModel state, NodeModel node, int processor) {
+    private boolean isFirstAvailableNode(StateModel state, NodeModel node) {
         List<NodeModel> equivalentNodeGroup = this.graph.getEquivalentNodeGroup(node.getGroupId());
 
         for (NodeModel equivalentNode : equivalentNodeGroup) {
-            // They are both the same
+            // both tasks are both the same, so we can continue with scheduling it
             if (equivalentNode.equals(node)) {
                 return true;
             }
 
-            // if there is an equivalent node that is not scheduled
+            // if there is an earlier equivalent task that is not scheduled
             if (!state.isNodeScheduled(equivalentNode)) {
-                if (state.getNodeProcessor(equivalentNode) == processor) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -155,6 +149,4 @@ public class AStarScheduler extends Scheduler {
 
         return minimumDataReadyTime;
     }
-
-
 }

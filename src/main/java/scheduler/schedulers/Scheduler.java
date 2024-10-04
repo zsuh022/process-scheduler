@@ -19,8 +19,6 @@ public abstract class Scheduler {
 
     protected int[] bottomLevelPathLengths;
 
-    protected StateModel bestState;
-
     protected MetricsModel metrics;
 
     protected NodeModel[] nodes;
@@ -257,19 +255,6 @@ public abstract class Scheduler {
         }
 
         return true;
-    }
-
-    /**
-     * Method returns the best schedule from the DFS scheduler. Used after the DFS search is complete.
-     *
-     * @return the best state found during the DFS search.
-     */
-    public StateModel getBestState() {
-        return this.bestState;
-    }
-
-    protected void setBestState(StateModel state) {
-        this.bestState = state;
     }
 
     public MetricsModel getMetrics() {

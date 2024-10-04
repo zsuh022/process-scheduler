@@ -44,7 +44,8 @@ public class DFSScheduler extends Scheduler {
 
             if (this.bestFinishTime > maximumFinishTime) {
                 this.bestFinishTime = maximumFinishTime;
-                setBestState(bestState);
+
+                metrics.setBestState(state);
             }
 
             return;

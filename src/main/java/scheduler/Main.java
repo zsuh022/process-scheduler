@@ -33,7 +33,8 @@ public class Main {
         System.out.println("Number of opened states: " + metrics.getNumberOfOpenedStates());
         System.out.println("Number of closed states: " + metrics.getNumberOfClosedStates());
 
-        StateModel bestState = scheduler.getBestState();
+        StateModel bestState = metrics.getBestState();
+        System.out.println("Schedule finish time: " + bestState.getMaximumFinishTime());
 //            graph.setNodesAndEdgesForState(bestState);
 //
 //            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
