@@ -12,6 +12,7 @@ public class NodeModel {
     private final String id;
 
     private final int weight;
+    private int groupId;
     private int inDegree;
     private int outDegree;
     private int startTime;
@@ -33,6 +34,7 @@ public class NodeModel {
         this.id = id;
 
         this.weight = weight;
+        this.groupId = -1;
         this.inDegree = 0;
         this.outDegree = 0;
         this.startTime = -1;
@@ -42,6 +44,14 @@ public class NodeModel {
 
         this.successors = new ArrayList<>();
         this.predecessors = new ArrayList<>();
+    }
+
+    public int getGroupId() {
+        return this.groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 
     /**

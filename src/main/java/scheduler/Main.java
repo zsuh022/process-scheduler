@@ -28,6 +28,7 @@ public class Main {
         double durationInSeconds = (endTime - startTime) / 1000.0;
 
         System.out.println("Elapsed time: " + durationInSeconds + " seconds");
+        System.out.println("Number of closed states: " + scheduler.getNumberOfClosedStates());
 
         StateModel bestState = scheduler.getBestState();
 //            graph.setNodesAndEdgesForState(bestState);

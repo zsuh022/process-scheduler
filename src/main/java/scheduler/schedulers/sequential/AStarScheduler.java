@@ -1,9 +1,6 @@
 package scheduler.schedulers.sequential;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
@@ -11,22 +8,20 @@ import scheduler.models.StateModel;
 import scheduler.schedulers.Scheduler;
 
 public class AStarScheduler extends Scheduler {
-    private Set<StateModel> closedStates;
+    private PriorityQueue<StateModel> openedStates;
 
     public AStarScheduler(GraphModel graph, int processors) {
         super(graph, processors);
 
-        this.closedStates = new HashSet<>();
+        this.openedStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
     }
 
     @Override
     public void schedule() {
-        PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
+        this.openedStates.add(new StateModel(this.processors, this.numberOfNodes));
 
-        openedStates.add(new StateModel(this.processors, this.numberOfNodes));
-
-        while (!openedStates.isEmpty()) {
-            StateModel currentState = openedStates.poll();
+        while (!this.openedStates.isEmpty()) {
+            StateModel currentState = this.openedStates.poll();
             System.out.println(currentState.getMaximumFinishTime());
 
             if (currentState.areAllNodesScheduled()) {
@@ -34,23 +29,51 @@ public class AStarScheduler extends Scheduler {
                 return;
             }
 
-            this.closedStates.add(currentState);
+            closedStates.add(currentState);
 
             for (NodeModel node : getAvailableNodes(currentState)) {
-                for (int processor = 0; processor < processors; processor++) {
-                    StateModel nextState = currentState.clone();
-
-                    int earliestStartTime = getEarliestStartTime(currentState, node, processor);
-
-                    nextState.addNode(node, processor, earliestStartTime);
-
-                    if (!isStatePruned(nextState)) {
-                        openedStates.add(nextState);
-                    }
-
+                for (int processor = 0; processor < this.processors; processor++) {
+                    expandState(currentState, node, processor);
                 }
             }
         }
+    }
+
+    private void expandState(StateModel state, NodeModel node, int processor) {
+        // We only need to schedule the first available free task
+        if (isFirstAvailableNode(state, node, processor)) {
+
+        }
+
+        StateModel nextState = state.clone();
+
+        int earliestStartTime = getEarliestStartTime(state, node, processor);
+
+        nextState.addNode(node, processor, earliestStartTime);
+
+        if (!isStatePruned(nextState)) {
+            this.openedStates.add(nextState);
+        }
+    }
+
+    private boolean isFirstAvailableNode(StateModel state, NodeModel node, int processor) {
+        List<NodeModel> equivalentNodeGroup = this.graph.getEquivalentNodeGroup(node.getGroupId());
+
+        for (NodeModel equivalentNode : equivalentNodeGroup) {
+            // They are both the same
+            if (equivalentNode.equals(node)) {
+                return true;
+            }
+
+            // if there is an equivalent node that is not scheduled
+            if (!state.isNodeScheduled(equivalentNode)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void getValidSchedule() {
@@ -122,4 +145,6 @@ public class AStarScheduler extends Scheduler {
 
         return minimumDataReadyTime;
     }
+
+
 }

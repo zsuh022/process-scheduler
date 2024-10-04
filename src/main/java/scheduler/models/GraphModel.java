@@ -35,6 +35,8 @@ public class GraphModel {
         this.numberOfNodes = 0;
         this.totalNodeWeight = 0;
 
+        this.equivalentNodes = new ArrayList<>();
+
         setNodes();
         setEdges();
 
@@ -109,12 +111,17 @@ public class GraphModel {
         }
     }
 
+    // Decide on a fixed order - part of pruning
     public void findEquivalentNodes() {
         for (NodeModel node : this.nodes.values()) {
             boolean isEquivalentNodeGroupFound = false;
 
-            for (List<NodeModel> equivalentNodeGroup : this.equivalentNodes) {
-                if (areNodesEquivalent(node, equivalentNodeGroup.getLast())) {
+            for (int groupId = 0; groupId < this.equivalentNodes.size(); groupId++) {
+                List<NodeModel> equivalentNodeGroup = this.equivalentNodes.get(groupId);
+                int groupSize = equivalentNodeGroup.size();
+
+                if (areNodesEquivalent(node, equivalentNodeGroup.get(groupSize - 1))) {
+                    node.setGroupId(groupId);
                     equivalentNodeGroup.add(node);
                     isEquivalentNodeGroupFound = true;
 
@@ -123,7 +130,8 @@ public class GraphModel {
             }
 
             if (!isEquivalentNodeGroupFound) {
-                this.equivalentNodes.add(new ArrayList<>(Collections.singletonList(node)));
+                node.setGroupId(this.equivalentNodes.size());
+                this.equivalentNodes.add(new LinkedList<>(Collections.singletonList(node)));
             }
         }
     }
@@ -146,6 +154,10 @@ public class GraphModel {
         }
 
         return areSuccessorEdgeWeightsEquivalent(nodeA, nodeB);
+    }
+
+    public List<NodeModel> getEquivalentNodeGroup(int groupId) {
+        return this.equivalentNodes.get(groupId);
     }
 
     private boolean arePredecessorEdgeWeightsEquivalent(NodeModel nodeA, NodeModel nodeB) {
@@ -172,6 +184,10 @@ public class GraphModel {
         }
 
         return true;
+    }
+
+    public List<List<NodeModel>> getEquivalentNodes() {
+        return this.equivalentNodes;
     }
 
     /**

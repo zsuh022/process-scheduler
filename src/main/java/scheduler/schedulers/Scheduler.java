@@ -26,6 +26,8 @@ public abstract class Scheduler {
 
     protected NodeModel[] nodes;
 
+    protected Set<StateModel> closedStates;
+
     /**
      * Constructor for the Scheduler class. Initialises the graph, number of processors, number of
      * nodes, computes topological sorting and bottom level path lengths.
@@ -41,6 +43,8 @@ public abstract class Scheduler {
         this.criticalPathLength = 0;
 
         this.nodes = getSortedNodes(graph.getNodes());
+
+        this.closedStates = new HashSet<>();
 
         setNodeByteIds();
 
@@ -266,5 +270,9 @@ public abstract class Scheduler {
 
     protected void setBestState(StateModel state) {
         this.bestState = state;
+    }
+
+    public int getNumberOfClosedStates() {
+        return this.closedStates.size();
     }
 }
