@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-readonly INPUT_DOT_FILE=src/main/resources/dotfiles/input/Nodes_ForkJoin_1.dot
+readonly INPUT_DOT_FILE=src/main/resources/dotfiles/input/Nodes_8_Random.dot
 readonly PROCESSORS=2
 
 if [ "$1" = "main" ]; then
