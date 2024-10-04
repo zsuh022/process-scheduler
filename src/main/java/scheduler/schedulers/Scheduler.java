@@ -2,10 +2,7 @@ package scheduler.schedulers;
 
 import java.util.*;
 
-import scheduler.models.EdgeModel;
-import scheduler.models.GraphModel;
-import scheduler.models.NodeModel;
-import scheduler.models.StateModel;
+import scheduler.models.*;
 
 import static scheduler.constants.Constants.INF_32;
 
@@ -22,9 +19,11 @@ public abstract class Scheduler {
 
     protected int[] bottomLevelPathLengths;
 
-    protected StateModel bestState;
+    protected MetricsModel metrics;
 
     protected NodeModel[] nodes;
+
+    protected Set<StateModel> closedStates;
 
     /**
      * Constructor for the Scheduler class. Initialises the graph, number of processors, number of
@@ -40,8 +39,14 @@ public abstract class Scheduler {
         this.numberOfNodes = graph.getNumberOfNodes();
         this.criticalPathLength = 0;
 
+        this.metrics = new MetricsModel();
+
         this.nodes = getSortedNodes(graph.getNodes());
+
+        this.closedStates = new HashSet<>();
+
         setNodeByteIds();
+
         this.bottomLevelPathLengths = getBottomLevelPathLengths();
     }
 
@@ -95,7 +100,7 @@ public abstract class Scheduler {
                 deque.add(node);
             }
 
-            nodeIndex++;
+            ++nodeIndex;
         }
 
         while (!deque.isEmpty()) {
@@ -107,7 +112,7 @@ public abstract class Scheduler {
 
                 for (NodeModel successor : node.getSuccessors()) {
                     int index = nodeMap.get(successor);
-                    inDegrees[index]--;
+                    --inDegrees[index];
 
                     if (inDegrees[index] == 0) {
                         deque.add(successor);
@@ -252,16 +257,7 @@ public abstract class Scheduler {
         return true;
     }
 
-    /**
-     * Method returns the best schedule from the DFS scheduler. Used after the DFS search is complete.
-     *
-     * @return the best state found during the DFS search.
-     */
-    public StateModel getBestState() {
-        return this.bestState;
-    }
-
-    protected void setBestState(StateModel state) {
-        this.bestState = state;
+    public MetricsModel getMetrics() {
+        return this.metrics;
     }
 }

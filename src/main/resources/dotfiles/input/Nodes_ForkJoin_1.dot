@@ -1,0 +1,16 @@
+digraph "Nodes_ForkJoin" {
+	A [Weight=2];
+	B [Weight=7];
+	C [Weight=2];
+	D [Weight=2];
+	E [Weight=2];
+	F [Weight=2];
+	A -> B [Weight=4];
+	A -> C [Weight=4];
+	A -> D [Weight=4];
+	A -> E [Weight=4];
+	B -> F [Weight=3];
+	C -> F [Weight=3];
+	D -> F [Weight=3];
+	E -> F [Weight=3];
+}

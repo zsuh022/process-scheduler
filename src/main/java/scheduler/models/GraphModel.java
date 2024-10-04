@@ -1,8 +1,7 @@
 package scheduler.models;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.graphstream.graph.Graph;
 
@@ -13,13 +12,15 @@ import scheduler.parsers.InputOutputParser;
  * Keeps track of the number of nodes, and information on nodes and edges.
  */
 public class GraphModel {
-    private Graph graph;
+    private final Graph graph;
 
     private int numberOfNodes;
     private int totalNodeWeight;
 
     private Map<String, NodeModel> nodes;
     private Map<String, EdgeModel> edges;
+
+    private final List<List<NodeModel>> equivalentNodes;
 
     /**
      * Constructor for GraphModel class. Loads a graph from a DOT file and initialises the nodes
@@ -34,8 +35,12 @@ public class GraphModel {
         this.numberOfNodes = 0;
         this.totalNodeWeight = 0;
 
+        this.equivalentNodes = new ArrayList<>();
+
         setNodes();
         setEdges();
+
+        findEquivalentNodes();
     }
 
     /**
@@ -63,7 +68,7 @@ public class GraphModel {
                 nodeModel.setProcessor(processor);
             }
 
-            this.numberOfNodes++;
+            ++this.numberOfNodes;
             this.totalNodeWeight += weight;
         });
 
@@ -104,6 +109,85 @@ public class GraphModel {
             node.setProcessor(state.getNodeProcessor(node) + 1);
             node.setStartTime(state.getNodeStartTime(node));
         }
+    }
+
+    // Decide on a fixed order - part of pruning
+    public void findEquivalentNodes() {
+        for (NodeModel node : this.nodes.values()) {
+            boolean isEquivalentNodeGroupFound = false;
+
+            for (int groupId = 0; groupId < this.equivalentNodes.size(); groupId++) {
+                List<NodeModel> equivalentNodeGroup = this.equivalentNodes.get(groupId);
+                int groupSize = equivalentNodeGroup.size();
+
+                if (areNodesEquivalent(node, equivalentNodeGroup.get(groupSize - 1))) {
+                    node.setGroupId(groupId);
+                    equivalentNodeGroup.add(node);
+                    isEquivalentNodeGroupFound = true;
+
+                    break;
+                }
+            }
+
+            if (!isEquivalentNodeGroupFound) {
+                node.setGroupId(this.equivalentNodes.size());
+                this.equivalentNodes.add(new LinkedList<>(Collections.singletonList(node)));
+            }
+        }
+    }
+
+    private boolean areNodesEquivalent(NodeModel nodeA, NodeModel nodeB) {
+        if (nodeA.getWeight() != nodeB.getWeight()) {
+            return false;
+        }
+
+        if (!nodeA.getPredecessors().equals(nodeB.getPredecessors())) {
+            return false;
+        }
+
+        if (!nodeA.getSuccessors().equals(nodeB.getSuccessors())) {
+            return false;
+        }
+
+        if (!arePredecessorEdgeWeightsEquivalent(nodeA, nodeB)) {
+            return false;
+        }
+
+        return areSuccessorEdgeWeightsEquivalent(nodeA, nodeB);
+    }
+
+    public List<NodeModel> getEquivalentNodeGroup(int groupId) {
+        return this.equivalentNodes.get(groupId);
+    }
+
+    private boolean arePredecessorEdgeWeightsEquivalent(NodeModel nodeA, NodeModel nodeB) {
+        for (NodeModel predecessor : nodeA.getPredecessors()) {
+            int weightA = getEdge(predecessor, nodeA).getWeight();
+            int weightB = getEdge(predecessor, nodeB).getWeight();
+
+            if (weightA != weightB) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean areSuccessorEdgeWeightsEquivalent(NodeModel nodeA, NodeModel nodeB) {
+        for (NodeModel successor : nodeA.getSuccessors()) {
+            int weightA = getEdge(nodeA, successor).getWeight();
+            int weightB = getEdge(nodeB, successor).getWeight();
+
+            if (weightA != weightB) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public List<List<NodeModel>> getEquivalentNodes() {
+        return this.equivalentNodes;
     }
 
     /**
@@ -155,6 +239,20 @@ public class GraphModel {
     public Map<String, EdgeModel> getEdges() {
         return this.edges;
     }
+
+    public EdgeModel getEdge(NodeModel source, NodeModel destination) {
+        String edgeId = getEdgeId(source, destination);
+
+        return this.edges.get(edgeId);
+    }
+
+    public String getEdgeId(NodeModel source, NodeModel destination) {
+        String sourceId = source.getId();
+        String destinationId = destination.getId();
+
+        return sourceId.concat(destinationId);
+    }
+
 
     public int getTotalNodeWeight() {
         return this.totalNodeWeight;

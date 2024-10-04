@@ -1,8 +1,9 @@
-package scheduler.schedulers;
+package scheduler.schedulers.sequential;
 
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
+import scheduler.schedulers.Scheduler;
 
 import java.util.*;
 
@@ -12,8 +13,6 @@ import java.util.*;
  */
 public class DFSScheduler extends Scheduler {
     private int bestFinishTime;
-
-    private Set<StateModel> closedStates;
 
     /**
      * Constructor for the DFSScheduler class.
@@ -25,12 +24,12 @@ public class DFSScheduler extends Scheduler {
         super(graph, processors);
 
         this.bestFinishTime = Integer.MAX_VALUE;
-
-        this.closedStates = new HashSet<>();
     }
 
     public void schedule() {
         schedule(new StateModel(processors, this.numberOfNodes));
+
+        metrics.setNumberOfClosedStates(closedStates.size());
     }
 
     /**
@@ -45,17 +44,18 @@ public class DFSScheduler extends Scheduler {
 
             if (this.bestFinishTime > maximumFinishTime) {
                 this.bestFinishTime = maximumFinishTime;
-                setBestState(bestState);
+
+                metrics.setBestState(state);
             }
 
             return;
         }
 
-        if (this.closedStates.contains(state)) {
+        if (closedStates.contains(state)) {
            return;
         }
 
-        this.closedStates.add(state);
+        closedStates.add(state);
 
         for (NodeModel node : getAvailableNodes(state)) {
             for (int processor = 0; processor < processors; processor++) {
@@ -68,6 +68,8 @@ public class DFSScheduler extends Scheduler {
                 if (nextState.getMaximumFinishTime() >= this.bestFinishTime) {
                     continue;
                 }
+
+                metrics.incrementNumberOfOpenedStates();
 
                 schedule(nextState);
             }
