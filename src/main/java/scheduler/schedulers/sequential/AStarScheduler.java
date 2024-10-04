@@ -26,7 +26,7 @@ public class AStarScheduler extends Scheduler {
 
             if (currentState.areAllNodesScheduled()) {
                 setBestState(currentState);
-                return;
+                break;
             }
 
             closedStates.add(currentState);
@@ -37,12 +37,18 @@ public class AStarScheduler extends Scheduler {
                 }
             }
         }
+
+        updateMetrics();
+    }
+
+    private void updateMetrics() {
+        metrics.setNumberOfClosedStates(closedStates.size());
     }
 
     private void expandState(StateModel state, NodeModel node, int processor) {
-        // We only need to schedule the first available free task
-        if (isFirstAvailableNode(state, node, processor)) {
-
+        // Skip tasks that are not in the fixed order defined
+        if (!isFirstAvailableNode(state, node, processor)) {
+            return;
         }
 
         StateModel nextState = state.clone();
@@ -53,6 +59,8 @@ public class AStarScheduler extends Scheduler {
 
         if (!isStatePruned(nextState)) {
             this.openedStates.add(nextState);
+
+            metrics.incrementNumberOfOpenedStates();
         }
     }
 
@@ -67,9 +75,11 @@ public class AStarScheduler extends Scheduler {
 
             // if there is an equivalent node that is not scheduled
             if (!state.isNodeScheduled(equivalentNode)) {
-                return true;
-            } else {
-                return false;
+                if (state.getNodeProcessor(equivalentNode) == processor) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
 

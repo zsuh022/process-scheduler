@@ -1,11 +1,13 @@
 package scheduler.models;
 
+// refactor later, maybe make it a singleton?
 public class MetricsModel {
     private int numberOfOpenedStates;
     private int numberOfClosedStates;
 
     public MetricsModel() {
-
+        this.numberOfOpenedStates = 0;
+        this.numberOfClosedStates = 0;
     }
 
     public int getNumberOfOpenedStates() {
@@ -18,6 +20,10 @@ public class MetricsModel {
 
     public int getNumberOfClosedStates() {
         return this.numberOfClosedStates;
+    }
+
+    public void incrementNumberOfOpenedStates() {
+        ++this.numberOfOpenedStates;
     }
 
     public void setNumberOfClosedStates(int numberOfClosedStates) {

@@ -3,6 +3,7 @@ package scheduler;
 import java.io.IOException;
 
 import scheduler.models.GraphModel;
+import scheduler.models.MetricsModel;
 import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
@@ -24,11 +25,13 @@ public class Main {
         long startTime = System.currentTimeMillis();
         scheduler.schedule();
         long endTime = System.currentTimeMillis();
-
         double durationInSeconds = (endTime - startTime) / 1000.0;
 
+        MetricsModel metrics = scheduler.getMetrics();
+
         System.out.println("Elapsed time: " + durationInSeconds + " seconds");
-        System.out.println("Number of closed states: " + scheduler.getNumberOfClosedStates());
+        System.out.println("Number of opened states: " + metrics.getNumberOfOpenedStates());
+        System.out.println("Number of closed states: " + metrics.getNumberOfClosedStates());
 
         StateModel bestState = scheduler.getBestState();
 //            graph.setNodesAndEdgesForState(bestState);

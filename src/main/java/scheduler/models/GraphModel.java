@@ -12,7 +12,7 @@ import scheduler.parsers.InputOutputParser;
  * Keeps track of the number of nodes, and information on nodes and edges.
  */
 public class GraphModel {
-    private Graph graph;
+    private final Graph graph;
 
     private int numberOfNodes;
     private int totalNodeWeight;
@@ -20,7 +20,7 @@ public class GraphModel {
     private Map<String, NodeModel> nodes;
     private Map<String, EdgeModel> edges;
 
-    private List<List<NodeModel>> equivalentNodes;
+    private final List<List<NodeModel>> equivalentNodes;
 
     /**
      * Constructor for GraphModel class. Loads a graph from a DOT file and initialises the nodes

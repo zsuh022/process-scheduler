@@ -28,6 +28,8 @@ public class DFSScheduler extends Scheduler {
 
     public void schedule() {
         schedule(new StateModel(processors, this.numberOfNodes));
+
+        metrics.setNumberOfClosedStates(closedStates.size());
     }
 
     /**
@@ -65,6 +67,8 @@ public class DFSScheduler extends Scheduler {
                 if (nextState.getMaximumFinishTime() >= this.bestFinishTime) {
                     continue;
                 }
+
+                metrics.incrementNumberOfOpenedStates();
 
                 schedule(nextState);
             }

@@ -2,10 +2,7 @@ package scheduler.schedulers;
 
 import java.util.*;
 
-import scheduler.models.EdgeModel;
-import scheduler.models.GraphModel;
-import scheduler.models.NodeModel;
-import scheduler.models.StateModel;
+import scheduler.models.*;
 
 import static scheduler.constants.Constants.INF_32;
 
@@ -23,6 +20,8 @@ public abstract class Scheduler {
     protected int[] bottomLevelPathLengths;
 
     protected StateModel bestState;
+
+    protected MetricsModel metrics;
 
     protected NodeModel[] nodes;
 
@@ -42,6 +41,8 @@ public abstract class Scheduler {
         this.numberOfNodes = graph.getNumberOfNodes();
         this.criticalPathLength = 0;
 
+        this.metrics = new MetricsModel();
+
         this.nodes = getSortedNodes(graph.getNodes());
 
         this.closedStates = new HashSet<>();
@@ -52,7 +53,6 @@ public abstract class Scheduler {
     }
 
     public abstract void schedule();
-
 
     /**
      * Method assigns byte id to each node.
@@ -272,7 +272,7 @@ public abstract class Scheduler {
         this.bestState = state;
     }
 
-    public int getNumberOfClosedStates() {
-        return this.closedStates.size();
+    public MetricsModel getMetrics() {
+        return this.metrics;
     }
 }
