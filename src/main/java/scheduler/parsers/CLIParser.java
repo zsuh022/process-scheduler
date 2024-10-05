@@ -9,6 +9,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import static scheduler.constants.Constants.NUMBER_OF_REQUIRED_ARGUMENTS;
+
 /**
  * The CLI parser provides an interface for parsing user CLI inputs. It ensures the correctness of their input, as any
  * incorrect arguments passed to our program will be detected, and a help message will be displayed to the user.
@@ -46,7 +48,7 @@ public class CLIParser {
         CommandLine commandPrompt = parser.parse(CLIParser.options, CLIArguments);
         String[] remainingArguments = commandPrompt.getArgs();
 
-        if (remainingArguments.length < 2) {
+        if (remainingArguments.length < NUMBER_OF_REQUIRED_ARGUMENTS) {
             throw new ParseException("Missing input file and number of cores");
         }
 
@@ -98,9 +100,13 @@ public class CLIParser {
      */
     private static void setDefaultOutputDOTFilePath(Arguments arguments) {
         String inputDOTFilePath = arguments.getInputDOTFilePath();
+
         File inputFile = new File(inputDOTFilePath);
+
+
         String outputFileName = inputFile.getName().replace(".dot", "-output.dot");
         String outputDOTFilePath = inputFile.getParent() + File.separator + outputFileName;
+
         if (inputFile.getParent() == null) {
             outputDOTFilePath = outputFileName;
         }
