@@ -1,8 +1,6 @@
 package scheduler.models;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -11,7 +9,7 @@ import java.util.Objects;
  * Used in algorithms like branch-and-bound to keep track of the current scheduling state.
  */
 public class StateModel {
-    private byte numberOfProcessors;
+    private final byte numberOfProcessors;
     private byte numberOfScheduledNodes;
 
     private final int numberOfNodes;
