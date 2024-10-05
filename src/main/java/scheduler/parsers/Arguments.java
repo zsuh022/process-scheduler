@@ -110,4 +110,8 @@ public class Arguments {
     public void setIsVisualiseSearch(boolean isVisualiseSearch) {
         this.isVisualiseSearch = isVisualiseSearch;
     }
+
+    public void displayOutputDOTFilePath() {
+        System.out.println("\nOutput written to " + getOutputDOTFilePath());
+    }
 }

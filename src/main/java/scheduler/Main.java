@@ -19,27 +19,23 @@ import scheduler.visualiser.Visualiser;
 public class Main {
     private static void runScheduler(Arguments arguments) throws IOException {
         GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
-
         Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
 
         long startTime = System.currentTimeMillis();
         scheduler.schedule();
         long endTime = System.currentTimeMillis();
-        double durationInSeconds = (endTime - startTime) / 1000.0;
+        double elapsedTime = (endTime - startTime) / 1000.0;
 
         MetricsModel metrics = scheduler.getMetrics();
+        metrics.setElapsedTime(elapsedTime);
 
-        System.out.println("Elapsed time: " + durationInSeconds + " seconds");
-        System.out.println("Number of opened states: " + metrics.getNumberOfOpenedStates());
-        System.out.println("Number of closed states: " + metrics.getNumberOfClosedStates());
+        metrics.display();
 
-        StateModel bestState = metrics.getBestState();
-        System.out.println("Schedule finish time: " + bestState.getMaximumFinishTime());
+//        StateModel bestState = metrics.getBestState();
 //            graph.setNodesAndEdgesForState(bestState);
 //
 //            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
-
-        System.out.println("Scheduled successfully! Output written to " + arguments.getOutputDOTFilePath());
+        arguments.displayOutputDOTFilePath();
     }
 
     /**
