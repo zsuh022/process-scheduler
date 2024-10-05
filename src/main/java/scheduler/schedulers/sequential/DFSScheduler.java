@@ -20,7 +20,7 @@ public class DFSScheduler extends Scheduler {
      * @param graph represents the graph model.
      * @param processors represents the number of processors for scheduling.
      */
-    public DFSScheduler(GraphModel graph, int processors) {
+    public DFSScheduler(GraphModel graph, byte processors) {
         super(graph, processors);
 
         this.bestFinishTime = Integer.MAX_VALUE;

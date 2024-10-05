@@ -7,14 +7,14 @@ import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.schedulers.Scheduler;
 
-import static scheduler.constants.Constants.INF_32;
+import static scheduler.constants.Constants.INFINITY_32;
 
 public class AStarScheduler extends Scheduler {
     private final PriorityQueue<StateModel> openedStates;
 
-    private StateModel validState;
+    private final StateModel validState;
 
-    public AStarScheduler(GraphModel graph, int processors) {
+    public AStarScheduler(GraphModel graph, byte processors) {
         super(graph, processors);
 
         this.openedStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
@@ -29,20 +29,20 @@ public class AStarScheduler extends Scheduler {
         this.openedStates.add(new StateModel(processors, numberOfNodes));
 
         while (!this.openedStates.isEmpty()) {
-            StateModel currentState = this.openedStates.poll();
+            StateModel state = this.openedStates.poll();
 
-            if (currentState.areAllNodesScheduled()) {
-                metrics.setBestState(currentState);
+            if (state.areAllNodesScheduled()) {
+                metrics.setBestState(state);
                 isBestStateFound = true;
 
                 break;
             }
 
-            closedStates.add(currentState);
+            closedStates.add(state);
 
-            for (NodeModel node : getAvailableNodes(currentState)) {
+            for (NodeModel node : getAvailableNodes(state)) {
                 for (int processor = 0; processor < processors; processor++) {
-                    expandState(currentState, node, processor);
+                    expandState(state, node, processor);
                 }
             }
         }
@@ -96,10 +96,8 @@ public class AStarScheduler extends Scheduler {
     private StateModel getValidSchedule() {
         StateModel state = new StateModel(processors, numberOfNodes);
 
-        // for each node the topologically sorted list
         for (NodeModel node : nodes) {
-            // for each processor
-            int bestStartTime = INF_32;
+            int bestStartTime = INFINITY_32;
             int processorWithBestStartTime = -1;
 
             for (int processor = 0; processor < processors; processor++) {
@@ -183,7 +181,7 @@ public class AStarScheduler extends Scheduler {
     }
 
     public int getMinimumDataReadyTime(StateModel state, NodeModel node) {
-        int minimumDataReadyTime = Integer.MAX_VALUE;
+        int minimumDataReadyTime = INFINITY_32;
 
         for (int processor = 0; processor < processors; processor++) {
             int dataReadyTime = getEarliestStartTime(state, node, processor);
