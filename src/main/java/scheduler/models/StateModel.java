@@ -1,6 +1,8 @@
 package scheduler.models;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -9,18 +11,18 @@ import java.util.Objects;
  * Used in algorithms like branch-and-bound to keep track of the current scheduling state.
  */
 public class StateModel {
-    private byte normalisationIndex;
+    private byte numberOfProcessors;
     private byte numberOfScheduledNodes;
 
     private final int numberOfNodes;
     private int totalIdleTime;
     private int maximumFinishTime;
 
-    private int[] finishTimes;
+    private final int[] finishTimes;
     private final int[] nodeStartTimes;
 
     private final byte[] nodeProcessors;
-    private byte[] scheduledNodes;
+    private final byte[] scheduledNodes;
     private final byte[] normalisedProcessors;
 
     /**
@@ -30,11 +32,12 @@ public class StateModel {
      * @param numberOfProcessors the number of processors available for scheduling
      * @param numberOfNodes      the total number of nodes to schedule
      */
-    public StateModel(int numberOfProcessors, int numberOfNodes) {
+    public StateModel(byte numberOfProcessors, int numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
         this.totalIdleTime = 0;
         this.maximumFinishTime = 0;
-        this.normalisationIndex = 0;
+
+        this.numberOfProcessors = numberOfProcessors;
         this.numberOfScheduledNodes = 0;
 
         this.finishTimes = new int[numberOfProcessors];
@@ -42,11 +45,12 @@ public class StateModel {
 
         this.nodeProcessors = new byte[numberOfNodes];
         this.scheduledNodes = new byte[numberOfNodes];
-        this.normalisedProcessors = new byte[numberOfProcessors];
+        this.normalisedProcessors = new byte[numberOfNodes];
 
         Arrays.fill(this.nodeProcessors, (byte) -1);
         Arrays.fill(this.normalisedProcessors, (byte) -1);
     }
+
     /**
      * Constructs a new {@code StateModel} as a deep copy of the given state.
      *
@@ -56,7 +60,8 @@ public class StateModel {
         this.numberOfNodes = state.numberOfNodes;
         this.totalIdleTime = state.totalIdleTime;
         this.maximumFinishTime = state.maximumFinishTime;
-        this.normalisationIndex = state.normalisationIndex;
+
+        this.numberOfProcessors = state.numberOfProcessors;
         this.numberOfScheduledNodes = state.numberOfScheduledNodes;
 
         this.finishTimes = state.finishTimes.clone();
@@ -84,16 +89,31 @@ public class StateModel {
         this.nodeStartTimes[nodeId] = startTime;
         this.finishTimes[processor] = startTime + node.getWeight();
 
-        scheduleNode(node.getByteId());
-        normaliseProcessor(nodeId);
+        scheduleNode(nodeId);
+        normaliseProcessors();
 
         ++this.numberOfScheduledNodes;
         this.maximumFinishTime = Math.max(this.maximumFinishTime, this.finishTimes[processor]);
     }
 
-    private void normaliseProcessor(byte nodeId) {
-        byte nodeProcessorIndex = this.nodeProcessors[nodeId];
-        normalisedProcessors[nodeProcessorIndex] = this.normalisationIndex++;
+    private void normaliseProcessors() {
+        byte[] nodeProcessorNormalisationIndices = new byte[this.numberOfProcessors];
+
+        byte normalisationIndex = 0;
+
+        Arrays.fill(nodeProcessorNormalisationIndices, (byte) -1);
+
+        for (int nodeId = 0; nodeId < this.numberOfNodes; nodeId++) {
+            if (isNodeScheduled(nodeId)) {
+                byte nodeProcessorIndex = this.nodeProcessors[nodeId];
+
+                if (nodeProcessorNormalisationIndices[nodeProcessorIndex] == -1) {
+                    nodeProcessorNormalisationIndices[nodeProcessorIndex] = normalisationIndex++;
+                }
+
+                this.normalisedProcessors[nodeId] = nodeProcessorNormalisationIndices[nodeProcessorIndex];
+            }
+        }
     }
 
     public void updateTotalIdleTime(int processor, int startTime) {
@@ -183,36 +203,61 @@ public class StateModel {
      * Two states are equal if they have the same number of nodes, scheduled nodes,
      * finish times, node start times, node processors, and scheduled nodes array.
      *
-     * @param o the object to compare with
+     * @param object the object to compare with
      * @return true if the states are equal; false otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
-        if (!(o instanceof StateModel))
+        }
+
+        if (!(object instanceof StateModel that)) {
             return false;
-        StateModel that = (StateModel) o;
-        return numberOfNodes == that.numberOfNodes &&
-                numberOfScheduledNodes == that.numberOfScheduledNodes &&
-                Arrays.equals(finishTimes, that.finishTimes) &&
-                Arrays.equals(nodeStartTimes, that.nodeStartTimes) &&
-                Arrays.equals(nodeProcessors, that.nodeProcessors) &&
-                Arrays.equals(scheduledNodes, that.scheduledNodes);
+        }
+
+        if (this.numberOfNodes != that.numberOfNodes || this.numberOfScheduledNodes != that.numberOfScheduledNodes) {
+            return false;
+        }
+
+        if (!Arrays.equals(this.scheduledNodes, that.scheduledNodes)) {
+            return false;
+        }
+
+        for (byte nodeId = 0; nodeId < this.numberOfNodes; nodeId++) {
+            if (this.scheduledNodes[nodeId] != that.scheduledNodes[nodeId]) {
+                continue;
+            }
+
+            if (this.isNodeScheduled(nodeId)) {
+                byte thisNormalisedProcessor = this.normalisedProcessors[nodeId];
+                byte thatNormalisedProcessor = that.normalisedProcessors[nodeId];
+
+                if (thisNormalisedProcessor != thatNormalisedProcessor) {
+                    return false;
+                }
+
+                if (this.nodeStartTimes[nodeId] != that.nodeStartTimes[nodeId]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
-    /**
-     * Computes the hash code for this state based on its fields.
-     *
-     * @return the hash code of the state
-     */
+    public boolean isNodeScheduled(int nodeId) {
+        return (this.scheduledNodes[nodeId] == 1);
+    }
+
     @Override
     public int hashCode() {
-        int result = Objects.hash(numberOfNodes, numberOfScheduledNodes);
-        result = 31 * result + Arrays.hashCode(finishTimes);
-        result = 31 * result + Arrays.hashCode(nodeStartTimes);
-        result = 31 * result + Arrays.hashCode(nodeProcessors);
-        result = 31 * result + Arrays.hashCode(scheduledNodes);
+        int result = Objects.hash(this.numberOfNodes, this.numberOfScheduledNodes);
+
+        result = 31 * result + Arrays.hashCode(this.scheduledNodes);
+        result = 31 * result + Arrays.hashCode(this.normalisedProcessors);
+        result = 31 * result + Arrays.hashCode(this.nodeStartTimes);
+
         return result;
     }
 

@@ -13,7 +13,8 @@ import static scheduler.constants.Constants.INFINITY_32;
 public abstract class Scheduler {
     protected GraphModel graph;
 
-    protected int processors;
+    protected byte processors;
+
     protected int numberOfNodes;
     protected int criticalPathLength;
 
@@ -32,7 +33,7 @@ public abstract class Scheduler {
      * @param graph represents the graph model.
      * @param processors represents the number of processors for scheduling.
      */
-    protected Scheduler(GraphModel graph, int processors) {
+    protected Scheduler(GraphModel graph, byte processors) {
         this.graph = graph;
 
         this.processors = processors;

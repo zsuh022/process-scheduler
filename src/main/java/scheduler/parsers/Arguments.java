@@ -5,8 +5,8 @@ package scheduler.parsers;
  * sdf cores, etc.,
  */
 public class Arguments {
-    private int cores;
-    private int processors;
+    private byte cores;
+    private byte processors;
 
     private String inputDOTFilePath;
     private String outputDOTFilePath;
@@ -26,8 +26,8 @@ public class Arguments {
      *
      * @return the cores used in the scheduler
      */
-    public int getCores() {
-        return cores;
+    public byte getCores() {
+        return this.cores;
     }
 
     /**
@@ -35,7 +35,7 @@ public class Arguments {
      *
      * @param cores the number of cores to be used
      */
-    public void setCores(int cores) {
+    public void setCores(byte cores) {
         this.cores = cores;
     }
 
@@ -44,8 +44,8 @@ public class Arguments {
      *
      * @return the number of processors used in the scheduler
      */
-    public int getProcessors() {
-        return processors;
+    public byte getProcessors() {
+        return this.processors;
     }
 
     /**
@@ -53,7 +53,7 @@ public class Arguments {
      *
      * @param processors the number of processors
      */
-    public void setProcessors(int processors) {
+    public void setProcessors(byte processors) {
         this.processors = processors;
     }
 

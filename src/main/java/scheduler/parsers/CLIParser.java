@@ -65,7 +65,7 @@ public class CLIParser {
      */
     private static void parseRequiredArguments(Arguments arguments, String[] remainingArguments) {
         arguments.setInputDOTFilePath(remainingArguments[0]);
-        arguments.setProcessors(Integer.parseInt(remainingArguments[1]));
+        arguments.setProcessors(Byte.parseByte(remainingArguments[1]));
     }
 
     /**
@@ -77,7 +77,7 @@ public class CLIParser {
      */
     private static void parseOptionalArguments(Arguments arguments, CommandLine commandPrompt) {
         if (commandPrompt.hasOption("p")) {
-            arguments.setCores(Integer.parseInt(commandPrompt.getOptionValue("p")));
+            arguments.setCores(Byte.parseByte(commandPrompt.getOptionValue("p")));
         }
 
         if (commandPrompt.hasOption("v")) {
