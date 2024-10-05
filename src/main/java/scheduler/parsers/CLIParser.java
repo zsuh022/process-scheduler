@@ -136,6 +136,6 @@ public class CLIParser {
         System.out.println(errorMessage);
         System.out.println("\nRequired arguments:");
         System.out.printf(" %-10s %s %s", "INPUT.dot", "<String>", "The path to the input dot file");
-        System.out.printf(" %-10s %s %s%n", "P", "<int>", "The number of processors to use\n");
+        System.out.printf(" %-10s %s %s%n", "P", "<int>", "The number of processors to use");
     }
 }

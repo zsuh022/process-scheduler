@@ -7,6 +7,8 @@ public class MetricsModel {
     private int numberOfOpenedStates;
     private int numberOfClosedStates;
 
+    private double elapsedTime;
+
     public MetricsModel() {
         this.numberOfOpenedStates = 0;
         this.numberOfClosedStates = 0;
@@ -38,5 +40,21 @@ public class MetricsModel {
 
     public void setBestState(StateModel bestState) {
         this.bestState = bestState;
+    }
+
+    public double getElapsedTime() {
+        return this.elapsedTime;
+    }
+
+    public void setElapsedTime(double elapsedTime) {
+        this.elapsedTime = elapsedTime;
+    }
+
+    public void display() {
+        System.out.println("Metrics:");
+        System.out.printf("  %-25s %ss%n", "Elapsed time in seconds:", elapsedTime);
+        System.out.printf("  %-25s %d%n", "Number of opened states:", this.numberOfOpenedStates);
+        System.out.printf("  %-25s %d%n", "Number of closed states:", this.numberOfClosedStates);
+        System.out.printf("  %-25s %d%n", "Schedule finish time:", this.bestState.getMaximumFinishTime());
     }
 }

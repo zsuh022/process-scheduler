@@ -122,13 +122,7 @@ public class AStarScheduler extends Scheduler {
             return true;
         }
 
-        int fCost = getFCost(state);
-
-        if (fCost >= validState.getMaximumFinishTime()) {
-            return true;
-        }
-
-        return false;
+        return getFCost(state) >= validState.getMaximumFinishTime();
     }
 
     public int getFCost(StateModel state) {
