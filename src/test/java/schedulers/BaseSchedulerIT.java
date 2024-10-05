@@ -5,6 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import scheduler.models.GraphModel;
 import scheduler.parsers.Arguments;
 import scheduler.schedulers.Scheduler;
+import scheduler.schedulers.sequential.AStarScheduler;
+
+import java.io.IOException;
 
 public abstract class BaseSchedulerIT {
     protected GraphModel graph;

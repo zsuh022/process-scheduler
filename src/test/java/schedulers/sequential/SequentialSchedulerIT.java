@@ -1,7 +1,5 @@
 package schedulers.sequential;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
@@ -64,5 +62,70 @@ public class SequentialSchedulerIT extends BaseSchedulerIT {
     }
 
     @Test
-    public
+    public void testNodes_8_Random() throws IOException {
+        // Arrange
+        int[][] processorsAndExpectedValues = {{2, 581}, {4, 581}};
+        setInputAndOutputPaths("Nodes_8_Random.dot");
+
+        for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
+            arrangeTestCase((byte) processorsAndExpectedValue[0]);
+
+            // Act
+            scheduler.schedule();
+
+            // Assert
+            assertTestCase(processorsAndExpectedValue[1]);
+        }
+    }
+
+    @Test
+    public void TestNodes_9_SeriesParallel() throws IOException {
+        // Arrange
+        int[][] processorsAndExpectedValues = {{2, 55}, {4, 55}};
+        setInputAndOutputPaths("Nodes_9_SeriesParallel.dot");
+
+        for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
+            arrangeTestCase((byte) processorsAndExpectedValue[0]);
+
+            // Act
+            scheduler.schedule();
+
+            // Assert
+            assertTestCase(processorsAndExpectedValue[1]);
+        }
+    }
+
+    @Test
+    public void TestNodes_10_Random() throws IOException {
+        // Arrange
+        int[][] processorsAndExpectedValues = {{2, 50}, {4, 50}};
+        setInputAndOutputPaths("Nodes_10_Random.dot");
+
+        for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
+            arrangeTestCase((byte) processorsAndExpectedValue[0]);
+
+            // Act
+            scheduler.schedule();
+
+            // Assert
+            assertTestCase(processorsAndExpectedValue[1]);
+        }
+    }
+
+    @Test
+    public void testNodes_11_OutTree() throws IOException {
+        // Arrange
+        int[][] processorsAndExpectedValues = {{2, 350}, {4, 227}};
+        setInputAndOutputPaths("Nodes_11_OutTree.dot");
+
+        for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
+            arrangeTestCase((byte) processorsAndExpectedValue[0]);
+
+            // Act
+            scheduler.schedule();
+
+            // Assert
+            assertTestCase(processorsAndExpectedValue[1]);
+        }
+    }
 }
