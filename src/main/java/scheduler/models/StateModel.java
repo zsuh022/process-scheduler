@@ -121,14 +121,7 @@ public class StateModel {
     public byte getNumberOfScheduledNodes() {
         return this.numberOfScheduledNodes;
     }
-    /**
-     * Sets the number of nodes that have been scheduled.
-     *
-     * @param numberOfScheduledNodes the number of scheduled nodes to set
-     */
-    public void setNumberOfScheduledNodes(byte numberOfScheduledNodes) {
-        this.numberOfScheduledNodes = numberOfScheduledNodes;
-    }
+
     /**
      * Returns an array indicating which nodes have been scheduled.
      *
@@ -146,6 +139,7 @@ public class StateModel {
     public void scheduleNode(byte nodeId) {
         this.scheduledNodes[nodeId] = 1;
     }
+
     /**
      * Returns the start time of the specified node.
      *
@@ -155,14 +149,7 @@ public class StateModel {
     public int getNodeStartTime(NodeModel node) {
         return this.nodeStartTimes[node.getByteId()];
     }
-    /**
-     * Sets the array of scheduled nodes.
-     *
-     * @param scheduledNodes the array to set
-     */
-    public void setScheduledNodes(byte[] scheduledNodes) {
-        this.scheduledNodes = scheduledNodes;
-    }
+
     /**
      * Checks if a given node has been scheduled.
      *
@@ -172,6 +159,7 @@ public class StateModel {
     public boolean isNodeScheduled(NodeModel node) {
         return (this.scheduledNodes[node.getByteId()] == 1);
     }
+
     /**
      * Checks if all nodes have been scheduled.
      *
@@ -180,6 +168,7 @@ public class StateModel {
     public boolean areAllNodesScheduled() {
         return (this.numberOfScheduledNodes == this.numberOfNodes);
     }
+
     /**
      * Returns the maximum finish time among all processors, representing the total schedule length.
      *
@@ -238,17 +227,9 @@ public class StateModel {
      * @return the finish time of the processors
      */
     public int[] getFinishTimes() {
-        return finishTimes;
+        return this.finishTimes;
     }
 
-    /**
-     * Sets the finish times for all processors.
-     *
-     * @param finishTimes the array of finish times to set
-     */
-    public void setFinishTimes(int[] finishTimes) {
-        this.finishTimes = finishTimes;
-    }
     /**
      * Returns the processor assigned to the specified node.
      *
