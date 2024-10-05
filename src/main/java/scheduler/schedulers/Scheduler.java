@@ -4,7 +4,7 @@ import java.util.*;
 
 import scheduler.models.*;
 
-import static scheduler.constants.Constants.INF_32;
+import static scheduler.constants.Constants.INFINITY_32;
 
 /**
  * This abstract class is used for scheduling algorithms. There are subclasses such as DFSScheduler and
@@ -134,7 +134,8 @@ public abstract class Scheduler {
         int[] bottomLevelPathLengths = new int[this.numberOfNodes];
 
         for (NodeModel node : this.nodes) {
-            bottomLevelPathLengths[node.getByteId()] = node.getSuccessors().size() == 0 ? node.getWeight() : -INF_32;
+            int numberOfSucessors = node.getSuccessors().size();
+            bottomLevelPathLengths[node.getByteId()] = numberOfSucessors == 0 ? node.getWeight() : -INFINITY_32;
         }
 
         for (int i = this.numberOfNodes - 1; i >= 0; i--) {

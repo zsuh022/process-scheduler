@@ -7,12 +7,12 @@ import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.schedulers.Scheduler;
 
-import static scheduler.constants.Constants.INF_32;
+import static scheduler.constants.Constants.INFINITY_32;
 
 public class AStarScheduler extends Scheduler {
     private final PriorityQueue<StateModel> openedStates;
 
-    private StateModel validState;
+    private final StateModel validState;
 
     public AStarScheduler(GraphModel graph, int processors) {
         super(graph, processors);
@@ -99,7 +99,7 @@ public class AStarScheduler extends Scheduler {
         // for each node the topologically sorted list
         for (NodeModel node : nodes) {
             // for each processor
-            int bestStartTime = INF_32;
+            int bestStartTime = INFINITY_32;
             int processorWithBestStartTime = -1;
 
             for (int processor = 0; processor < processors; processor++) {
@@ -183,7 +183,7 @@ public class AStarScheduler extends Scheduler {
     }
 
     public int getMinimumDataReadyTime(StateModel state, NodeModel node) {
-        int minimumDataReadyTime = Integer.MAX_VALUE;
+        int minimumDataReadyTime = INFINITY_32;
 
         for (int processor = 0; processor < processors; processor++) {
             int dataReadyTime = getEarliestStartTime(state, node, processor);

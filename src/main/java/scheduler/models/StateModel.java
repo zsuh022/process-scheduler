@@ -9,16 +9,19 @@ import java.util.Objects;
  * Used in algorithms like branch-and-bound to keep track of the current scheduling state.
  */
 public class StateModel {
-    private int numberOfNodes;
+    private byte normalisationIndex;
+    private byte numberOfScheduledNodes;
+
+    private final int numberOfNodes;
     private int totalIdleTime;
     private int maximumFinishTime;
-    private int numberOfScheduledNodes;
 
     private int[] finishTimes;
     private final int[] nodeStartTimes;
 
     private final byte[] nodeProcessors;
     private byte[] scheduledNodes;
+    private final byte[] normalisedProcessors;
 
     /**
      * Constructs a new {@code StateModel} with the specified number of processors and nodes.
@@ -31,6 +34,7 @@ public class StateModel {
         this.numberOfNodes = numberOfNodes;
         this.totalIdleTime = 0;
         this.maximumFinishTime = 0;
+        this.normalisationIndex = 0;
         this.numberOfScheduledNodes = 0;
 
         this.finishTimes = new int[numberOfProcessors];
@@ -38,8 +42,10 @@ public class StateModel {
 
         this.nodeProcessors = new byte[numberOfNodes];
         this.scheduledNodes = new byte[numberOfNodes];
+        this.normalisedProcessors = new byte[numberOfProcessors];
 
         Arrays.fill(this.nodeProcessors, (byte) -1);
+        Arrays.fill(this.normalisedProcessors, (byte) -1);
     }
     /**
      * Constructs a new {@code StateModel} as a deep copy of the given state.
@@ -50,6 +56,7 @@ public class StateModel {
         this.numberOfNodes = state.numberOfNodes;
         this.totalIdleTime = state.totalIdleTime;
         this.maximumFinishTime = state.maximumFinishTime;
+        this.normalisationIndex = state.normalisationIndex;
         this.numberOfScheduledNodes = state.numberOfScheduledNodes;
 
         this.finishTimes = state.finishTimes.clone();
@@ -57,6 +64,7 @@ public class StateModel {
 
         this.nodeProcessors = state.nodeProcessors.clone();
         this.scheduledNodes = state.scheduledNodes.clone();
+        this.normalisedProcessors = state.normalisedProcessors.clone();
     }
 
     /**
@@ -76,22 +84,16 @@ public class StateModel {
         this.nodeStartTimes[nodeId] = startTime;
         this.finishTimes[processor] = startTime + node.getWeight();
 
-        this.scheduleNode(node.getByteId());
+        scheduleNode(node.getByteId());
+        normaliseProcessor(nodeId);
 
-        this.numberOfScheduledNodes++;
+        ++this.numberOfScheduledNodes;
         this.maximumFinishTime = Math.max(this.maximumFinishTime, this.finishTimes[processor]);
     }
 
-    /**
-     * Checks if the given node, processor, and start time represent an empty or uninitialized node.
-     *
-     * @param node      the node to check
-     * @param processor the processor value
-     * @param startTime the start time value
-     * @return true if the node is null and processor and startTime are -1; false otherwise
-     */
-    public boolean isEmptyNode(NodeModel node, int processor, int startTime) {
-        return (node == null && processor == -1 && startTime == -1);
+    private void normaliseProcessor(byte nodeId) {
+        byte nodeProcessorIndex = this.nodeProcessors[nodeId];
+        normalisedProcessors[nodeProcessorIndex] = this.normalisationIndex++;
     }
 
     public void updateTotalIdleTime(int processor, int startTime) {
@@ -116,7 +118,7 @@ public class StateModel {
      *
      * @return the number of scheduled nodes
      */
-    public int getNumberOfScheduledNodes() {
+    public byte getNumberOfScheduledNodes() {
         return this.numberOfScheduledNodes;
     }
     /**
@@ -124,7 +126,7 @@ public class StateModel {
      *
      * @param numberOfScheduledNodes the number of scheduled nodes to set
      */
-    public void setNumberOfScheduledNodes(int numberOfScheduledNodes) {
+    public void setNumberOfScheduledNodes(byte numberOfScheduledNodes) {
         this.numberOfScheduledNodes = numberOfScheduledNodes;
     }
     /**
@@ -238,6 +240,7 @@ public class StateModel {
     public int[] getFinishTimes() {
         return finishTimes;
     }
+
     /**
      * Sets the finish times for all processors.
      *
