@@ -2,6 +2,7 @@ package scheduler;
 
 import java.io.IOException;
 
+import org.graphstream.graph.Graph;
 import scheduler.generator.GraphGenerator;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
@@ -22,19 +23,35 @@ public class Main {
     private static void runScheduler(Arguments arguments) throws IOException {
 //        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
         GraphModel graph = GraphGenerator.getRandomGraph();
-//        Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
-        Scheduler scheduler = new ParallelScheduler(graph, arguments.getProcessors(), arguments.getCores());
+        Scheduler schedulerTest = new AStarScheduler(graph, arguments.getProcessors());
+        long startTimeTest = System.currentTimeMillis();
+        schedulerTest.schedule();
+        long endTimeTest = System.currentTimeMillis();
+        double elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0;
 
-        long startTime = System.currentTimeMillis();
-        scheduler.schedule();
-        long endTime = System.currentTimeMillis();
-        double elapsedTime = (endTime - startTime) / 1000.0;
+        MetricsModel metricsTest = schedulerTest.getMetrics();
+        metricsTest.setElapsedTime(elapsedTimeTest);
 
-        MetricsModel metrics = scheduler.getMetrics();
-        metrics.setElapsedTime(elapsedTime);
-
-        metrics.display();
+        metricsTest.display();
+        GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
         GraphGenerator.displayGraphInformation();
+//        Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
+
+        for (int i = 1; i <= 8; i++) {
+            arguments.setCores((byte) i);
+            Scheduler scheduler = new ParallelScheduler(graph, arguments.getProcessors(), arguments.getCores());
+
+            long startTime = System.currentTimeMillis();
+            scheduler.schedule();
+            long endTime = System.currentTimeMillis();
+            double elapsedTime = (endTime - startTime) / 1000.0;
+
+            MetricsModel metrics = scheduler.getMetrics();
+            metrics.setElapsedTime(elapsedTime);
+
+            metrics.display();
+        }
+
 
 //        StateModel bestState = metrics.getBestState();
 //            graph.setNodesAndEdgesForState(bestState);
@@ -42,6 +59,13 @@ public class Main {
 //            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
         arguments.displayOutputDOTFilePath();
     }
+
+//    private void runParallelScheduler(Graph graph, Arguments arguments, boolean isGraphRandom) {
+//    }
+//
+//    private void runSequentialScheduler() {
+//
+//    }
 
     /**
      * The main method for executing the main driver code.
