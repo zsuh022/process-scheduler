@@ -22,12 +22,22 @@ public class Main {
         Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
 
         long startTime = System.currentTimeMillis();
+
+        Runtime runtime = Runtime.getRuntime();
+        runtime.gc();
+        long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
+
         scheduler.schedule();
+
         long endTime = System.currentTimeMillis();
         double elapsedTime = (endTime - startTime) / 1000.0;
 
+        long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
+        double memoryUsed = memoryAfter - memoryBefore;
+
         MetricsModel metrics = scheduler.getMetrics();
         metrics.setElapsedTime(elapsedTime);
+        metrics.setMemoryUsed(memoryUsed);
 
         metrics.display();
 
