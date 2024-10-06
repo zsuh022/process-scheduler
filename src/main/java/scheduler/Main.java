@@ -2,6 +2,7 @@ package scheduler;
 
 import java.io.IOException;
 
+import scheduler.generator.GraphGenerator;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
 import scheduler.models.StateModel;
@@ -19,9 +20,10 @@ import scheduler.visualiser.Visualiser;
  */
 public class Main {
     private static void runScheduler(Arguments arguments) throws IOException {
-        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
-        Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
-//        Scheduler scheduler = new ParallelScheduler(graph, arguments.getProcessors(), arguments.getCores());
+//        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
+        GraphModel graph = GraphGenerator.getRandomGraph();
+//        Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
+        Scheduler scheduler = new ParallelScheduler(graph, arguments.getProcessors(), arguments.getCores());
 
         long startTime = System.currentTimeMillis();
         scheduler.schedule();
@@ -32,6 +34,7 @@ public class Main {
         metrics.setElapsedTime(elapsedTime);
 
         metrics.display();
+        GraphGenerator.displayGraphInformation();
 
 //        StateModel bestState = metrics.getBestState();
 //            graph.setNodesAndEdgesForState(bestState);

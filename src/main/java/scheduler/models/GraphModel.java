@@ -20,7 +20,7 @@ public class GraphModel {
     private Map<String, NodeModel> nodes;
     private Map<String, EdgeModel> edges;
 
-    private final List<List<NodeModel>> equivalentNodes;
+    private List<List<NodeModel>> equivalentNodes;
 
     /**
      * Constructor for GraphModel class. Loads a graph from a DOT file and initialises the nodes
@@ -32,6 +32,16 @@ public class GraphModel {
     public GraphModel(String filename) throws IOException {
         this.graph = InputOutputParser.readDOTFile(filename);
 
+        initialise();
+    }
+
+    public GraphModel(Graph graph) {
+        this.graph = graph;
+
+        initialise();
+    }
+
+    private void initialise() {
         this.numberOfNodes = 0;
         this.totalNodeWeight = 0;
 
@@ -50,7 +60,7 @@ public class GraphModel {
     private void setNodes() {
         Map<String, NodeModel> nodes = new HashMap<>();
 
-        graph.nodes().forEach(node -> {
+        this.graph.nodes().forEach(node -> {
             String id = node.getId();
 
             int weight = (int) Math.round((Double) node.getAttribute("Weight"));
@@ -82,7 +92,7 @@ public class GraphModel {
     private void setEdges() {
         Map<String, EdgeModel> edges = new HashMap<>();
 
-        graph.edges().forEach(edge -> {
+        this.graph.edges().forEach(edge -> {
             NodeModel source = getNode(edge.getSourceNode().getId());
             NodeModel destination = getNode(edge.getTargetNode().getId());
 
