@@ -97,9 +97,6 @@ public class GraphGenerator {
             int sourceId = getRandomInteger(0, GraphInformation.numberOfNodes - 1);
             int destinationId = getRandomInteger(0, GraphInformation.numberOfNodes - 1);
 
-//            int sourceId = 0;
-//            int destinationId = 1;
-
             if (sourceId == destinationId || adjacencyMatrix[sourceId][destinationId]) {
                 continue;
             }
