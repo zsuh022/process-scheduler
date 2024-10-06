@@ -103,7 +103,6 @@ public class CLIParser {
 
         File inputFile = new File(inputDOTFilePath);
 
-
         String outputFileName = inputFile.getName().replace(".dot", "-output.dot");
         String outputDOTFilePath = inputFile.getParent() + File.separator + outputFileName;
 

@@ -98,7 +98,7 @@ public class SequentialSchedulerIT extends BaseSchedulerIT {
     @Test
     public void TestNodes_10_Random() throws IOException {
         // Arrange
-        int[][] processorsAndExpectedValues = {{2, 50}, {4, 50}};
+        int[][] processorsAndExpectedValues = {{1, 63}, {2, 50}, {4, 50}};
         setInputAndOutputPaths("Nodes_10_Random.dot");
 
         for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
