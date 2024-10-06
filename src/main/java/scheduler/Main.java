@@ -8,6 +8,7 @@ import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
 import scheduler.schedulers.Scheduler;
+import scheduler.schedulers.parallel.ParallelScheduler;
 import scheduler.schedulers.sequential.AStarScheduler;
 import scheduler.visualiser.Visualiser;
 
@@ -20,6 +21,7 @@ public class Main {
     private static void runScheduler(Arguments arguments) throws IOException {
         GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
         Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
+//        Scheduler scheduler = new ParallelScheduler(graph, arguments.getProcessors(), arguments.getCores());
 
         long startTime = System.currentTimeMillis();
         scheduler.schedule();
