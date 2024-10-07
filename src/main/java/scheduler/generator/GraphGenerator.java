@@ -20,9 +20,6 @@ public class GraphGenerator {
     public static GraphModel getRandomGraph() {
         Graph graph = new SingleGraph("graph");
 
-        graph.setStrict(false);
-        graph.setAutoCreate(true);
-
         GraphInformation.numberOfNodes = getRandomNumberOfNodes();
         GraphInformation.numberOfEdges = getRandomNumberOfEdges();
 
@@ -36,7 +33,7 @@ public class GraphGenerator {
         boolean[] stack = new boolean[GraphInformation.numberOfNodes];
 
         for (int sourceId = 0; sourceId < GraphInformation.numberOfNodes; sourceId++) {
-            if (isValidNode(sourceId, adjacencyMatrix, visited) && isCyclic(sourceId, adjacencyMatrix, visited, stack)) {
+            if (!visited[sourceId] && isCyclic(sourceId, adjacencyMatrix, visited, stack)) {
                 return true;
             }
         }
@@ -50,10 +47,14 @@ public class GraphGenerator {
             stack[sourceId] = true;
 
             for (int destinationId = 0; destinationId < GraphInformation.numberOfNodes; destinationId++) {
-                if (isValidEdge(sourceId, destinationId, adjacencyMatrix, visited) && isCyclic(destinationId, adjacencyMatrix, visited, stack)) {
-                    return true;
-                } else if (stack[destinationId]) {
-                    return true;
+                if (adjacencyMatrix[sourceId][destinationId]) {
+                    if (!visited[destinationId]) {
+                        if (isCyclic(destinationId, adjacencyMatrix, visited, stack)) {
+                            return true;
+                        }
+                    } else if (stack[destinationId]) {
+                        return true;
+                    }
                 }
             }
         }
@@ -63,34 +64,29 @@ public class GraphGenerator {
         return false;
     }
 
-    private static boolean isValidEdge(int sourceId, int destinationId, boolean[][] adjacencyMatrix, boolean[] visited) {
-        return (!visited[destinationId] && adjacencyMatrix[sourceId][destinationId]);
-    }
-
-    private static boolean isValidNode(int nodeId, boolean[][] adjacencyMatrix, boolean[] visited) {
-        return (!visited[nodeId] && adjacencyMatrix[nodeId][nodeId]);
-    }
-
-    private static void addEdge(Graph graph, String sourceId, String destinationId) {
-        Edge edge = graph.addEdge(sourceId.concat(destinationId), sourceId, destinationId);
-        edge.setAttribute("Weight", getRandomWeight());
-
-        addNodeWeight(edge.getSourceNode());
-        addNodeWeight(edge.getTargetNode());
-    }
-
-    private static void addNodeWeight(Node node) {
-        if (!node.hasAttribute("Weight")) {
+    private static void addNode(Graph graph, String nodeId) {
+        if (graph.getNode(nodeId) == null) {
+            Node node = graph.addNode(nodeId);
             node.setAttribute("Weight", getRandomWeight());
         }
     }
 
-    private static void generateRandomGraph(Graph graph) {
-        int edgeId = 0;
+    private static void addEdge(Graph graph, String sourceId, String destinationId) {
+        String edgeId = sourceId.concat(destinationId);
 
+        if (graph.getEdge(edgeId) == null) {
+            Edge edge = graph.addEdge(sourceId.concat(destinationId), sourceId, destinationId, true);
+            edge.setAttribute("Weight", getRandomWeight());
+        }
+    }
+
+    private static void generateRandomGraph(Graph graph) {
         boolean[][] adjacencyMatrix = new boolean[GraphInformation.numberOfNodes][GraphInformation.numberOfNodes];
 
-        while (edgeId < GraphInformation.numberOfEdges) {
+        int edgeCount = 0;
+
+        // Naive DAG generator
+        while (edgeCount < GraphInformation.numberOfEdges) {
             int sourceId = NumberUtility.getRandomInteger(0, GraphInformation.numberOfNodes - 1);
             int destinationId = NumberUtility.getRandomInteger(0, GraphInformation.numberOfNodes - 1);
 
@@ -103,7 +99,7 @@ public class GraphGenerator {
             if (isCyclic(adjacencyMatrix)) {
                 adjacencyMatrix[sourceId][destinationId] = false;
             } else {
-                ++edgeId;
+                ++edgeCount;
             }
         }
 
@@ -111,10 +107,16 @@ public class GraphGenerator {
     }
 
     private static void createGraphFromAdjacencyMatrix(Graph graph, boolean[][] adjacencyMatrix) {
-        for (int sourceId = 0; sourceId < GraphInformation.numberOfNodes; sourceId++) {
-            for (int destinationId = 0; destinationId < GraphInformation.numberOfNodes; destinationId++) {
-                if (adjacencyMatrix[sourceId][destinationId]) {
-                    addEdge(graph, String.valueOf(sourceId), String.valueOf(destinationId));
+        for (int sourceIndex = 0; sourceIndex < GraphInformation.numberOfNodes; sourceIndex++) {
+            for (int destinationIndex = 0; destinationIndex < GraphInformation.numberOfNodes; destinationIndex++) {
+                if (adjacencyMatrix[sourceIndex][destinationIndex]) {
+                    String sourceId = String.valueOf(sourceIndex);
+                    String destinationId = String.valueOf(destinationIndex);
+
+                    addNode(graph, sourceId);
+                    addNode(graph, destinationId);
+
+                    addEdge(graph, sourceId, destinationId);
                 }
             }
         }

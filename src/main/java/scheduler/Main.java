@@ -9,10 +9,13 @@ import scheduler.models.MetricsModel;
 import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
+import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.Scheduler;
 import scheduler.schedulers.parallel.ParallelScheduler;
 import scheduler.schedulers.sequential.AStarScheduler;
 import scheduler.visualiser.Visualiser;
+
+import static scheduler.constants.Constants.RANDOM_OUTPUT_DOT_FILE_PATH;
 
 /**
  * The Main Class contains the necessary driver code for ensuring our program runs smoothly, and that a valid and
@@ -23,6 +26,8 @@ public class Main {
     private static void runScheduler(Arguments arguments) throws IOException {
 //        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
         GraphModel graph = GraphGenerator.getRandomGraph();
+        String filename = "Random_Graph.dot";
+        InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
         Scheduler schedulerTest = new AStarScheduler(graph, arguments.getProcessors());
         long startTimeTest = System.currentTimeMillis();
         schedulerTest.schedule();
