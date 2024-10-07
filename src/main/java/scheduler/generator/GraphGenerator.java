@@ -5,7 +5,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import scheduler.models.GraphModel;
-import scheduler.utilities.NumberUtility;
+import scheduler.utilities.Utility;
 
 import static scheduler.constants.Constants.*;
 
@@ -83,12 +83,14 @@ public class GraphGenerator {
     private static void generateRandomGraph(Graph graph) {
         boolean[][] adjacencyMatrix = new boolean[GraphInformation.numberOfNodes][GraphInformation.numberOfNodes];
 
-        int edgeCount = 0;
+        int[] edgePermutations = getEdgePermutations();
+
+        int edgeIndex = 0;
 
         // Naive DAG generator
-        while (edgeCount < GraphInformation.numberOfEdges) {
-            int sourceId = NumberUtility.getRandomInteger(0, GraphInformation.numberOfNodes - 1);
-            int destinationId = NumberUtility.getRandomInteger(0, GraphInformation.numberOfNodes - 1);
+        while (edgeIndex < GraphInformation.numberOfEdges) {
+            int sourceId = Utility.getRandomInteger(0, GraphInformation.numberOfNodes - 1);
+            int destinationId = Utility.getRandomInteger(0, GraphInformation.numberOfNodes - 1);
 
             if (sourceId == destinationId || adjacencyMatrix[sourceId][destinationId]) {
                 continue;
@@ -99,7 +101,7 @@ public class GraphGenerator {
             if (isCyclic(adjacencyMatrix)) {
                 adjacencyMatrix[sourceId][destinationId] = false;
             } else {
-                ++edgeCount;
+                ++edgeIndex;
             }
         }
 
@@ -131,21 +133,29 @@ public class GraphGenerator {
     }
 
     private static int getRandomNumberOfNodes() {
-        return NumberUtility.getRandomInteger(NUMBER_OF_NODES_LOWER_BOUND, NUMBER_OF_NODES_UPPER_BOUND);
+        return Utility.getRandomInteger(NUMBER_OF_NODES_LOWER_BOUND, NUMBER_OF_NODES_UPPER_BOUND);
     }
 
     private static int getRandomNumberOfEdges() {
         int maxNumberOfEdges = (GraphInformation.numberOfNodes * (GraphInformation.numberOfNodes - 1)) / 2;
-        double randomPercentage = NumberUtility.getRandomPercentage(EDGE_RATIO_LOWER_BOUND, EDGE_RATIO_UPPER_BOUND);
+        double randomPercentage = Utility.getRandomPercentage(EDGE_RATIO_LOWER_BOUND, EDGE_RATIO_UPPER_BOUND);
 
         return (int) (randomPercentage * maxNumberOfEdges);
     }
 
     private static double getRandomWeight() {
-        return NumberUtility.getRandomInteger(WEIGHT_LOWER_BOUND, WEIGHT_UPPER_BOUND);
+        return Utility.getRandomInteger(WEIGHT_LOWER_BOUND, WEIGHT_UPPER_BOUND);
     }
 
     public static void setNumberOfProcessors(byte numberOfProcessors) {
         GraphInformation.numberOfProcessors = numberOfProcessors;
+    }
+
+    private static int[] getEdgePermutations() {
+        int[] edgePermutations = new int[GraphInformation.numberOfEdges];
+
+        for (int sourceId = 0; sourceId < GraphInformation.numberOfNodes; sourceId++) {
+            for (int destinationId = 0; destinationId)
+        }
     }
 }
