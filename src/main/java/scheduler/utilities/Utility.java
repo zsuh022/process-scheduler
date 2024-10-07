@@ -17,6 +17,10 @@ public class Utility {
         return getRandomDouble(minimum, maximum);
     }
 
+    public static boolean getRandomBoolean() {
+        return random.nextBoolean();
+    }
+
     // Fisher-Yates 2D shuffling without creating high overhead of using list
     public static void shuffle2DArray(int[][] array, int rows) {
         int randomRowIndex;
@@ -26,6 +30,10 @@ public class Utility {
 
             swap2DArrayRows(array, rowIndex, randomRowIndex);
         }
+    }
+
+    public static void shuffle1DArray(int[] array, int size) {
+
     }
 
     public static void swap2DArrayRows(int[][] array, int row1, int row2) {

@@ -29,8 +29,8 @@ public class GraphGenerator {
     }
 
     private static boolean isCyclic(boolean[][] adjacencyMatrix) {
-        boolean[] visited = new boolean[GraphInformation.numberOfNodes];
         boolean[] stack = new boolean[GraphInformation.numberOfNodes];
+        boolean[] visited = new boolean[GraphInformation.numberOfNodes];
 
         for (int sourceId = 0; sourceId < GraphInformation.numberOfNodes; sourceId++) {
             if (!visited[sourceId] && isCyclic(sourceId, adjacencyMatrix, visited, stack)) {
@@ -85,14 +85,19 @@ public class GraphGenerator {
 
         int[][] edgePermutations = getEdgePermutations();
 
+        boolean[] isSourceNode = getSourceNodePermutations();
+
         int edgeIndex = 0;
+        int edgeCount = 0;
 
         // Naive DAG generator- improved with 2d array shuffling
-        while (edgeIndex < GraphInformation.numberOfEdges) {
+        while (edgeIndex < edgePermutations.length && edgeCount < GraphInformation.numberOfEdges) {
             int sourceId = edgePermutations[edgeIndex][0];
             int destinationId = edgePermutations[edgeIndex][1];
 
-            if (sourceId == destinationId || adjacencyMatrix[sourceId][destinationId]) {
+            if (isSourceNode[destinationId]) {
+                ++edgeIndex;
+
                 continue;
             }
 
@@ -101,8 +106,10 @@ public class GraphGenerator {
             if (isCyclic(adjacencyMatrix)) {
                 adjacencyMatrix[sourceId][destinationId] = false;
             } else {
-                ++edgeIndex;
+                ++edgeCount;
             }
+
+            ++edgeIndex;
         }
 
         createGraphFromAdjacencyMatrix(graph, adjacencyMatrix);
@@ -139,11 +146,21 @@ public class GraphGenerator {
     private static int getRandomNumberOfEdges() {
         double randomPercentage = Utility.getRandomPercentage(EDGE_RATIO_LOWER_BOUND, EDGE_RATIO_UPPER_BOUND);
 
-        return (int) (randomPercentage * getMaximumNumberOfEdges());
+        return (int) (randomPercentage * getMaximumNumberOfDAGEdges());
     }
 
-    private static int getMaximumNumberOfEdges() {
-        return (GraphInformation.numberOfNodes * (GraphInformation.numberOfNodes - 1)) / 2;
+    private static int getRandomNumberOfSourceNodes() {
+        double randomPercentage = Utility.getRandomPercentage(SOURCE_NODE_RATIO_LOWER_BOUND, SOURCE_NODE_RATIO_UPPER_BOUND);
+
+        return Math.max(1, (int) (randomPercentage * GraphInformation.numberOfNodes));
+    }
+
+    private static int getMaximumNumberOfDAGEdges() {
+        return getMaximumNumberOfNonDAGEdges() / 2;
+    }
+
+    private static int getMaximumNumberOfNonDAGEdges() {
+        return GraphInformation.numberOfNodes * (GraphInformation.numberOfNodes - 1);
     }
 
     private static double getRandomWeight() {
@@ -156,21 +173,43 @@ public class GraphGenerator {
 
     private static int[][] getEdgePermutations() {
         int edgeIndex = 0;
-        int maximumNumberOfEdges = getMaximumNumberOfEdges();
+        int maximumNumberOfEdges = getMaximumNumberOfNonDAGEdges();
 
         int[][] edgePermutations = new int[maximumNumberOfEdges][2];
 
-        for (int sourceId = 0; sourceId < GraphInformation.numberOfNodes - 1; sourceId++) {
-            for (int destinationId = sourceId + 1; destinationId < GraphInformation.numberOfNodes; destinationId++) {
-                edgePermutations[edgeIndex][0] = sourceId;
-                edgePermutations[edgeIndex][1] = destinationId;
+        for (int sourceId = 0; sourceId < GraphInformation.numberOfNodes; sourceId++) {
+            for (int destinationId = 0; destinationId < GraphInformation.numberOfNodes; destinationId++) {
+                if (sourceId != destinationId) {
+                    edgePermutations[edgeIndex][0] = sourceId;
+                    edgePermutations[edgeIndex][1] = destinationId;
 
-                ++edgeIndex;
+                    ++edgeIndex;
+                }
             }
         }
 
         Utility.shuffle2DArray(edgePermutations, maximumNumberOfEdges);
 
         return edgePermutations;
+    }
+
+    private static boolean[] getSourceNodePermutations() {
+        boolean[] isSourceNode = new boolean[GraphInformation.numberOfNodes];
+
+        int sourceNodeIndex = 0;
+        int numberOfSourceNodes = 0;
+        int maximumNumberOfSourceNodes = getRandomNumberOfSourceNodes();
+
+        while (sourceNodeIndex < GraphInformation.numberOfNodes && numberOfSourceNodes < maximumNumberOfSourceNodes) {
+            isSourceNode[sourceNodeIndex] = Utility.getRandomBoolean();
+
+            if (isSourceNode[sourceNodeIndex]) {
+                ++numberOfSourceNodes;
+            }
+
+            ++sourceNodeIndex;
+        }
+
+        return isSourceNode;
     }
 }

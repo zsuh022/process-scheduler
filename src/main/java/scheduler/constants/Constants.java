@@ -18,4 +18,6 @@ public class Constants {
 
     public static final double EDGE_RATIO_LOWER_BOUND = 0.6;
     public static final double EDGE_RATIO_UPPER_BOUND = 1.0;
+    public static final double SOURCE_NODE_RATIO_LOWER_BOUND = 0.2;
+    public static final double SOURCE_NODE_RATIO_UPPER_BOUND = 0.4;
 }
