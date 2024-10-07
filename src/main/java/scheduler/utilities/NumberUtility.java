@@ -13,7 +13,7 @@ public class NumberUtility {
         return random.nextDouble() * (maximum - minimum) + minimum;
     }
 
-    public static double getRandomPercentage() {
-        return getRandomDouble(0.0, 1.0);
+    public static double getRandomPercentage(double minimum, double maximum) {
+        return getRandomDouble(minimum, maximum);
     }
 }

@@ -134,8 +134,9 @@ public class GraphGenerator {
 
     private static int getRandomNumberOfEdges() {
         int maxNumberOfEdges = (GraphInformation.numberOfNodes * (GraphInformation.numberOfNodes - 1)) / 2;
+        double randomPercentage = NumberUtility.getRandomPercentage(EDGE_RATIO_LOWER_BOUND, EDGE_RATIO_UPPER_BOUND);
 
-        return (int) (NumberUtility.getRandomPercentage() * maxNumberOfEdges);
+        return (int) (randomPercentage * maxNumberOfEdges);
     }
 
     private static double getRandomWeight() {
