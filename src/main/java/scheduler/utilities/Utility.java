@@ -17,24 +17,21 @@ public class Utility {
         return getRandomDouble(minimum, maximum);
     }
 
-    // Fisher-Yates 2D XOR shuffle variant without creating high overhead of using list
-    public static void shuffle2DArray(int[][] array, int rows, int columns) {
+    // Fisher-Yates 2D shuffling without creating high overhead of using list
+    public static void shuffle2DArray(int[][] array, int rows) {
         int randomRowIndex;
-        int randomColumnIndex;
 
-        for (int rowIndex = rows; rowIndex > 0; rowIndex--) {
-            for (int columnIndex = columns; columnIndex > 0; columnIndex--) {
-                randomRowIndex = random.nextInt(rowIndex + 1);
-                randomColumnIndex = random.nextInt(columnIndex + 1);
+        for (int rowIndex = rows - 1; rowIndex > 0; rowIndex--) {
+            randomRowIndex = random.nextInt(rowIndex + 1);
 
-                if (randomRowIndex)
-            }
-
-            if (randomIndex != index) {
-                array[randomIndex] ^= array[index];
-                array[index] ^= array[randomIndex];
-                array[randomIndex] ^= array[index];
-            }
+            swap2DArrayRows(array, rowIndex, randomRowIndex);
         }
+    }
+
+    public static void swap2DArrayRows(int[][] array, int row1, int row2) {
+        int[] temporaryArray = array[row1];
+
+        array[row1] = array[row2];
+        array[row2] = temporaryArray;
     }
 }

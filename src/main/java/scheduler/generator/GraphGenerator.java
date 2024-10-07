@@ -83,14 +83,14 @@ public class GraphGenerator {
     private static void generateRandomGraph(Graph graph) {
         boolean[][] adjacencyMatrix = new boolean[GraphInformation.numberOfNodes][GraphInformation.numberOfNodes];
 
-        int[] edgePermutations = getEdgePermutations();
+        int[][] edgePermutations = getEdgePermutations();
 
         int edgeIndex = 0;
 
-        // Naive DAG generator
+        // Naive DAG generator- improved with 2d array shuffling
         while (edgeIndex < GraphInformation.numberOfEdges) {
-            int sourceId = Utility.getRandomInteger(0, GraphInformation.numberOfNodes - 1);
-            int destinationId = Utility.getRandomInteger(0, GraphInformation.numberOfNodes - 1);
+            int sourceId = edgePermutations[edgeIndex][0];
+            int destinationId = edgePermutations[edgeIndex][1];
 
             if (sourceId == destinationId || adjacencyMatrix[sourceId][destinationId]) {
                 continue;
@@ -137,10 +137,13 @@ public class GraphGenerator {
     }
 
     private static int getRandomNumberOfEdges() {
-        int maxNumberOfEdges = (GraphInformation.numberOfNodes * (GraphInformation.numberOfNodes - 1)) / 2;
         double randomPercentage = Utility.getRandomPercentage(EDGE_RATIO_LOWER_BOUND, EDGE_RATIO_UPPER_BOUND);
 
-        return (int) (randomPercentage * maxNumberOfEdges);
+        return (int) (randomPercentage * getMaximumNumberOfEdges());
+    }
+
+    private static int getMaximumNumberOfEdges() {
+        return (GraphInformation.numberOfNodes * (GraphInformation.numberOfNodes - 1)) / 2;
     }
 
     private static double getRandomWeight() {
@@ -151,11 +154,23 @@ public class GraphGenerator {
         GraphInformation.numberOfProcessors = numberOfProcessors;
     }
 
-    private static int[] getEdgePermutations() {
-        int[] edgePermutations = new int[GraphInformation.numberOfEdges];
+    private static int[][] getEdgePermutations() {
+        int edgeIndex = 0;
+        int maximumNumberOfEdges = getMaximumNumberOfEdges();
 
-        for (int sourceId = 0; sourceId < GraphInformation.numberOfNodes; sourceId++) {
-            for (int destinationId = 0; destinationId)
+        int[][] edgePermutations = new int[maximumNumberOfEdges][2];
+
+        for (int sourceId = 0; sourceId < GraphInformation.numberOfNodes - 1; sourceId++) {
+            for (int destinationId = sourceId + 1; destinationId < GraphInformation.numberOfNodes; destinationId++) {
+                edgePermutations[edgeIndex][0] = sourceId;
+                edgePermutations[edgeIndex][1] = destinationId;
+
+                ++edgeIndex;
+            }
         }
+
+        Utility.shuffle2DArray(edgePermutations, maximumNumberOfEdges);
+
+        return edgePermutations;
     }
 }
