@@ -1,11 +1,10 @@
-package schedulers.sequential;
+package scheduler.schedulers.sequential;
 
 import org.junit.jupiter.api.Test;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
 import scheduler.models.StateModel;
-import scheduler.schedulers.sequential.AStarScheduler;
-import schedulers.BaseSchedulerIT;
+import scheduler.schedulers.BaseSchedulerIT;
 
 import java.io.IOException;
 
@@ -98,7 +97,7 @@ public class SequentialSchedulerIT extends BaseSchedulerIT {
     @Test
     public void TestNodes_10_Random() throws IOException {
         // Arrange
-        int[][] processorsAndExpectedValues = {{2, 50}, {4, 50}};
+        int[][] processorsAndExpectedValues = {{1, 63}, {2, 50}, {4, 50}};
         setInputAndOutputPaths("Nodes_10_Random.dot");
 
         for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
