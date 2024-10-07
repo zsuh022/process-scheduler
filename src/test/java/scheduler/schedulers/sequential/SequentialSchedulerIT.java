@@ -1,11 +1,10 @@
-package schedulers.sequential;
+package scheduler.schedulers.sequential;
 
 import org.junit.jupiter.api.Test;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
 import scheduler.models.StateModel;
-import scheduler.schedulers.sequential.AStarScheduler;
-import schedulers.BaseSchedulerIT;
+import scheduler.schedulers.BaseSchedulerIT;
 
 import java.io.IOException;
 
