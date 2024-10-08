@@ -127,6 +127,10 @@ public class MetricsModel {
         this.memoryUsed = memoryUsed;
     }
 
+    public List<Double> getPeriodicCpuUsage() {
+        return this.cpuUsage;
+    }
+
     public void startPeriodicTracking(long interval) {
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
         this.scheduledExecutorService.scheduleAtFixedRate(this::capturePeriodicMetrics, 0, interval, TimeUnit.MILLISECONDS);
