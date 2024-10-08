@@ -134,9 +134,9 @@ public class GraphGenerator {
     // Could refactor into utility class later - formatter class?
     public static void displayGraphInformation() {
         System.out.println("\nGenerated Graph Information:");
-        System.out.printf("  %-20s %d%n", "Number of nodes:", GraphInformation.numberOfNodes);
-        System.out.printf("  %-20s %d%n", "Number of edges:", GraphInformation.numberOfEdges);
-        System.out.printf("  %-20s %d%n", "Number of processors:", GraphInformation.numberOfProcessors);
+        System.out.printf("  %-25s %d%n", "Number of nodes:", GraphInformation.numberOfNodes);
+        System.out.printf("  %-25s %d%n", "Number of edges:", GraphInformation.numberOfEdges);
+        System.out.printf("  %-25s %d%n", "Number of processors:", GraphInformation.numberOfProcessors);
     }
 
     private static int getRandomNumberOfNodes() {
