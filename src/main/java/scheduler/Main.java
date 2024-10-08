@@ -49,7 +49,7 @@ public class Main {
             arguments.setCores((byte) i);
             Scheduler scheduler = new ParallelScheduler(graph, arguments.getProcessors(), arguments.getCores());
 
-            MetricsModel metrics = schedulerTest.getMetrics();
+            MetricsModel metrics = scheduler.getMetrics();
             // track memory and cpu usage every x ms
             metrics.startPeriodicTracking(500);
 
