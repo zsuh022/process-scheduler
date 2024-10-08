@@ -173,7 +173,7 @@ public class MetricsModel {
         System.out.println("\nPeriodic CPU Usage:");
 
         for (int i = 0; i < cpuUsage.size(); i++) {
-            System.out.printf("  Interval %d - CPU: %.3f%%%n", i + 1, cpuUsage.get(i));
+            System.out.printf("  CPU Usage at interval %d: %.3f%%%n", i + 1, cpuUsage.get(i));
         }
     }
 }

@@ -46,17 +46,24 @@ public class Main {
             arguments.setCores((byte) i);
             Scheduler scheduler = new ParallelScheduler(graph, arguments.getProcessors(), arguments.getCores());
 
+            MetricsModel metrics = schedulerTest.getMetrics();
+            // track memory and cpu usage every x ms
+            metrics.startPeriodicTracking(500);
+
             long startTime = System.currentTimeMillis();
             Runtime runtime = Runtime.getRuntime();
             runtime.gc();
             long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
+
             scheduler.schedule();
+
             long endTime = System.currentTimeMillis();
             double elapsedTime = (endTime - startTime) / 1000.0;
             long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
             double memoryUsed = memoryAfter - memoryBefore;
 
-            MetricsModel metrics = scheduler.getMetrics();
+            metrics.stopPeriodicTracking();
+
             metrics.setElapsedTime(elapsedTime);
             metrics.setMemoryUsed(memoryUsed);
 
