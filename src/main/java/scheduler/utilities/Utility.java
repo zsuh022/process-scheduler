@@ -32,10 +32,6 @@ public class Utility {
         }
     }
 
-    public static void shuffle1DArray(int[] array, int size) {
-
-    }
-
     public static void swap2DArrayRows(int[][] array, int row1, int row2) {
         int[] temporaryArray = array[row1];
 
