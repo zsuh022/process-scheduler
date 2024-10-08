@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualiser.controllers.ProcessorController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="scheduler.controllers.ProcessorController">
    <children>
       <VBox layoutX="30.0" layoutY="240.0" style="-fx-background-color: #e0e0e0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -70,5 +70,6 @@
          </children>
       </VBox>
       <Button layoutX="643.0" layoutY="34.0" mnemonicParsing="false" onAction="#drawAllTasks" text="Button" />
+      <Button fx:id="musicButton" mnemonicParsing="false" onMouseClicked="#playMusic" text="Music" />
    </children>
 </AnchorPane>
