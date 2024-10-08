@@ -1,5 +1,13 @@
 package scheduler.models;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 // refactor later, maybe make it a singleton?
 public class MetricsModel {
     private StateModel bestState;
@@ -10,12 +18,16 @@ public class MetricsModel {
     private double elapsedTime;
     private double memoryUsed;
 
+    private List<Double> cpuUsage;
+    private ScheduledExecutorService scheduledExecutorService;
+
     /**
      * Constructor for MetricsModel class.
      */
     public MetricsModel() {
         this.numberOfOpenedStates = 0;
         this.numberOfClosedStates = 0;
+        this.cpuUsage = new ArrayList<>();
     }
 
     /**
@@ -113,6 +125,30 @@ public class MetricsModel {
      */
     public void setMemoryUsed(double memoryUsed) {
         this.memoryUsed = memoryUsed;
+    }
+
+    public void startPeriodicTracking(long interval) {
+        this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        this.scheduledExecutorService.scheduleAtFixedRate(this::capturePeriodicMetrics, 0, interval, TimeUnit.MILLISECONDS);
+    }
+
+    public void stopPeriodicTracking() {
+        if (this.scheduledExecutorService != null && !this.scheduledExecutorService.isShutdown()) {
+            this.scheduledExecutorService.shutdown();
+        }
+    }
+
+    private void capturePeriodicMetrics() {
+        double cpuUsage = getCurrentCpuLoad();
+        this.cpuUsage.add(cpuUsage);
+    }
+
+    private double getCurrentCpuLoad() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
+            return ((com.sun.management.OperatingSystemMXBean) osBean).getSystemCpuLoad() * 100;
+        }
+        return -1;
     }
 
     /**
