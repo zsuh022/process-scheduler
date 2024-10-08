@@ -143,14 +143,27 @@ public class MetricsModel {
     }
 
     private void capturePeriodicMetrics() {
-        double cpuUsage = getCurrentCpuLoad();
-        this.cpuUsage.add(cpuUsage);
+        double currentCpuUsage = getCurrentCpuLoad();
+
+        // if CPU usage is NaN
+        if (Double.isNaN(currentCpuUsage)) {
+            System.out.println("**** NaN ****");
+            if (!this.cpuUsage.isEmpty()) {
+                // use previously recorded value
+                currentCpuUsage = this.cpuUsage.get(this.cpuUsage.size() - 1);
+            } else {
+                // use 0.0%
+                currentCpuUsage = 0.0;
+            }
+        }
+
+        this.cpuUsage.add(currentCpuUsage);
     }
 
     private double getCurrentCpuLoad() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
-            return ((com.sun.management.OperatingSystemMXBean) osBean).getSystemCpuLoad() * 100;
+            return ((com.sun.management.OperatingSystemMXBean) osBean).getCpuLoad() * 100;
         }
         return -1;
     }
