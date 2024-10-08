@@ -5,8 +5,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import static scheduler.constants.Constants.MUSIC_PATH;
 
