@@ -1,4 +1,4 @@
-package scheduler.controllers;
+package visualiser.controllers;
 
 import java.io.IOException;
 import java.util.Map;
@@ -18,7 +18,7 @@ import javafx.scene.text.FontWeight;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.parsers.Arguments;
-import scheduler.visualiser.Visualiser;
+import visualiser.Visualiser;
 
 
 public class ProcessorController {
