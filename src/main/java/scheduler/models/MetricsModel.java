@@ -7,26 +7,31 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 // refactor later, maybe make it a singleton?
 public class MetricsModel {
     private StateModel bestState;
 
-    private int numberOfOpenedStates;
-    private int numberOfClosedStates;
+    private final AtomicInteger numberOfOpenedStates;
 
-    private double elapsedTime;
+    private final AtomicInteger numberOfClosedStates;
+
+
     private double memoryUsed;
+    private double elapsedTime;
 
     private List<Double> cpuUsage;
+
     private ScheduledExecutorService scheduledExecutorService;
 
     /**
      * Constructor for MetricsModel class.
      */
     public MetricsModel() {
-        this.numberOfOpenedStates = 0;
-        this.numberOfClosedStates = 0;
+        this.numberOfOpenedStates = new AtomicInteger(0);
+        this.numberOfClosedStates = new AtomicInteger(0);
+
         this.cpuUsage = new ArrayList<>();
     }
 
@@ -36,16 +41,7 @@ public class MetricsModel {
      * @return the number of opened states
      */
     public int getNumberOfOpenedStates() {
-        return this.numberOfOpenedStates;
-    }
-
-    /**
-     * Method sets the number of opened states.
-     *
-     * @param numberOfOpenedStates the number of opened states to set
-     */
-    public void setNumberOfOpenedStates(int numberOfOpenedStates) {
-        this.numberOfOpenedStates = numberOfOpenedStates;
+        return this.numberOfOpenedStates.get();
     }
 
     /**
@@ -54,14 +50,18 @@ public class MetricsModel {
      * @return the number of closed states
      */
     public int getNumberOfClosedStates() {
-        return this.numberOfClosedStates;
+        return this.numberOfClosedStates.get();
     }
 
     /**
      * Method increments the number of opened states by one.
      */
     public void incrementNumberOfOpenedStates() {
-        ++this.numberOfOpenedStates;
+        this.numberOfOpenedStates.getAndIncrement();
+    }
+
+    public void incrementNumberOfClosedStates() {
+        this.numberOfClosedStates.getAndIncrement();
     }
 
     /**
@@ -70,7 +70,7 @@ public class MetricsModel {
      * @param numberOfClosedStates the number of closed states to set
      */
     public void setNumberOfClosedStates(int numberOfClosedStates) {
-        this.numberOfClosedStates = numberOfClosedStates;
+        this.numberOfClosedStates.set(numberOfClosedStates);
     }
 
     /**
@@ -133,6 +133,7 @@ public class MetricsModel {
 
     public void startPeriodicTracking(long interval) {
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
         this.scheduledExecutorService.scheduleAtFixedRate(this::capturePeriodicMetrics, 0, interval, TimeUnit.MILLISECONDS);
     }
 
@@ -143,6 +144,9 @@ public class MetricsModel {
     }
 
     private void capturePeriodicMetrics() {
+        double cpuUsage = getCurrentCpuLoad();
+
+        this.cpuUsage.add(cpuUsage);
         double currentCpuUsage = getCurrentCpuLoad();
 
         // if CPU usage is NaN
@@ -162,9 +166,11 @@ public class MetricsModel {
 
     private double getCurrentCpuLoad() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+
         if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
             return ((com.sun.management.OperatingSystemMXBean) osBean).getCpuLoad() * 100;
         }
+
         return -1;
     }
 
@@ -174,12 +180,16 @@ public class MetricsModel {
      */
     public void display() {
         System.out.println("\nMetrics:");
-        System.out.printf("  %-25s %ss%n", "Elapsed time in seconds:", elapsedTime);
-        System.out.printf("  %-25s %d%n", "Number of opened states:", this.numberOfOpenedStates);
-        System.out.printf("  %-25s %d%n", "Number of closed states:", this.numberOfClosedStates);
+        System.out.printf("  %-25s %.3fs%n", "Elapsed time in seconds:", elapsedTime);
+        System.out.printf("  %-25s %d%n", "Number of opened states:", this.numberOfOpenedStates.get());
+        System.out.printf("  %-25s %d%n", "Number of closed states:", this.numberOfClosedStates.get());
         System.out.printf("  %-25s %d%n", "Schedule finish time:", this.bestState.getMaximumFinishTime());
-        System.out.printf("  %-25s %.3fMB%n", "Memory used in MB:", this.memoryUsed / (1024 * 1024));
+        System.out.printf("  %-25s %.3fMB%n", "Memory used in MB:", getMegaBytesUsed());
         displayPeriodicMetrics();
+    }
+
+    private double getMegaBytesUsed() {
+        return this.memoryUsed / 1024 / 1024;
     }
 
     private void displayPeriodicMetrics() {

@@ -37,7 +37,7 @@ public class Visualiser extends Application {
             MetricsModel metrics = scheduler.getMetrics();
             controller.setMetrics(metrics);
             //MetricsModel metrics = scheduler.getMetrics();
-            //controller.setMetrics(metrics);
+//            controller.setMetrics(metrics);
         }
         return root;
     }

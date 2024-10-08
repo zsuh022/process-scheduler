@@ -13,7 +13,7 @@ public class Constants {
     public static final byte NUMBER_OF_REQUIRED_ARGUMENTS = 2;
 
     public static final int INFINITY_32 = Integer.MAX_VALUE;
-    public static final int NUMBER_OF_NODES_LOWER_BOUND = 5;
+    public static final int NUMBER_OF_NODES_LOWER_BOUND = 10;
     public static final int NUMBER_OF_NODES_UPPER_BOUND = 20;
     public static final int WEIGHT_LOWER_BOUND = 100;
     public static final int WEIGHT_UPPER_BOUND = 1000;
