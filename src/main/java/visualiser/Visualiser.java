@@ -1,4 +1,4 @@
-package scheduler.visualiser;
+package visualiser;
 
 import java.io.IOException;
 
@@ -9,15 +9,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import scheduler.controllers.ProcessorController;
+import scheduler.models.MetricsModel;
 import scheduler.parsers.Arguments;
+import scheduler.schedulers.Scheduler;
+import visualiser.controllers.ProcessorController;
+import visualiser.controllers.VisualiserController;
 
 public class Visualiser extends Application {
     private static Arguments arguments;
     private static Scene scene;
-
-    public static void run(Arguments arguments) {
+    private static Scheduler scheduler;
+    public static void run(Arguments arguments, Scheduler scheduler){
         Visualiser.arguments = arguments;
+        Visualiser.scheduler = scheduler;
         launch();
     }
     private static Parent loadFxml(final String fxml) throws IOException {
@@ -27,6 +31,13 @@ public class Visualiser extends Application {
         if (fxml.equals("processor")){
             ProcessorController controller = loader.getController();
             controller.setArguments(arguments);
+        } else if (fxml.equals("visualiser")){
+            VisualiserController controller = loader.getController();
+            controller.setArguments(arguments);
+            MetricsModel metrics = scheduler.getMetrics();
+            controller.setMetrics(metrics);
+            //MetricsModel metrics = scheduler.getMetrics();
+            //controller.setMetrics(metrics);
         }
         return root;
     }

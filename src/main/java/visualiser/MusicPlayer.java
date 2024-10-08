@@ -1,4 +1,4 @@
-package scheduler.visualiser;
+package visualiser;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
