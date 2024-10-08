@@ -3,6 +3,7 @@ package scheduler.controllers;
 import java.io.IOException;
 import java.util.Map;
 
+import javafx.scene.control.Button;
 import org.graphstream.graph.Graph;
 
 import javafx.fxml.FXML;
@@ -18,6 +19,7 @@ import javafx.scene.text.FontWeight;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.parsers.Arguments;
+import scheduler.visualiser.MusicPlayer;
 import scheduler.visualiser.Visualiser;
 
 
@@ -25,6 +27,9 @@ public class ProcessorController {
 
     @FXML
     private Canvas canvas;
+
+    @FXML
+    private Button musicButton;
 
     private GraphicsContext gc;
 
@@ -36,11 +41,15 @@ public class ProcessorController {
     
     int unitLengths = 25;
 
+    private MusicPlayer musicPlayer;
+
 
     public void initialize() {
         gc = canvas.getGraphicsContext2D();
         processors = 2;
         latestLength = 130;
+
+        this.musicPlayer = MusicPlayer.getInstance();
     }
 
     @FXML
@@ -128,6 +137,11 @@ public class ProcessorController {
             latestLength = i;
         }
         latestLength += unitLengths;
+    }
+
+    @FXML
+    public void playMusic() {
+        this.musicPlayer.play();
     }
 
     @FXML
