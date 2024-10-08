@@ -36,13 +36,14 @@ public class ParallelSchedulerTest extends AStarScheduler {
 
     @Override
     public void schedule() {
-        StateModel initialState = new StateModel(processors, numberOfNodes);
+        StateModel validState = getValidSchedule();
 
         List<Worker> workers = new ArrayList<>();
 
         for (int i = 0; i < cores; i++) {
             Worker worker = new Worker();
-            worker.openedStates.add(initialState);
+            worker.openedStates.add(new StateModel(processors, numberOfNodes));
+            worker.openedStates.add(validState.clone());
             workers.add(worker);
         }
 
@@ -57,7 +58,7 @@ public class ParallelSchedulerTest extends AStarScheduler {
         if (this.bestState != null) {
             metrics.setBestState(this.bestState);
         } else {
-            metrics.setBestState(getValidSchedule());
+            metrics.setBestState(validState);
         }
 
         metrics.setNumberOfClosedStates(this.closedStates.size());
