@@ -120,7 +120,7 @@ public class MetricsModel {
      * time and memory used.
      */
     public void display() {
-        System.out.println("Metrics:");
+        System.out.println("\nMetrics:");
         System.out.printf("  %-25s %ss%n", "Elapsed time in seconds:", elapsedTime);
         System.out.printf("  %-25s %d%n", "Number of opened states:", this.numberOfOpenedStates);
         System.out.printf("  %-25s %d%n", "Number of closed states:", this.numberOfClosedStates);
