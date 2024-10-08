@@ -49,7 +49,7 @@ public class ProcessorController {
         processors = 2;
         latestLength = 130;
 
-        this.musicPlayer = MusicPlayer.getInstance();
+//        this.musicPlayer = MusicPlayer.getInstance();
     }
 
     @FXML

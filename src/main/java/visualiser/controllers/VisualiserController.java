@@ -44,6 +44,7 @@ public class VisualiserController {
 
     private void updateMetricsDisplay() {
         lblProcessTime.setText("asads");
+        System.out.println(metrics.getElapsedTime());
         if (metrics != null) {
             lblProcessTime.setText(String.valueOf(metrics.getBestState().getMaximumFinishTime()));
             lblProcessorsUsed.setText(String.valueOf(processors));

@@ -22,13 +22,13 @@ public class ParallelScheduler extends AStarScheduler {
     public ParallelScheduler(GraphModel graph, byte processors, byte cores) {
         super(graph, processors);
 
-        this.openedStates = new PriorityBlockingQueue<>(11, Comparator.comparingInt(this::getFCost));
+        this.openedStates = new PriorityBlockingQueue<>(cores, Comparator.comparingInt(this::getFCost));
+
         this.closedStates = ConcurrentHashMap.newKeySet();
 
         this.executorService = Executors.newFixedThreadPool(cores);
 
         this.validState = getValidSchedule();
-
     }
 
     @Override

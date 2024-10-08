@@ -25,20 +25,19 @@ import static scheduler.constants.Constants.RANDOM_OUTPUT_DOT_FILE_PATH;
 public class Main {
     private static Scheduler scheduler;
     private static void runScheduler(Arguments arguments) throws IOException {
-//        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
-        GraphModel graph = GraphGenerator.getRandomGraph();
-        String filename = "Random_Graph.dot";
-        InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
+        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
+//        GraphModel graph = GraphGenerator.getRandomGraph();
+//        String filename = "Random_Graph.dot";
+//        InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
         //Scheduler schedulerTest = new AStarScheduler(graph, arguments.getProcessors());
         scheduler = new AStarScheduler(graph, arguments.getProcessors());
         long startTimeTest = System.currentTimeMillis();
-//        schedulerTest.schedule();
         scheduler.schedule();
         long endTimeTest = System.currentTimeMillis();
         double elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0;
 
-//        MetricsModel metricsTest = schedulerTest.getMetrics();
-//        metricsTest.setElapsedTime(elapsedTimeTest);
+        MetricsModel metricsTest = scheduler.getMetrics();
+        metricsTest.setElapsedTime(elapsedTimeTest);
 
 //        metricsTest.display();
         GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
@@ -49,7 +48,7 @@ public class Main {
             arguments.setCores((byte) i);
             Scheduler scheduler = new ParallelScheduler(graph, arguments.getProcessors(), arguments.getCores());
 
-            MetricsModel metrics = schedulerTest.getMetrics();
+            MetricsModel metrics = scheduler.getMetrics();
             // track memory and cpu usage every x ms
             metrics.startPeriodicTracking(500);
 
@@ -74,19 +73,11 @@ public class Main {
         }
 
 
-//        StateModel bestState = metrics.getBestState();
-//            graph.setNodesAndEdgesForState(bestState);
-//
-//            InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
+        StateModel bestState = scheduler.getMetrics().getBestState();
+        graph.setNodesAndEdgesForState(bestState);
+        InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
         arguments.displayOutputDOTFilePath();
     }
-
-//    private void runParallelScheduler(Graph graph, Arguments arguments, boolean isGraphRandom) {
-//    }
-//
-//    private void runSequentialScheduler() {
-//
-//    }
 
     /**
      * The main method for executing the main driver code.
@@ -115,5 +106,5 @@ public class Main {
         }
         Visualiser.run(arguments, scheduler);
     }
-    
+
 }
