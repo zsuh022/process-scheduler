@@ -166,5 +166,14 @@ public class MetricsModel {
         System.out.printf("  %-25s %d%n", "Number of closed states:", this.numberOfClosedStates);
         System.out.printf("  %-25s %d%n", "Schedule finish time:", this.bestState.getMaximumFinishTime());
         System.out.printf("  %-25s %.3fMB%n", "Memory used in MB:", this.memoryUsed / (1024 * 1024));
+        displayPeriodicMetrics();
+    }
+
+    private void displayPeriodicMetrics() {
+        System.out.println("\nPeriodic CPU Usage:");
+
+        for (int i = 0; i < cpuUsage.size(); i++) {
+            System.out.printf("  Interval %d - CPU: %.3f%%%n", i + 1, cpuUsage.get(i));
+        }
     }
 }
