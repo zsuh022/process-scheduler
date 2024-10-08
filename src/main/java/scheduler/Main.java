@@ -2,7 +2,6 @@ package scheduler;
 
 import java.io.IOException;
 
-import org.graphstream.graph.Graph;
 import scheduler.generator.GraphGenerator;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
@@ -12,6 +11,7 @@ import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.Scheduler;
 import scheduler.schedulers.parallel.ParallelScheduler;
+import scheduler.schedulers.parallel.ParallelSchedulerTest;
 import scheduler.schedulers.sequential.AStarScheduler;
 import visualiser.Visualiser;
 
@@ -29,6 +29,7 @@ public class Main {
         GraphModel graph = GraphGenerator.getRandomGraph();
         String filename = "Random_Graph.dot";
         InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
+
         scheduler = new AStarScheduler(graph, arguments.getProcessors());
         long startTimeTest = System.currentTimeMillis();
         scheduler.schedule();
@@ -44,32 +45,31 @@ public class Main {
 
         for (int i = 1; i <= 8; i++) {
             arguments.setCores((byte) i);
-            Scheduler scheduler = new ParallelScheduler(graph, arguments.getProcessors(), arguments.getCores());
+            Scheduler scheduler = new ParallelSchedulerTest(graph, arguments.getProcessors(), arguments.getCores());
 
             MetricsModel metrics = scheduler.getMetrics();
             // track memory and cpu usage every x ms
-            metrics.startPeriodicTracking(500);
+//            metrics.startPeriodicTracking(500);
 
             long startTime = System.currentTimeMillis();
-            Runtime runtime = Runtime.getRuntime();
-            runtime.gc();
-            long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
+//            Runtime runtime = Runtime.getRuntime();
+//            runtime.gc();
+//            long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
 
             scheduler.schedule();
 
             long endTime = System.currentTimeMillis();
             double elapsedTime = (endTime - startTime) / 1000.0;
-            long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
-            double memoryUsed = memoryAfter - memoryBefore;
-
-            metrics.stopPeriodicTracking();
+//            long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
+//            double memoryUsed = memoryAfter - memoryBefore;
+//
+//            metrics.stopPeriodicTracking();
 
             metrics.setElapsedTime(elapsedTime);
-            metrics.setMemoryUsed(memoryUsed);
+//            metrics.setMemoryUsed(memoryUsed);
 
             metrics.display();
         }
-
 
         StateModel bestState = scheduler.getMetrics().getBestState();
         graph.setNodesAndEdgesForState(bestState);
@@ -102,7 +102,5 @@ public class Main {
         if (arguments.isVisualiseSearch()) {
             Visualiser.run(arguments, scheduler);
         }
-        Visualiser.run(arguments, scheduler);
     }
-
 }

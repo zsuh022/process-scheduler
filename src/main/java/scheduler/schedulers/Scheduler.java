@@ -13,18 +13,18 @@ import static scheduler.constants.Constants.INFINITY_32;
 public abstract class Scheduler {
     protected GraphModel graph;
 
+    protected MetricsModel metrics;
+
+    protected NodeModel[] nodes;
+
+    protected Set<StateModel> closedStates;
+
     protected byte processors;
 
     protected int numberOfNodes;
     protected int criticalPathLength;
 
     protected int[] bottomLevelPathLengths;
-
-    protected MetricsModel metrics;
-
-    protected NodeModel[] nodes;
-
-    protected Set<StateModel> closedStates;
 
     /**
      * Constructor for the Scheduler class. Initialises the graph, number of processors, number of
@@ -109,6 +109,11 @@ public abstract class Scheduler {
 
             for (int i = 0; i < dequeSize; i++) {
                 NodeModel node = deque.poll();
+
+                if (node == null) {
+                    continue;
+                }
+
                 sortedNodes[sortedIndex++] = node;
 
                 for (NodeModel successor : node.getSuccessors()) {
