@@ -1,4 +1,4 @@
-package scheduler.visualiser;
+package visualiser;
 
 import java.io.IOException;
 
@@ -9,8 +9,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import scheduler.controllers.ProcessorController;
 import scheduler.parsers.Arguments;
+import visualiser.controllers.ProcessorController;
 
 public class Visualiser extends Application {
     private static Arguments arguments;

@@ -1,10 +1,10 @@
-package scheduler.controllers;
+package visualiser.controllers;
 import java.io.IOException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import scheduler.visualiser.Visualiser;
+import visualiser.Visualiser;
 
 public class VisualiserController {
     @FXML

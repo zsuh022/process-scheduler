@@ -13,7 +13,7 @@ import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.Scheduler;
 import scheduler.schedulers.parallel.ParallelScheduler;
 import scheduler.schedulers.sequential.AStarScheduler;
-import scheduler.visualiser.Visualiser;
+import visualiser.Visualiser;
 
 import static scheduler.constants.Constants.RANDOM_OUTPUT_DOT_FILE_PATH;
 
