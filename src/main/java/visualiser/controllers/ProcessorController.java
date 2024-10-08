@@ -90,7 +90,7 @@ public class ProcessorController {
         length = ((length + (unitLengths-1)) / unitLengths) * unitLengths;
         gc.strokeLine(latestLength, 0, length, 0);
         for (int i = 0; i < processors; i++) {
-            int y = 2*unitLengths + i * unitLengths;
+            int y = 2*unitLengths + 2*i * unitLengths;
             gc.strokeLine(latestLength, y, length, y);
         }
         extendTimeAxis(gc, length);
@@ -98,7 +98,7 @@ public class ProcessorController {
 
     private void drawTask(GraphicsContext gc, int delay, int length, int processor, String id) {
         int startX = 130 + delay*unitLengths;
-        int startY = unitLengths * processor - unitLengths;
+        int startY = unitLengths * processor;
 
         int taskWidth = length*unitLengths;
 
