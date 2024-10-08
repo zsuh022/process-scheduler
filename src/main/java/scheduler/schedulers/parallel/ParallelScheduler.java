@@ -9,14 +9,13 @@ import scheduler.schedulers.sequential.AStarScheduler;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static scheduler.constants.Constants.INFINITY_32;
-
 public class ParallelScheduler extends AStarScheduler {
     private final PriorityBlockingQueue<StateModel> openedStates;
 
     private final Set<StateModel> closedStates;
 
     private final ExecutorService executorService;
+
     private final StateModel validState;
 
     public ParallelScheduler(GraphModel graph, byte processors, byte cores) {
@@ -95,6 +94,28 @@ public class ParallelScheduler extends AStarScheduler {
         }
 
         metrics.setNumberOfClosedStates(closedStates.size());
+    }
+
+    private static class Worker implements Callable<StateModel> {
+        private PriorityBlockingQueue<StateModel> openedStates = new PriorityBlockingQueue<>();
+        private Set<StateModel> closedStates = ConcurrentHashMap.newKeySet();
+
+        @Override
+        public StateModel call() {
+            while (!this.openedStates.isEmpty()) {
+                StateModel state = this.openedStates.poll();
+
+//                synchronized (this) {
+//                    if () {
+//
+//                    }
+//                }
+
+//                expandState(state, )
+            }
+
+            return null;
+        }
     }
 
     private void expandState(StateModel state, NodeModel node, int processor) {

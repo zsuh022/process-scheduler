@@ -25,11 +25,10 @@ import static scheduler.constants.Constants.RANDOM_OUTPUT_DOT_FILE_PATH;
 public class Main {
     private static Scheduler scheduler;
     private static void runScheduler(Arguments arguments) throws IOException {
-        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
-//        GraphModel graph = GraphGenerator.getRandomGraph();
-//        String filename = "Random_Graph.dot";
-//        InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
-        //Scheduler schedulerTest = new AStarScheduler(graph, arguments.getProcessors());
+//        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
+        GraphModel graph = GraphGenerator.getRandomGraph();
+        String filename = "Random_Graph.dot";
+        InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
         scheduler = new AStarScheduler(graph, arguments.getProcessors());
         long startTimeTest = System.currentTimeMillis();
         scheduler.schedule();
@@ -38,11 +37,10 @@ public class Main {
 
         MetricsModel metricsTest = scheduler.getMetrics();
         metricsTest.setElapsedTime(elapsedTimeTest);
+        metricsTest.display();
 
-//        metricsTest.display();
         GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
         GraphGenerator.displayGraphInformation();
-//        Scheduler scheduler = new AStarScheduler(graph, arguments.getProcessors());
 
         for (int i = 1; i <= 8; i++) {
             arguments.setCores((byte) i);
