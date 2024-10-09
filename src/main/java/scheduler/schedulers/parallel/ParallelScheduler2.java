@@ -8,7 +8,6 @@ import scheduler.schedulers.sequential.AStarScheduler;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static scheduler.constants.Constants.INFINITY_32;
 
@@ -18,8 +17,6 @@ public class ParallelScheduler2 extends AStarScheduler {
     private final PriorityQueue<StateModel> initialStates;
 
     private final Set<StateModel> closedStates;
-
-    private final AtomicBoolean isBestStateFound;
 
     private final Worker[] workers;
 
@@ -35,8 +32,6 @@ public class ParallelScheduler2 extends AStarScheduler {
         this.initialStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
 
         this.closedStates = ConcurrentHashMap.newKeySet();
-
-        this.isBestStateFound = new AtomicBoolean(false);
 
         this.workers = new Worker[cores];
 
@@ -54,7 +49,7 @@ public class ParallelScheduler2 extends AStarScheduler {
     private void runAStarScheduleWithHeuristic() {
         this.initialStates.add(new StateModel(this.processors, this.numberOfNodes));
 
-        while (!this.initialStates.isEmpty() && this.initialStates.size() < this.cores) {
+        while (!this.initialStates.isEmpty() && this.initialStates.size() < this.numberOfNodes * this.cores) {
             StateModel state = this.initialStates.poll();
 
             if (state.areAllNodesScheduled()) {
@@ -82,6 +77,7 @@ public class ParallelScheduler2 extends AStarScheduler {
         int earliestStartTime = getEarliestStartTime(state, node, processor);
 
         nextState.addNode(node, processor, earliestStartTime);
+        nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
 
         if (!canPruneState(nextState)) {
             this.initialStates.add(nextState);
@@ -182,6 +178,7 @@ public class ParallelScheduler2 extends AStarScheduler {
             int earliestStartTime = getEarliestStartTime(state, node, processor);
 
             nextState.addNode(node, processor, earliestStartTime);
+            nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
 
             if (canPruneState(nextState)) {
                 return;
@@ -207,7 +204,7 @@ public class ParallelScheduler2 extends AStarScheduler {
         }
 
         private int getFCost(StateModel state) {
-            if (state.isEmptyState()) {
+            if (state.isEmpty()) {
                 return getLowerBound();
             }
 
@@ -218,6 +215,7 @@ public class ParallelScheduler2 extends AStarScheduler {
             int fCost = Math.max(idleTime, Math.max(maximumBottomLevelPathLength, maximumDataReadyTime));
 
             state.setFCost(fCost);
+            state.setMaximumBottomLevelPathLength(maximumBottomLevelPathLength);
 
             return fCost;
         }
@@ -234,17 +232,17 @@ public class ParallelScheduler2 extends AStarScheduler {
             return (int) Math.ceil(totalWeight / processors);
         }
 
-        // V2- can be reduced to O(1) but with increased memory? I'll see if it is worth it
-        // note: fbl(s)=max(fbl(s_parent),ts(last)+bl(last))
         private int getMaximumBottomLevelPathLength(StateModel state) {
-            int maximumBottomLevelPathLength = 0;
-
-            for (NodeModel node : getScheduledNodes(state)) {
-                int cost = state.getNodeStartTime(node) + bottomLevelPathLengths[node.getByteId()];
-                maximumBottomLevelPathLength = Math.max(maximumBottomLevelPathLength, cost);
+            if (state.isEmpty()) {
+                return 0;
             }
 
-            return maximumBottomLevelPathLength;
+            byte lastNodeId = state.getLastNode();
+
+            int estimatedFinishTime = state.getNodeStartTime(lastNodeId) + bottomLevelPathLengths[lastNodeId];
+            int parentBottomLevelPathLength = state.getParentMaximumBottomLevelPathLength();
+
+            return Math.max(parentBottomLevelPathLength, estimatedFinishTime);
         }
 
         // This is actually amortised O(1) from O(|free(s)| * |P|)

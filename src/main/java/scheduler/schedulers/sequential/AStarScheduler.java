@@ -57,6 +57,7 @@ public class AStarScheduler extends Scheduler {
         int earliestStartTime = getEarliestStartTime(state, node, processor);
 
         nextState.addNode(node, processor, earliestStartTime);
+        nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
 
         if (!canPruneState(nextState)) {
             this.openedStates.add(nextState);
@@ -111,11 +112,10 @@ public class AStarScheduler extends Scheduler {
         }
 
         return state.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
-//        return state.getFCost() >= this.bestState.getMaximumFinishTime();
     }
 
     protected int getFCost(StateModel state) {
-        if (state.isEmptyState()) {
+        if (state.isEmpty()) {
             return getLowerBound();
         }
 
@@ -126,6 +126,7 @@ public class AStarScheduler extends Scheduler {
         int fCost = Math.max(idleTime, Math.max(maximumBottomLevelPathLength, maximumDataReadyTime));
 
         state.setFCost(fCost);
+        state.setMaximumBottomLevelPathLength(maximumBottomLevelPathLength);
 
         return fCost;
     }
@@ -144,15 +145,18 @@ public class AStarScheduler extends Scheduler {
 
     // V2- can be reduced to O(1) but with increased memory? I'll see if it is worth it
     // note: fbl(s)=max(fbl(s_parent),ts(last)+bl(last))
-    protected int getMaximumBottomLevelPathLength(StateModel state) {
-        int maximumBottomLevelPathLength = 0;
 
-        for (NodeModel node : getScheduledNodes(state)) {
-            int cost = state.getNodeStartTime(node) + bottomLevelPathLengths[node.getByteId()];
-            maximumBottomLevelPathLength = Math.max(maximumBottomLevelPathLength, cost);
+     protected int getMaximumBottomLevelPathLength(StateModel state) {
+        if (state.isEmpty()) {
+            return 0;
         }
 
-        return maximumBottomLevelPathLength;
+        byte lastNodeId = state.getLastNode();
+
+        int estimatedFinishTime = state.getNodeStartTime(lastNodeId) + bottomLevelPathLengths[lastNodeId];
+        int parentBottomLevelPathLength = state.getParentMaximumBottomLevelPathLength();
+
+        return Math.max(parentBottomLevelPathLength, estimatedFinishTime);
     }
 
     // This is actually amortised O(1) from O(|free(s)| * |P|)

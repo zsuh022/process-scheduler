@@ -9,13 +9,16 @@ import java.util.Objects;
  * Used in algorithms like branch-and-bound to keep track of the current scheduling state.
  */
 public class StateModel {
+    private byte lastNodeId;
     private final byte numberOfProcessors;
     private byte numberOfScheduledNodes;
 
     private int fCost;
-    private final int numberOfNodes;
+    private int numberOfNodes;
     private int totalIdleTime;
     private int maximumFinishTime;
+    private int maximumBottomLevelPathLength;
+    private int parentMaximumBottomLevelPathLength;
 
     private final int[] finishTimes;
     private final int[] nodeStartTimes;
@@ -35,6 +38,8 @@ public class StateModel {
         this.numberOfNodes = numberOfNodes;
         this.totalIdleTime = 0;
         this.maximumFinishTime = 0;
+        this.maximumBottomLevelPathLength = 0;
+        this.parentMaximumBottomLevelPathLength = 0;
 
         this.numberOfProcessors = numberOfProcessors;
         this.numberOfScheduledNodes = 0;
@@ -56,9 +61,14 @@ public class StateModel {
      * @param state the state to copy
      */
     public StateModel(StateModel state) {
+        this.lastNodeId = state.lastNodeId;
+
+        this.fCost = state.fCost;
         this.numberOfNodes = state.numberOfNodes;
         this.totalIdleTime = state.totalIdleTime;
         this.maximumFinishTime = state.maximumFinishTime;
+        this.maximumBottomLevelPathLength = state.maximumBottomLevelPathLength;
+        this.parentMaximumBottomLevelPathLength = state.parentMaximumBottomLevelPathLength;
 
         this.numberOfProcessors = state.numberOfProcessors;
         this.numberOfScheduledNodes = state.numberOfScheduledNodes;
@@ -91,8 +101,10 @@ public class StateModel {
         scheduleNode(nodeId);
         normaliseProcessors();
 
-        ++this.numberOfScheduledNodes;
+        this.lastNodeId = nodeId;
         this.maximumFinishTime = Math.max(this.maximumFinishTime, this.finishTimes[processor]);
+
+        ++this.numberOfScheduledNodes;
     }
 
     private void normaliseProcessors() {
@@ -128,7 +140,7 @@ public class StateModel {
      *
      * @return true if no nodes are scheduled; false otherwise
      */
-    public boolean isEmptyState() {
+    public boolean isEmpty() {
         return (this.numberOfScheduledNodes == 0);
     }
 
@@ -139,6 +151,22 @@ public class StateModel {
      */
     public byte getNumberOfScheduledNodes() {
         return this.numberOfScheduledNodes;
+    }
+
+    public int getParentMaximumBottomLevelPathLength() {
+        return this.parentMaximumBottomLevelPathLength;
+    }
+
+    public void setParentMaximumBottomLevelPathLength(int bottomLevelPathLength) {
+        this.parentMaximumBottomLevelPathLength = bottomLevelPathLength;
+    }
+
+    public void setMaximumBottomLevelPathLength(int maximumBottomLevelPathLength) {
+        this.maximumBottomLevelPathLength = maximumBottomLevelPathLength;
+    }
+
+    public int getMaximumBottomLevelPathLength() {
+        return this.maximumBottomLevelPathLength;
     }
 
     /**
@@ -167,6 +195,14 @@ public class StateModel {
      */
     public int getNodeStartTime(NodeModel node) {
         return this.nodeStartTimes[node.getByteId()];
+    }
+
+    public int getNodeStartTime(byte nodeId) {
+        return this.nodeStartTimes[nodeId];
+    }
+
+    public byte getLastNode() {
+        return this.lastNodeId;
     }
 
     /**

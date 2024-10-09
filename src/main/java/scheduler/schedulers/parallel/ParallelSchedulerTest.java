@@ -8,7 +8,6 @@ import scheduler.schedulers.sequential.AStarScheduler;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static scheduler.constants.Constants.INFINITY_32;
 
@@ -136,7 +135,7 @@ public class ParallelSchedulerTest extends AStarScheduler {
         }
 
         private int getFCost(StateModel state) {
-            if (state.isEmptyState()) {
+            if (state.isEmpty()) {
                 return getLowerBound();
             }
 

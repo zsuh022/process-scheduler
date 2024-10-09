@@ -194,7 +194,7 @@ public abstract class Scheduler {
      * @return the earliest start time for a node on a given processor.
      */
     protected int getEarliestStartTime(StateModel state, NodeModel node, int processor) {
-        if (state.isEmptyState()) {
+        if (state.isEmpty()) {
             return 0;
         }
 
