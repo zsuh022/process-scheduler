@@ -98,7 +98,7 @@ public class ProcessorController {
 
     private void drawTask(GraphicsContext gc, int delay, int length, int processor, String id) {
         int startX = 130 + delay*unitLengths;
-        int startY = unitLengths * processor;
+        int startY = unitLengths * processor*2-unitLengths*2;
 
         int taskWidth = length*unitLengths;
 

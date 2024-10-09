@@ -129,6 +129,8 @@ public class GraphGenerator {
                 }
             }
         }
+
+        GraphInformation.numberOfEdges = graph.getEdgeCount();
     }
 
     // Could refactor into utility class later - formatter class?
