@@ -25,8 +25,8 @@ import static scheduler.constants.Constants.RANDOM_OUTPUT_DOT_FILE_PATH;
 public class Main {
     private static Scheduler scheduler;
     private static void runScheduler(Arguments arguments) throws IOException {
-//        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
-        GraphModel graph = GraphGenerator.getRandomGraph();
+        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
+//        GraphModel graph = GraphGenerator.getRandomGraph();
         String filename = "Random_Graph.dot";
         InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
 
