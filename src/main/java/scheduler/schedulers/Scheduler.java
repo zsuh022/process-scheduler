@@ -246,6 +246,25 @@ public abstract class Scheduler {
         return scheduledNodes;
     }
 
+    protected int getEstimatedFinishTime(StateModel state) {
+        int estimatedFinishTime = state.getFCost();
+
+        for (NodeModel node : getAvailableNodes(state)) {
+            int bestStartTime = INFINITY_32;
+
+            for (int processor = 0; processor < processors; processor++) {
+                int earliestStartTime = getEarliestStartTime(state, node, processor);
+
+                if (earliestStartTime < bestStartTime) {
+                    bestStartTime = earliestStartTime;
+                }
+            }
+
+            estimatedFinishTime = Math.max(estimatedFinishTime, bestStartTime + bottomLevelPathLengths[node.getByteId()]);
+        }
+
+        return estimatedFinishTime;
+    }
 
     /**
      * Method checks if all predecessors have been scheduled.

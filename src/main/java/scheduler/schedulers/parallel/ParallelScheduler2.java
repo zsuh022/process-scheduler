@@ -12,63 +12,123 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static scheduler.constants.Constants.INFINITY_32;
 
-public class ParallelSchedulerTest extends AStarScheduler {
+public class ParallelScheduler2 extends AStarScheduler {
     private final ExecutorService threadPool;
 
-    private volatile StateModel bestState;
+    private final PriorityQueue<StateModel> initialStates;
 
     private final Set<StateModel> closedStates;
 
     private final AtomicBoolean isBestStateFound;
 
+    private final Worker[] workers;
+
+    private final Object bestStateLock;
+
     private final byte cores;
 
-    public ParallelSchedulerTest(GraphModel graph, byte processors, byte cores) {
+    public ParallelScheduler2(GraphModel graph, byte processors, byte cores) {
         super(graph, processors);
 
         this.threadPool = Executors.newFixedThreadPool(cores);
 
-        this.isBestStateFound = new AtomicBoolean(false);
-
-        this.cores = cores;
+        this.initialStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
 
         this.closedStates = ConcurrentHashMap.newKeySet();
+
+        this.isBestStateFound = new AtomicBoolean(false);
+
+        this.workers = new Worker[cores];
+
+        this.bestStateLock = new Object();
+
+        this.cores = cores;
+    }
+
+    private void createWorkers() {
+        for (byte workerId = 0; workerId < this.cores; workerId++) {
+            this.workers[workerId] = new Worker();
+        }
+    }
+
+    private void runAStarScheduleWithHeuristic() {
+        this.initialStates.add(new StateModel(this.processors, this.numberOfNodes));
+
+        while (!this.initialStates.isEmpty() && this.initialStates.size() < this.cores) {
+            StateModel state = this.initialStates.poll();
+
+            if (state.areAllNodesScheduled()) {
+                this.bestState = state;
+
+                break;
+            }
+
+            for (NodeModel node : getAvailableNodes(state)) {
+                for (int processor = 0; processor < processors; processor++) {
+                    expandState(state, node, processor);
+                }
+            }
+        }
+    }
+
+    private void expandState(StateModel state, NodeModel node, int processor) {
+        // Skip tasks that are not in the fixed order defined
+        if (!isFirstAvailableNode(state, node)) {
+            return;
+        }
+
+        StateModel nextState = state.clone();
+
+        int earliestStartTime = getEarliestStartTime(state, node, processor);
+
+        nextState.addNode(node, processor, earliestStartTime);
+
+        if (!canPruneState(nextState)) {
+            this.initialStates.add(nextState);
+
+            metrics.incrementNumberOfOpenedStates();
+        }
+    }
+
+    public void assignWorkToWorkers() {
+        for (byte workerId = 0; workerId < this.cores; workerId++) {
+            this.workers[workerId] = new Worker();
+        }
+
+        int workerId = 0;
+
+        while (!this.initialStates.isEmpty()) {
+            this.workers[workerId].openedStates.add(this.initialStates.poll());
+            workerId = (workerId + 1) % this.cores;
+        }
+    }
+
+    @Override
+    public boolean canPruneState(StateModel state) {
+        if (!this.closedStates.add(state)) {
+            return true;
+        }
+
+        return state.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
     }
 
     @Override
     public void schedule() {
-        StateModel validState = getValidSchedule();
+        createWorkers();
 
-        List<Worker> workers = new ArrayList<>();
+        runAStarScheduleWithHeuristic();
 
-        for (byte i = 0; i < cores; i++) {
-            Worker worker = new Worker();
-
-            worker.openedStates.add(new StateModel(processors, numberOfNodes));
-//
-//            if (i == 0) {
-//                worker.openedStates.add(validState.clone());
-//            }
-
-            workers.add(worker);
-        }
+        assignWorkToWorkers();
 
         try {
-            this.threadPool.invokeAll(workers);
+            this.threadPool.invokeAll(List.of(workers));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
             this.threadPool.shutdown();
         }
 
-        System.out.println(this.bestState == null);
-
-        if (this.bestState != null) {
-            metrics.setBestState(this.bestState);
-        } else {
-            metrics.setBestState(validState);
-        }
-
+        metrics.setBestState(this.bestState);
         metrics.setNumberOfClosedStates(this.closedStates.size());
     }
 
@@ -83,27 +143,24 @@ public class ParallelSchedulerTest extends AStarScheduler {
         }
 
         private void processPendingStates() {
-            while (true) {
+            while (!this.openedStates.isEmpty()) {
                 StateModel state = this.openedStates.poll();
-
-                if (state == null) {
-                    break;
-                }
-
-                if (!closedStates.add(state)) {
-                    continue;
-                }
-
-//                if (bestState != null && getEstimatedFinishTime(state) >= getEstimatedFinishTime(bestState)) {
-//                    continue;
-//                }
 
                 if (state.areAllNodesScheduled()) {
                     updateBestState(state);
-                    continue;
+
+                    break;
                 }
 
                 expandStates(state);
+            }
+        }
+
+        private void updateBestState(StateModel state) {
+            synchronized (bestStateLock) {
+                if (state.getMaximumFinishTime() < bestState.getMaximumFinishTime()) {
+                    bestState = state;
+                }
             }
         }
 
@@ -133,6 +190,20 @@ public class ParallelSchedulerTest extends AStarScheduler {
             this.openedStates.add(nextState);
 
             metrics.incrementNumberOfOpenedStates();
+        }
+
+        private boolean canPruneState(StateModel state) {
+            if (!closedStates.add(state)) {
+                return true;
+            }
+
+            return state.getMaximumFinishTime() >= getBestStateFinishTime();
+        }
+
+        private int getBestStateFinishTime() {
+            synchronized (bestStateLock) {
+                return bestState.getMaximumFinishTime();
+            }
         }
 
         private int getFCost(StateModel state) {
@@ -197,12 +268,6 @@ public class ParallelSchedulerTest extends AStarScheduler {
             }
 
             return minimumDataReadyTime;
-        }
-    }
-
-    private synchronized void updateBestState(StateModel state) {
-        if (this.bestState == null || state.getMaximumFinishTime() < this.bestState.getMaximumFinishTime()) {
-            this.bestState = state;
         }
     }
 }

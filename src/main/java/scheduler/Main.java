@@ -11,6 +11,7 @@ import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.Scheduler;
 import scheduler.schedulers.parallel.ParallelScheduler;
+import scheduler.schedulers.parallel.ParallelScheduler2;
 import scheduler.schedulers.parallel.ParallelSchedulerTest;
 import scheduler.schedulers.sequential.AStarScheduler;
 import visualiser.Visualiser;
@@ -25,8 +26,8 @@ import static scheduler.constants.Constants.RANDOM_OUTPUT_DOT_FILE_PATH;
 public class Main {
     private static Scheduler scheduler;
     private static void runScheduler(Arguments arguments) throws IOException {
-        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
-//        GraphModel graph = GraphGenerator.getRandomGraph();
+//        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
+        GraphModel graph = GraphGenerator.getRandomGraph();
         String filename = "Random_Graph.dot";
         InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
 
@@ -34,7 +35,7 @@ public class Main {
         long startTimeTest = System.currentTimeMillis();
         scheduler.schedule();
         long endTimeTest = System.currentTimeMillis();
-        double elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0;
+        float elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0f;
 
         MetricsModel metricsTest = scheduler.getMetrics();
         metricsTest.setElapsedTime(elapsedTimeTest);
@@ -43,9 +44,9 @@ public class Main {
         GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
         GraphGenerator.displayGraphInformation();
 
-        for (int i = 1; i <= 8; i++) {
-            arguments.setCores((byte) i);
-            Scheduler scheduler = new ParallelSchedulerTest(graph, arguments.getProcessors(), arguments.getCores());
+        for (byte i = 1; i <= 8; i++) {
+            arguments.setCores(i);
+            Scheduler scheduler = new ParallelScheduler2(graph, arguments.getProcessors(), arguments.getCores());
 
             MetricsModel metrics = scheduler.getMetrics();
             // track memory and cpu usage every x ms
@@ -59,7 +60,7 @@ public class Main {
             scheduler.schedule();
 
             long endTime = System.currentTimeMillis();
-            double elapsedTime = (endTime - startTime) / 1000.0;
+            float elapsedTime = (endTime - startTime) / 1000.0f;
 //            long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
 //            double memoryUsed = memoryAfter - memoryBefore;
 //

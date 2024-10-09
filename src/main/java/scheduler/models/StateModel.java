@@ -12,6 +12,7 @@ public class StateModel {
     private final byte numberOfProcessors;
     private byte numberOfScheduledNodes;
 
+    private int fCost;
     private final int numberOfNodes;
     private int totalIdleTime;
     private int maximumFinishTime;
@@ -290,5 +291,13 @@ public class StateModel {
      */
     public int getFinishTime(int processor) {
         return this.finishTimes[processor];
+    }
+
+    public void setFCost(int fCost) {
+        this.fCost = fCost;
+    }
+
+    public int getFCost() {
+        return this.fCost;
     }
 }

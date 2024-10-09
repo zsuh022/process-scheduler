@@ -101,8 +101,8 @@ public class ParallelScheduler extends AStarScheduler {
                     break;
                 }
 
-//                StateModel state = openedStates.poll(1, TimeUnit.SECONDS);
-                StateModel state = openedStates.poll();
+                StateModel state = openedStates.poll(1, TimeUnit.SECONDS);
+//                StateModel state = openedStates.poll();
 
                 if (state == null) {
                     if (activeNodes.get() == 0 && openedStates.isEmpty()) {
@@ -143,7 +143,7 @@ public class ParallelScheduler extends AStarScheduler {
         }
     }
 
-    private void expandState(StateModel state, NodeModel node, int processor) {
+    protected void expandState(StateModel state, NodeModel node, int processor) {
         StateModel nextState = state.clone();
 
         int earliestStartTime = getEarliestStartTime(state, node, processor);
