@@ -5,6 +5,8 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -39,12 +41,12 @@
                   </Text>
                   <StackPane>
                      <children>
-                        <Rectangle arcHeight="30.0" arcWidth="30.0" fill="#002e72" height="46.0" onMouseClicked="#showSchedule" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" width="230.0">
+                        <Rectangle arcHeight="30.0" arcWidth="30.0" fill="#002e72" height="46.0" onMouseClicked="#showMetrics" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" width="230.0">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Rectangle>
-                        <Text fill="WHITE" fontSmoothingType="LCD" onMouseClicked="#showSchedule" strokeType="OUTSIDE" strokeWidth="0.0" text="Show Schedule Chart">
+                        <Text fill="WHITE" fontSmoothingType="LCD" onMouseClicked="#showMetrics" strokeType="OUTSIDE" strokeWidth="0.0" text="Show Schedule Chart">
                            <font>
                               <Font name="System Bold" size="20.0" />
                            </font>
@@ -155,19 +157,24 @@
                               <Insets bottom="30.0" right="610.0" />
                            </StackPane.margin>
                         </Text>
-                        <Text fx:id="lblTimeElapsed" fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="0" wrappingWidth="605.0" StackPane.alignment="BOTTOM_CENTER">
+                        <Label fx:id="lblTimeElapsed" prefHeight="21.1" prefWidth="605.0" text="0" textFill="#777777" StackPane.alignment="BOTTOM_CENTER">
                            <font>
                               <Font name="System Bold" size="18.0" />
                            </font>
                            <StackPane.margin>
-                              <Insets bottom="30.0" left="610.0" />
+                              <Insets bottom="28.0" left="610.0" />
                            </StackPane.margin>
-                        </Text>
+                        </Label>
                      </children>
                   </StackPane>
                </children>
             </HBox>
          </children>
       </VBox>
+      <ScrollPane fx:id="chartPane" layoutX="45.0" layoutY="350.0" prefHeight="280.0" prefWidth="1190.0">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1190.0" />
+         </content>
+      </ScrollPane>
    </children>
 </AnchorPane>

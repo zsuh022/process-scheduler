@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import scheduler.models.MetricsModel;
 import scheduler.parsers.Arguments;
 import scheduler.schedulers.Scheduler;
+import visualiser.controllers.DynamicController;
 import visualiser.controllers.GanttChartController;
 import visualiser.controllers.ProcessorController;
 import visualiser.controllers.VisualiserController;
@@ -29,8 +30,8 @@ public class Visualiser extends Application {
         FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/fxml/" + fxml + ".fxml"));
         Parent root = loader.load();
         
-        if (fxml.equals("ganttChart")) {
-            GanttChartController controller = loader.getController();
+        if (fxml.equals("dynamic")) {
+            DynamicController controller = loader.getController();
             controller.setArguments(arguments);
         } else if (fxml.equals("visualiser")){
             VisualiserController controller = loader.getController();
@@ -59,7 +60,7 @@ public class Visualiser extends Application {
         //above is for milestone 2
         //Scene scene = new Scene(new StackPane(l), 640, 480);
         
-        scene = new Scene(loadFxml("visualiser"), 1280, 720);
+        scene = new Scene(loadFxml("dynamic"), 1280, 720);
         // Used for milestone 2
         stage.setScene(scene);
         stage.show();
