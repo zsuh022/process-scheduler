@@ -61,11 +61,11 @@
                   <Insets />
                </VBox.margin>
                <children>
-                  <StackPane prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                  <StackPane HBox.hgrow="ALWAYS">
                      <children>
-                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="420.0" stroke="TRANSPARENT" strokeType="INSIDE" width="570.0">
+                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="200.0" stroke="TRANSPARENT" strokeType="INSIDE" width="570.0">
                            <StackPane.margin>
-                              <Insets />
+                              <Insets bottom="-35.0" />
                            </StackPane.margin>
                         </Rectangle>
                         <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="RAM" StackPane.alignment="TOP_LEFT">
@@ -73,16 +73,19 @@
                               <Font name="System Bold" size="18.0" />
                            </font>
                            <StackPane.margin>
-                              <Insets left="45.0" top="26.0" />
+                              <Insets left="45.0" top="15.0" />
                            </StackPane.margin>
                         </Text>
                      </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
                   </StackPane>
-                  <StackPane prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                  <StackPane HBox.hgrow="ALWAYS">
                      <children>
-                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="420.0" stroke="TRANSPARENT" strokeType="INSIDE" width="570.0">
+                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="200.0" stroke="TRANSPARENT" strokeType="INSIDE" width="570.0">
                            <StackPane.margin>
-                              <Insets />
+                              <Insets bottom="-35.0" />
                            </StackPane.margin>
                         </Rectangle>
                         <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="CPU" StackPane.alignment="TOP_LEFT">
@@ -90,14 +93,34 @@
                               <Font name="System Bold" size="18.0" />
                            </font>
                            <StackPane.margin>
-                              <Insets left="45.0" top="26.0" />
+                              <Insets left="45.0" top="15.0" />
                            </StackPane.margin>
                         </Text>
                      </children>
                   </StackPane>
                </children>
             </HBox>
-            <HBox />
+            <HBox>
+               <children>
+                  <StackPane prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="300.0" stroke="TRANSPARENT" strokeType="INSIDE" width="1210.0">
+                           <StackPane.margin>
+                              <Insets bottom="40.0" top="40.0" />
+                           </StackPane.margin>
+                        </Rectangle>
+                        <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule" StackPane.alignment="TOP_LEFT">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                           <StackPane.margin>
+                              <Insets left="45.0" top="10.0" />
+                           </StackPane.margin>
+                        </Text>
+                     </children>
+                  </StackPane>
+               </children>
+            </HBox>
          </children>
       </VBox>
    </children>
