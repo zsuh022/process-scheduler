@@ -7,11 +7,10 @@ import scheduler.schedulers.sequential.AStarScheduler;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static scheduler.constants.Constants.INFINITY_32;
 
-public class ParallelScheduler2 extends AStarScheduler {
+public class ParallelSchedulerStatic extends AStarScheduler {
     private final ExecutorService threadPool;
 
     private final PriorityQueue<StateModel> initialStates;
@@ -24,7 +23,7 @@ public class ParallelScheduler2 extends AStarScheduler {
 
     private final byte cores;
 
-    public ParallelScheduler2(GraphModel graph, byte processors, byte cores) {
+    public ParallelSchedulerStatic(GraphModel graph, byte processors, byte cores) {
         super(graph, processors);
 
         this.threadPool = Executors.newFixedThreadPool(cores);
@@ -245,7 +244,6 @@ public class ParallelScheduler2 extends AStarScheduler {
             return Math.max(parentBottomLevelPathLength, estimatedFinishTime);
         }
 
-        // This is actually amortised O(1) from O(|free(s)| * |P|)
         private int getMaximumDataReadyTime(StateModel state) {
             int maximumDataReadyTime = 0;
 

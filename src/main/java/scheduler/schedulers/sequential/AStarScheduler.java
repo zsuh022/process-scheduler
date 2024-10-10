@@ -143,9 +143,6 @@ public class AStarScheduler extends Scheduler {
         return (int) Math.ceil(totalWeight / processors);
     }
 
-    // V2- can be reduced to O(1) but with increased memory? I'll see if it is worth it
-    // note: fbl(s)=max(fbl(s_parent),ts(last)+bl(last))
-
      protected int getMaximumBottomLevelPathLength(StateModel state) {
         if (state.isEmpty()) {
             return 0;
@@ -159,7 +156,6 @@ public class AStarScheduler extends Scheduler {
         return Math.max(parentBottomLevelPathLength, estimatedFinishTime);
     }
 
-    // This is actually amortised O(1) from O(|free(s)| * |P|)
     protected int getMaximumDataReadyTime(StateModel state) {
         int maximumDataReadyTime = 0;
 
