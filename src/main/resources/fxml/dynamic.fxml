@@ -79,7 +79,7 @@
                               <Insets left="10.0" />
                            </StackPane.margin>
                         </Rectangle>
-                        <LineChart title="RAM" StackPane.alignment="CENTER">
+                        <LineChart fx:id="lineChartRam" title="RAM" StackPane.alignment="CENTER">
                           <xAxis>
                             <CategoryAxis label="Time (ms)" side="BOTTOM" />
                           </xAxis>
@@ -110,7 +110,7 @@
                               <Insets right="10.0" />
                            </StackPane.margin>
                         </Rectangle>
-                        <LineChart title="CPU" StackPane.alignment="CENTER">
+                        <LineChart fx:id="lineChartCpu" title="CPU" StackPane.alignment="CENTER">
                            <xAxis>
                               <CategoryAxis label="Time (ms)" side="BOTTOM" />
                            </xAxis>
