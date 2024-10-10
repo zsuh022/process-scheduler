@@ -2,6 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -63,11 +66,6 @@
                <children>
                   <StackPane HBox.hgrow="ALWAYS">
                      <children>
-                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="210.0" stroke="TRANSPARENT" strokeType="INSIDE" width="580.0">
-                           <StackPane.margin>
-                              <Insets left="10.0" />
-                           </StackPane.margin>
-                        </Rectangle>
                         <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="RAM" StackPane.alignment="TOP_LEFT">
                            <font>
                               <Font name="System Bold" size="18.0" />
@@ -76,6 +74,22 @@
                               <Insets left="45.0" top="35.0" />
                            </StackPane.margin>
                         </Text>
+                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="210.0" stroke="TRANSPARENT" strokeType="INSIDE" width="580.0">
+                           <StackPane.margin>
+                              <Insets left="10.0" />
+                           </StackPane.margin>
+                        </Rectangle>
+                        <LineChart title="RAM" StackPane.alignment="CENTER">
+                          <xAxis>
+                            <CategoryAxis label="Time (ms)" side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis label="Memory Usage (MB)" side="LEFT" />
+                          </yAxis>
+                           <StackPane.margin>
+                              <Insets bottom="10.0" left="30.0" right="20.0" top="20.0" />
+                           </StackPane.margin>
+                        </LineChart>
                      </children>
                      <HBox.margin>
                         <Insets />
@@ -83,11 +97,6 @@
                   </StackPane>
                   <StackPane HBox.hgrow="ALWAYS">
                      <children>
-                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="210.0" stroke="TRANSPARENT" strokeType="INSIDE" width="580.0">
-                           <StackPane.margin>
-                              <Insets right="10.0" />
-                           </StackPane.margin>
-                        </Rectangle>
                         <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="CPU" StackPane.alignment="TOP_LEFT">
                            <font>
                               <Font name="System Bold" size="18.0" />
@@ -96,6 +105,22 @@
                               <Insets left="45.0" top="35.0" />
                            </StackPane.margin>
                         </Text>
+                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="210.0" stroke="TRANSPARENT" strokeType="INSIDE" width="580.0">
+                           <StackPane.margin>
+                              <Insets right="10.0" />
+                           </StackPane.margin>
+                        </Rectangle>
+                        <LineChart title="CPU" StackPane.alignment="CENTER">
+                           <xAxis>
+                              <CategoryAxis label="Time (ms)" side="BOTTOM" />
+                           </xAxis>
+                           <yAxis>
+                              <NumberAxis label="CPU Usage (%)" side="LEFT" />
+                           </yAxis>
+                           <StackPane.margin>
+                              <Insets bottom="10.0" left="20.0" right="30.0" top="20.0" />
+                           </StackPane.margin>
+                        </LineChart>
                      </children>
                   </StackPane>
                </children>
