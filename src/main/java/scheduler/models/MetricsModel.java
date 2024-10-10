@@ -20,6 +20,7 @@ public class MetricsModel {
     private float elapsedTime;
 
     private final List<Float> cpuUsage;
+    private final List<Float> ramUsage;
 
     private ScheduledExecutorService scheduledExecutorService;
 
@@ -31,6 +32,7 @@ public class MetricsModel {
         this.numberOfClosedStates = new AtomicInteger(0);
 
         this.cpuUsage = new ArrayList<>();
+        this.ramUsage = new ArrayList<>();
     }
 
     /**
@@ -143,12 +145,19 @@ public class MetricsModel {
 
     private void capturePeriodicMetrics() {
         this.cpuUsage.add(getCurrentCpuLoad());
+        this.ramUsage.add(getCurrentRamUsage());
     }
 
     private float getCurrentCpuLoad() {
         OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
         return (osBean == null) ? -1.0f : (float) (osBean.getCpuLoad() * 100.0);
+    }
+
+    private float getCurrentRamUsage() {
+        Runtime runtime = Runtime.getRuntime();
+        long memoryUsed = runtime.totalMemory() - runtime.freeMemory();
+        return (float) memoryUsed / 1024 / 1024;
     }
 
     /**
@@ -173,7 +182,7 @@ public class MetricsModel {
         System.out.println("\nPeriodic CPU Usage:");
 
         for (int i = 0; i < this.cpuUsage.size(); i++) {
-            System.out.printf("  CPU Usage at interval %d: %.3f%%%n", i + 1, this.cpuUsage.get(i));
+            System.out.printf("  Interval %d - RAM: %.3fMB, CPU: %.3f%%%n", i + 1, this.ramUsage.get(i), this.cpuUsage.get(i));
         }
     }
 }
