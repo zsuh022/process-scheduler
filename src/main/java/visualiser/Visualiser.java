@@ -32,6 +32,8 @@ public class Visualiser extends Application {
         
         if (fxml.equals("dynamic")) {
             DynamicController controller = loader.getController();
+            MetricsModel metricsModel = new MetricsModel();
+            controller.setMetricsModel(metricsModel);
             controller.setArguments(arguments);
         } else if (fxml.equals("visualiser")){
             VisualiserController controller = loader.getController();

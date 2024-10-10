@@ -1,5 +1,6 @@
 package visualiser.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -17,6 +18,8 @@ import visualiser.GanttChart;
 import visualiser.Visualiser;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class DynamicController {
 
@@ -41,6 +44,9 @@ public class DynamicController {
 
     private MetricsModel metricsModel;
 
+    private Timer timer;
+    private int timeElapsed = 0;
+
     @FXML
     public void initialize() {
         lineChartRam.getData().addAll(seriesRam);
@@ -60,6 +66,8 @@ public class DynamicController {
         Pane pane = new Pane();
         pane.getChildren().add(ganttChart);
         chartPane.setContent(pane);
+
+        startTracking();
     }
 
     @FXML
@@ -70,6 +78,47 @@ public class DynamicController {
     public void setArguments(Arguments arguments) throws IOException {
         this.arguments = arguments;
         addAllTask();
+    }
+
+    public void setMetricsModel(MetricsModel metricsModel) {
+        this.metricsModel = metricsModel;
+        this.metricsModel.startPeriodicTracking(500);
+        startTracking();
+    }
+
+    private void startTracking() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                updateLineCharts();
+            }
+        }, 0, 500);
+    }
+
+    private void updateLineCharts() {
+        int index = metricsModel.getPeriodicCpuUsage().size() - 1;
+        if (index >= 0) {
+            float currentCpuUsage = metricsModel.getPeriodicCpuUsage().get(index);
+            float currentRamUsage = metricsModel.getPeriodicRamUsage().get(index);
+
+            timeElapsed += 500;
+
+            Platform.runLater(() -> {
+                seriesCpu.getData().add(new XYChart.Data<>(String.valueOf(timeElapsed), currentCpuUsage));
+                seriesRam.getData().add(new XYChart.Data<>(String.valueOf(timeElapsed), currentRamUsage));
+
+                lblTimeElapsed.setText(String.valueOf(timeElapsed));
+
+                // Keep only a certain number of data points visible (e.g., 20)
+                if (seriesCpu.getData().size() > 20) {
+                    seriesCpu.getData().remove(0);
+                }
+                if (seriesRam.getData().size() > 20) {
+                    seriesRam.getData().remove(0);
+                }
+            });
+        }
     }
 
     public void addTask(int processor, int startTime, int length, String taskName) {
