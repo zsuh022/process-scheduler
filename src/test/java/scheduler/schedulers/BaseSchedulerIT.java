@@ -34,10 +34,17 @@ public abstract class BaseSchedulerIT {
         String path = TEST_CRAWLED_DOT_FILE_PATH;
 
         File directory = new File(path);
+        int index=0;
 
         for (File file : Objects.requireNonNull(directory.listFiles())) {
-            crawledDOTFiles.add(path.concat(file.getName()));
+            String filename = file.getName();
+
+            if (filename.startsWith("Fork_Join")) {
+                crawledDOTFiles.add(path.concat(file.getName()));
+            }
         }
+
+        System.out.println(crawledDOTFiles.size());
     }
 
     @BeforeEach

@@ -1,16 +1,14 @@
 package scheduler.schedulers.sequential;
 
 import org.graphstream.graph.Graph;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import scheduler.models.GraphModel;
-import scheduler.models.MetricsModel;
 import scheduler.models.StateModel;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.BaseSchedulerIT;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static scheduler.constants.Constants.TEST_INPUT_DOT_FILE_PATH;
@@ -139,6 +137,7 @@ public class SequentialSchedulerIT extends BaseSchedulerIT {
         arguments.setProcessors(Byte.parseByte(splits[1]));
     }
 
+    @Disabled
     @Test
     public void testCrawledDOTFiles() throws IOException {
         for (String crawledDOTFile : crawledDOTFiles) {

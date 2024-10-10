@@ -20,8 +20,8 @@ public abstract class Scheduler {
     protected Set<StateModel> closedStates;
 
     protected byte processors;
+    protected byte numberOfNodes;
 
-    protected int numberOfNodes;
     protected int criticalPathLength;
 
     protected int[] bottomLevelPathLengths;
@@ -37,7 +37,8 @@ public abstract class Scheduler {
         this.graph = graph;
 
         this.processors = processors;
-        this.numberOfNodes = graph.getNumberOfNodes();
+        this.numberOfNodes = (byte) graph.getNumberOfNodes();
+
         this.criticalPathLength = 0;
 
         this.metrics = new MetricsModel();
