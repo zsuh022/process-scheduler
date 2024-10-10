@@ -43,12 +43,6 @@ public class ParallelSchedulerStatic extends AStarScheduler {
         this.cores = cores;
     }
 
-    private void createWorkers() {
-        for (byte workerId = 0; workerId < this.cores; workerId++) {
-            this.workers[workerId] = new Worker();
-        }
-    }
-
     private void runAStarScheduleWithHeuristic() {
         this.initialStates.add(new StateModel(this.processors, this.numberOfNodes));
 
@@ -70,7 +64,6 @@ public class ParallelSchedulerStatic extends AStarScheduler {
     }
 
     private void expandState(StateModel state, NodeModel node, int processor) {
-        // Skip tasks that are not in the fixed order defined
         if (isFirstAvailableNode(state, node)) {
             return;
         }
@@ -113,8 +106,6 @@ public class ParallelSchedulerStatic extends AStarScheduler {
 
     @Override
     public void schedule() {
-        createWorkers();
-
         runAStarScheduleWithHeuristic();
 
         assignWorkToWorkers();

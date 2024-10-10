@@ -5,7 +5,10 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import scheduler.models.GraphModel;
+import scheduler.parsers.InputOutputParser;
 import scheduler.utilities.Utility;
+
+import java.io.IOException;
 
 import static scheduler.constants.Constants.*;
 
@@ -18,14 +21,10 @@ public class GraphGenerator {
     }
 
     public static GraphModel getRandomGraph() {
-        Graph graph = new SingleGraph("graph");
-
         GraphInformation.numberOfNodes = getRandomNumberOfNodes();
         GraphInformation.numberOfEdges = getRandomNumberOfEdges();
 
-        generateRandomGraph(graph);
-
-        return new GraphModel(graph);
+        return new GraphModel(generateRandomGraph());
     }
 
     private static boolean isCyclic(boolean[][] adjacencyMatrix) {
@@ -80,7 +79,9 @@ public class GraphGenerator {
         }
     }
 
-    private static void generateRandomGraph(Graph graph) {
+    private static Graph generateRandomGraph() {
+        Graph graph = new SingleGraph("graph");
+
         boolean[][] adjacencyMatrix = new boolean[GraphInformation.numberOfNodes][GraphInformation.numberOfNodes];
 
         int[][] edgePermutations = getEdgePermutations();
@@ -113,6 +114,8 @@ public class GraphGenerator {
         }
 
         createGraphFromAdjacencyMatrix(graph, adjacencyMatrix);
+
+        return graph;
     }
 
     private static void createGraphFromAdjacencyMatrix(Graph graph, boolean[][] adjacencyMatrix) {
@@ -213,5 +216,13 @@ public class GraphGenerator {
         }
 
         return isSourceNode;
+    }
+
+    public static void createAndSaveRandomGraphs(int numberOfRandomGraphs) throws IOException {
+        for (int graphIndex = 0; graphIndex < numberOfRandomGraphs; graphIndex++) {
+            String filename = "Random_%d_Graph.dot".formatted(graphIndex);
+
+            InputOutputParser.writeDOTFile(generateRandomGraph(), filename);
+        }
     }
 }

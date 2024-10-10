@@ -10,11 +10,11 @@ import java.util.Objects;
  */
 public class StateModel {
     private byte lastNodeId;
+    private final byte numberOfNodes;
     private final byte numberOfProcessors;
     private byte numberOfScheduledNodes;
 
     private int fCost;
-    private int numberOfNodes;
     private int totalIdleTime;
     private int maximumFinishTime;
     private int maximumBottomLevelPathLength;
@@ -34,7 +34,7 @@ public class StateModel {
      * @param numberOfProcessors the number of processors available for scheduling
      * @param numberOfNodes      the total number of nodes to schedule
      */
-    public StateModel(byte numberOfProcessors, int numberOfNodes) {
+    public StateModel(byte numberOfProcessors, byte numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
         this.totalIdleTime = 0;
         this.maximumFinishTime = 0;
