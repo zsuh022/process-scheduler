@@ -35,6 +35,7 @@ public class GanttChartController {
         ganttChart.setPrefHeight(300);
         ganttChart.setPrefWidth(1280);
         ganttChart.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        ganttChart.setLegendVisible(false);
         // Add the GanttChart to the Pane
         Pane pane = new Pane();
         pane.getChildren().add(ganttChart);
@@ -46,11 +47,11 @@ public class GanttChartController {
         addAllTask();
     }
 
-    public void addTask(int processor, int startTime, int length) {
+    public void addTask(int processor, int startTime, int length, String taskName) {
         // Create a new series for the task
         XYChart.Series<Number, String> series = new XYChart.Series<>();
         // Add the task to the series
-        series.getData().add(new XYChart.Data<>(startTime, "Processor " + processor, new GanttChart.ExtraData(length, "JONKLERBLOCK")));
+        series.getData().add(new XYChart.Data<>(startTime, "Processor " + processor, new GanttChart.ExtraData(length, "JONKLERBLOCK", taskName)));
         // Add the series to the Gantt chart
         ganttChart.getData().add(series);
     }
@@ -59,7 +60,7 @@ public class GanttChartController {
         String tasks = arguments.getOutputDOTFilePath();
         GraphModel graphModel = new GraphModel(tasks);
         for (NodeModel node : graphModel.getNodes().values()) {
-            addTask(node.getProcessor(), node.getStartTime(), node.getWeight());
+            addTask(node.getProcessor(), node.getStartTime(), node.getWeight(), node.getId());
         }
     }
 

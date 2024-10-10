@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.scene.Node;
 import javafx.scene.chart.Axis;
 import javafx.scene.chart.NumberAxis;
@@ -22,10 +23,12 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
     public static class ExtraData {
         private long length;
         private String styleClass;
+        private String taskName;
 
-        public ExtraData(long length, String styleClass) {
+        public ExtraData(long length, String styleClass, String taskName) {
             this.length = length;
             this.styleClass = styleClass;
+            this.taskName = taskName;
         }
 
         public long getLength() {
@@ -42,6 +45,14 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 
         public void setStyleClass(String styleClass) {
             this.styleClass = styleClass;
+        }
+
+        public String getTaskName() {
+            return taskName;
+        }
+
+        public void setTaskName(String taskName) {
+            this.taskName = taskName;
         }
     }
 
@@ -64,6 +75,10 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         return ((ExtraData) obj).getStyleClass();
     }
 
+    private static String getTaskName(Object obj) {
+        return ((ExtraData) obj).getTaskName();
+    }
+
     public double getBlockHeight() {
         return blockHeight;
     }
@@ -73,49 +88,62 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
     }
 
     @Override
-protected void layoutPlotChildren() {
+    protected void layoutPlotChildren() {
     // Iterate through all the data in the chart
-    for (int i = 0; i < getData().size(); i++) {
-        Series<X, Y> series = getData().get(i);
-        Iterator<Data<X, Y>> iter = getDisplayedDataIterator(series);
+        for (int i = 0; i < getData().size(); i++) {
+            Series<X, Y> series = getData().get(i);
+            Iterator<Data<X, Y>> iter = getDisplayedDataIterator(series);
 
-        // Iterate through all the tasks in the series
-        while (iter.hasNext()) {
-            Data<X, Y> item = iter.next();
-            double x = getXAxis().getDisplayPosition(item.getXValue());
-            double y = getYAxis().getDisplayPosition(item.getYValue());
+            // Iterate through all the tasks in the series
+            while (iter.hasNext()) {
+                Data<X, Y> item = iter.next();
+                double x = getXAxis().getDisplayPosition(item.getXValue());
+                double y = getYAxis().getDisplayPosition(item.getYValue());
 
-            // If x and y are NaN, skip this iteration
-            if (Double.isNaN(x) || Double.isNaN(y)) {
-                continue;
+                // If x and y are NaN, skip this iteration
+                if (Double.isNaN(x) || Double.isNaN(y)) {
+                    continue;
+                }
+
+                // Get or create the node for the task
+                Rectangle rect = (Rectangle) item.getNode();
+
+                if (rect == null) {
+                    rect = new Rectangle();
+                    item.setNode(rect);  // Set the newly created Rectangle as the node
+                    getPlotChildren().add(rect);  // Add the Rectangle to the plot
+                }
+
+                rect.getStyleClass().add(getStyleClass(item.getExtraValue()));
+
+                // Set the size of the rectangle (task block)
+                double length = getLength(item.getExtraValue()) * widthScaling();
+                double height = getBlockHeight() * heightScaling();
+
+                // Center block vertically
+                y -= height / 2;
+
+                // Set the position and size of the rectangle
+                rect.setX(x);
+                rect.setY(y);
+                rect.setWidth(length);
+                rect.setHeight(height);
+
+                String taskName = getTaskName(item.getExtraValue());
+                Text text = new Text(taskName);
+
+                // Calculate position of the text 
+                double textX = x + (length-10) / 2;
+
+                // Set the position of the text
+                text.setX(textX);
+                text.setY(y + (height+10) / 2);
+
+                // Add the text to the plot
+                getPlotChildren().add(text);
             }
-
-            // Get or create the node for the task
-            Rectangle rect = (Rectangle) item.getNode();
-
-            if (rect == null) {
-                rect = new Rectangle();
-                item.setNode(rect);  // Set the newly created Rectangle as the node
-                getPlotChildren().add(rect);  // Add the Rectangle to the plot
-            }
-
-            rect.getStyleClass().add(getStyleClass(item.getExtraValue()));
-
-            // Set the size of the rectangle (task block)
-            double length = getLength(item.getExtraValue()) * widthScaling();
-            double height = getBlockHeight() * heightScaling();
-
-            // Center block vertically
-            y -= height / 2;
-
-            // Set the position and size of the rectangle
-            rect.setX(x);
-            rect.setY(y);
-            rect.setWidth(length);
-            rect.setHeight(height);
         }
     }
-}
 
     private double heightScaling() {
         if (getYAxis() instanceof NumberAxis) {
