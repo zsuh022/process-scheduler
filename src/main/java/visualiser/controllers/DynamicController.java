@@ -23,7 +23,7 @@ import java.util.TimerTask;
 
 public class DynamicController {
 
-    private static final int PERIODIC_INTERVAL_MS = 50;
+    private static final int PERIODIC_INTERVAL_MS = 500;
 
     @FXML
     private Label lblTimeElapsed;
@@ -112,7 +112,7 @@ public class DynamicController {
 
                 lblTimeElapsed.setText(String.valueOf(timeElapsed));
 
-                // Keep only a certain number of data points visible (e.g., 20)
+                // number of data points visible
                 if (seriesCpu.getData().size() > 20) {
                     seriesCpu.getData().remove(0);
                 }

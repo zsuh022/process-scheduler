@@ -18,6 +18,7 @@ public class MetricsModel {
 
     private float memoryUsed;
     private float elapsedTime;
+    private long interval;
 
     private final List<Float> cpuUsage;
     private final List<Float> ramUsage;
@@ -136,9 +137,15 @@ public class MetricsModel {
     }
 
     public void startPeriodicTracking(long interval) {
+        this.interval = interval;
+
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
         this.scheduledExecutorService.scheduleAtFixedRate(this::capturePeriodicMetrics, 0, interval, TimeUnit.MILLISECONDS);
+    }
+
+    public long getInterval() {
+        return this.interval;
     }
 
     public void stopPeriodicTracking() {
