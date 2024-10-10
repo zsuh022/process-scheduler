@@ -131,6 +131,10 @@ public class MetricsModel {
         return this.cpuUsage;
     }
 
+    public List<Float> getPeriodicRamUsage() {
+        return this.ramUsage;
+    }
+
     public void startPeriodicTracking(long interval) {
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
