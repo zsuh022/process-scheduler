@@ -5,8 +5,14 @@ import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.schedulers.sequential.AStarScheduler;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ParallelSchedulerStatic extends AStarScheduler {
     private final ExecutorService threadPool;
@@ -65,7 +71,7 @@ public class ParallelSchedulerStatic extends AStarScheduler {
 
     private void expandState(StateModel state, NodeModel node, int processor) {
         // Skip tasks that are not in the fixed order defined
-        if (!isFirstAvailableNode(state, node)) {
+        if (isFirstAvailableNode(state, node)) {
             return;
         }
 
@@ -126,11 +132,7 @@ public class ParallelSchedulerStatic extends AStarScheduler {
     }
 
     private class Worker implements Callable<Void> {
-        private final PriorityQueue<StateModel> openedStates = new PriorityQueue<>(
-                Comparator.comparingInt(
-                        ParallelSchedulerStatic.this::getFCost
-                )
-        );
+        private final PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(ParallelSchedulerStatic.this::getFCost));
 
         @Override
         public Void call() {
@@ -163,7 +165,7 @@ public class ParallelSchedulerStatic extends AStarScheduler {
 
         private void expandStates(StateModel state) {
             for (NodeModel node : getAvailableNodes(state)) {
-                if (!isFirstAvailableNode(state, node)) {
+                if (isFirstAvailableNode(state, node)) {
                     continue;
                 }
 

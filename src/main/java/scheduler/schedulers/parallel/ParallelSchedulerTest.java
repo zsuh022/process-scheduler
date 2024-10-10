@@ -108,7 +108,7 @@ public class ParallelSchedulerTest extends AStarScheduler {
 
         private void expandStates(StateModel state) {
             for (NodeModel node : getAvailableNodes(state)) {
-                if (!isFirstAvailableNode(state, node)) {
+                if (isFirstAvailableNode(state, node)) {
                     continue;
                 }
 

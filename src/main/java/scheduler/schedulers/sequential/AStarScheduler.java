@@ -48,7 +48,7 @@ public class AStarScheduler extends Scheduler {
     }
 
     private void expandState(StateModel state, NodeModel node, int processor) {
-        if (!isFirstAvailableNode(state, node)) {
+        if (isFirstAvailableNode(state, node)) {
             return;
         }
 
@@ -72,16 +72,16 @@ public class AStarScheduler extends Scheduler {
         for (NodeModel equivalentNode : equivalentNodeGroup) {
             // both tasks are both the same, so we can continue with scheduling it
             if (equivalentNode.equals(node)) {
-                return true;
+                return false;
             }
 
             // if there is an earlier equivalent task that is not scheduled
             if (!state.isNodeScheduled(equivalentNode)) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     protected StateModel getValidSchedule() {
