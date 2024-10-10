@@ -51,11 +51,16 @@ public class InputOutputParser {
     public static void outputDOTFile(GraphModel graph, String filename) throws IOException {
         Graph graphStream = convertGraphModelToGraphStream(graph);
 
+        writeDOTFile(graphStream, filename);
+    }
+
+    public static void writeDOTFile(Graph graph, String filename) throws IOException {
         FileSinkDOT fileSinkDOT = new FileSinkDOT();
         fileSinkDOT.setDirected(true);
 
-        fileSinkDOT.writeAll(graphStream, new FileWriter(filename));
+        fileSinkDOT.writeAll(graph, new FileWriter(filename));
     }
+
 
     /**
      * Converts a graph model instance to a graph stream instance.

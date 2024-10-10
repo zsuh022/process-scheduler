@@ -10,6 +10,7 @@ import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.Scheduler;
+import scheduler.schedulers.parallel.ParallelSchedulerDynamic;
 import scheduler.schedulers.parallel.ParallelSchedulerStatic;
 import scheduler.schedulers.sequential.AStarScheduler;
 import visualiser.Visualiser;
@@ -44,7 +45,7 @@ public class Main {
 
         for (byte i = 1; i <= 8; i++) {
             arguments.setCores(i);
-            Scheduler scheduler = new ParallelSchedulerStatic(graph, arguments.getProcessors(), arguments.getCores());
+            Scheduler scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());
 
             MetricsModel metrics = scheduler.getMetrics();
             // track memory and cpu usage every x ms

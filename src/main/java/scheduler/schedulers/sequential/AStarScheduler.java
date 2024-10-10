@@ -30,7 +30,6 @@ public class AStarScheduler extends Scheduler {
             StateModel state = this.openedStates.poll();
 
             if (state.areAllNodesScheduled()) {
-                System.out.println(state.getMaximumFinishTime());
                 this.bestState = state;
 
                 break;

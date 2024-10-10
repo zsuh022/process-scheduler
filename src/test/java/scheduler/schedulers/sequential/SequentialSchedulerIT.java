@@ -1,12 +1,16 @@
 package scheduler.schedulers.sequential;
 
+import org.graphstream.graph.Graph;
 import org.junit.jupiter.api.Test;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
 import scheduler.models.StateModel;
+import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.BaseSchedulerIT;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static scheduler.constants.Constants.TEST_INPUT_DOT_FILE_PATH;
@@ -34,8 +38,7 @@ public class SequentialSchedulerIT extends BaseSchedulerIT {
     }
 
     private void assertTestCase(int expectedFinishTime) {
-        MetricsModel metrics = scheduler.getMetrics();
-        StateModel bestState = metrics.getBestState();
+        StateModel bestState = scheduler.getMetrics().getBestState();
 
         assertAll(
                 () -> assertNotNull(bestState),
@@ -126,5 +129,35 @@ public class SequentialSchedulerIT extends BaseSchedulerIT {
             // Assert
             assertTestCase(processorsAndExpectedValue[1]);
         }
+    }
+
+    public void setProcessors(Graph graph) {
+        String targetSystem = (String) graph.getAttribute("TargetSystem");
+
+        String[] splits = targetSystem.split("-");
+
+        arguments.setProcessors(Byte.parseByte(splits[1]));
+    }
+
+    @Test
+    public void testCrawledDOTFiles() throws IOException {
+        for (String crawledDOTFile : crawledDOTFiles) {
+            testSingleCrawledDOTFile(crawledDOTFile);
+        }
+    }
+
+    public void testSingleCrawledDOTFile(String filename) throws IOException {
+        Graph graph = InputOutputParser.readDOTFile(filename);
+
+        setProcessors(graph);
+
+        int expectedValue = (int) Math.round((double) graph.getAttribute("Total schedule length"));
+
+        this.graph = new GraphModel(graph);
+
+        this.scheduler = new AStarScheduler(this.graph, arguments.getProcessors());
+        this.scheduler.schedule();
+
+        assertTestCase(expectedValue);
     }
 }
