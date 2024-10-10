@@ -20,6 +20,7 @@ public class MetricsModel {
     private float elapsedTime;
 
     private final List<Float> cpuUsage;
+    private final List<Float> ramUsage;
 
     private ScheduledExecutorService scheduledExecutorService;
 
@@ -31,6 +32,7 @@ public class MetricsModel {
         this.numberOfClosedStates = new AtomicInteger(0);
 
         this.cpuUsage = new ArrayList<>();
+        this.ramUsage = new ArrayList<>();
     }
 
     /**
@@ -129,6 +131,10 @@ public class MetricsModel {
         return this.cpuUsage;
     }
 
+    public List<Float> getPeriodicRamUsage() {
+        return this.ramUsage;
+    }
+
     public void startPeriodicTracking(long interval) {
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
@@ -143,12 +149,28 @@ public class MetricsModel {
 
     private void capturePeriodicMetrics() {
         this.cpuUsage.add(getCurrentCpuLoad());
+        this.ramUsage.add(getCurrentRamUsage());
     }
 
     private float getCurrentCpuLoad() {
         OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        float cpuLoad = (osBean == null) ? -1.0f : (float) (osBean.getCpuLoad() * 100.0);
 
-        return (osBean == null) ? -1.0f : (float) (osBean.getCpuLoad() * 100.0);
+        if (Float.isNaN(cpuLoad)) {
+            if (!cpuUsage.isEmpty()) {
+                // return last cpu load value
+                return cpuUsage.get(cpuUsage.size() - 1);
+            }
+            return 0.0f;
+        }
+
+        return cpuLoad;
+    }
+
+    private float getCurrentRamUsage() {
+        Runtime runtime = Runtime.getRuntime();
+        long memoryUsed = runtime.totalMemory() - runtime.freeMemory();
+        return (float) memoryUsed / 1024 / 1024;
     }
 
     /**
@@ -173,7 +195,7 @@ public class MetricsModel {
         System.out.println("\nPeriodic CPU Usage:");
 
         for (int i = 0; i < this.cpuUsage.size(); i++) {
-            System.out.printf("  CPU Usage at interval %d: %.3f%%%n", i + 1, this.cpuUsage.get(i));
+            System.out.printf("  Interval %d - RAM: %.3fMB, CPU: %.3f%%%n", i + 1, this.ramUsage.get(i), this.cpuUsage.get(i));
         }
     }
 }
