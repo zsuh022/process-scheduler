@@ -131,7 +131,7 @@ public class AStarScheduler extends Scheduler {
         return fCost;
     }
 
-    protected int getLowerBound() {
+    private int getLowerBound() {
         double loadBalancedTime = (double) graph.getTotalNodeWeight() / processors;
 
         return (int) Math.max(Math.ceil(loadBalancedTime), getCriticalPathLength());

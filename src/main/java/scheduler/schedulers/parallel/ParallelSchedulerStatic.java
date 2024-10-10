@@ -8,8 +8,6 @@ import scheduler.schedulers.sequential.AStarScheduler;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static scheduler.constants.Constants.INFINITY_32;
-
 public class ParallelSchedulerStatic extends AStarScheduler {
     private final ExecutorService threadPool;
 
@@ -128,7 +126,11 @@ public class ParallelSchedulerStatic extends AStarScheduler {
     }
 
     private class Worker implements Callable<Void> {
-        private final PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
+        private final PriorityQueue<StateModel> openedStates = new PriorityQueue<>(
+                Comparator.comparingInt(
+                        ParallelSchedulerStatic.this::getFCost
+                )
+        );
 
         @Override
         public Void call() {
@@ -200,70 +202,6 @@ public class ParallelSchedulerStatic extends AStarScheduler {
             synchronized (bestStateLock) {
                 return bestState.getMaximumFinishTime();
             }
-        }
-
-        private int getFCost(StateModel state) {
-            if (state.isEmpty()) {
-                return getLowerBound();
-            }
-
-            int idleTime = getIdleTime(state);
-            int maximumDataReadyTime = getMaximumDataReadyTime(state);
-            int maximumBottomLevelPathLength = getMaximumBottomLevelPathLength(state);
-
-            int fCost = Math.max(idleTime, Math.max(maximumBottomLevelPathLength, maximumDataReadyTime));
-
-            state.setFCost(fCost);
-            state.setMaximumBottomLevelPathLength(maximumBottomLevelPathLength);
-
-            return fCost;
-        }
-
-        private int getLowerBound() {
-            double loadBalancedTime = (double) graph.getTotalNodeWeight() / processors;
-
-            return (int) Math.max(Math.ceil(loadBalancedTime), getCriticalPathLength());
-        }
-
-        private int getIdleTime(StateModel state) {
-            double totalWeight = (double) graph.getTotalNodeWeight() + state.getTotalIdleTime();
-
-            return (int) Math.ceil(totalWeight / processors);
-        }
-
-        private int getMaximumBottomLevelPathLength(StateModel state) {
-            if (state.isEmpty()) {
-                return 0;
-            }
-
-            byte lastNodeId = state.getLastNode();
-
-            int estimatedFinishTime = state.getNodeStartTime(lastNodeId) + bottomLevelPathLengths[lastNodeId];
-            int parentBottomLevelPathLength = state.getParentMaximumBottomLevelPathLength();
-
-            return Math.max(parentBottomLevelPathLength, estimatedFinishTime);
-        }
-
-        private int getMaximumDataReadyTime(StateModel state) {
-            int maximumDataReadyTime = 0;
-
-            for (NodeModel node : getAvailableNodes(state)) {
-                int cost = getMinimumDataReadyTime(state, node) + bottomLevelPathLengths[node.getByteId()];
-                maximumDataReadyTime = Math.max(maximumDataReadyTime, cost);
-            }
-
-            return maximumDataReadyTime;
-        }
-
-        private int getMinimumDataReadyTime(StateModel state, NodeModel node) {
-            int minimumDataReadyTime = INFINITY_32;
-
-            for (int processor = 0; processor < processors; processor++) {
-                int dataReadyTime = getEarliestStartTime(state, node, processor);
-                minimumDataReadyTime = Math.min(minimumDataReadyTime, dataReadyTime);
-            }
-
-            return minimumDataReadyTime;
         }
     }
 }
