@@ -37,8 +37,8 @@ public class DynamicController {
     @FXML
     private ScrollPane chartPane;
 
-    private XYChart.Series<String, Number> seriesRam = new XYChart.Series<>();
-    private XYChart.Series<String, Number> seriesCpu = new XYChart.Series<>();
+    private XYChart.Series<String, Number> seriesRam;
+    private XYChart.Series<String, Number> seriesCpu;
 
     private GanttChart<Number, String> ganttChart;
 
@@ -51,6 +51,9 @@ public class DynamicController {
 
     @FXML
     public void initialize() {
+        seriesRam = new XYChart.Series<>();
+        seriesCpu = new XYChart.Series<>();
+
         lineChartRam.getData().addAll(seriesRam);
         lineChartCpu.getData().addAll(seriesCpu);
 
@@ -113,10 +116,10 @@ public class DynamicController {
                 lblTimeElapsed.setText(String.valueOf(timeElapsed));
 
                 // number of data points visible
-                if (seriesCpu.getData().size() > 20) {
+                if (seriesCpu.getData().size() > 25) {
                     seriesCpu.getData().remove(0);
                 }
-                if (seriesRam.getData().size() > 20) {
+                if (seriesRam.getData().size() > 25) {
                     seriesRam.getData().remove(0);
                 }
             });
