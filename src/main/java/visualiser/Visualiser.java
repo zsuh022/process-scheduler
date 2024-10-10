@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import scheduler.models.MetricsModel;
 import scheduler.parsers.Arguments;
 import scheduler.schedulers.Scheduler;
+import visualiser.controllers.GanttChartController;
 import visualiser.controllers.ProcessorController;
 import visualiser.controllers.VisualiserController;
 
@@ -28,8 +29,8 @@ public class Visualiser extends Application {
         FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/fxml/" + fxml + ".fxml"));
         Parent root = loader.load();
         
-        if (fxml.equals("processor")){
-            ProcessorController controller = loader.getController();
+        if (fxml.equals("ganttChart")) {
+            GanttChartController controller = loader.getController();
             controller.setArguments(arguments);
         } else if (fxml.equals("visualiser")){
             VisualiserController controller = loader.getController();
@@ -38,6 +39,9 @@ public class Visualiser extends Application {
             controller.setMetrics(metrics);
             //MetricsModel metrics = scheduler.getMetrics();
 //            controller.setMetrics(metrics);
+        } else if (fxml.equals("processor")){
+            ProcessorController controller = loader.getController();
+            controller.setArguments(arguments);
         }
         return root;
     }
