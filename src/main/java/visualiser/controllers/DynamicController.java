@@ -23,6 +23,8 @@ import java.util.TimerTask;
 
 public class DynamicController {
 
+    private static final int PERIODIC_INTERVAL_MS = 50;
+
     @FXML
     private Label lblTimeElapsed;
 
@@ -82,7 +84,7 @@ public class DynamicController {
 
     public void setMetricsModel(MetricsModel metricsModel) {
         this.metricsModel = metricsModel;
-        this.metricsModel.startPeriodicTracking(500);
+        this.metricsModel.startPeriodicTracking(PERIODIC_INTERVAL_MS);
         startTracking();
     }
 
@@ -93,7 +95,7 @@ public class DynamicController {
             public void run() {
                 updateLineCharts();
             }
-        }, 0, 500);
+        }, 0, PERIODIC_INTERVAL_MS);
     }
 
     private void updateLineCharts() {
@@ -102,7 +104,7 @@ public class DynamicController {
             float currentCpuUsage = metricsModel.getPeriodicCpuUsage().get(index);
             float currentRamUsage = metricsModel.getPeriodicRamUsage().get(index);
 
-            timeElapsed += 500;
+            timeElapsed += PERIODIC_INTERVAL_MS;
 
             Platform.runLater(() -> {
                 seriesCpu.getData().add(new XYChart.Data<>(String.valueOf(timeElapsed), currentCpuUsage));
