@@ -194,7 +194,7 @@ public abstract class Scheduler {
      * @return the earliest start time for a node on a given processor.
      */
     protected int getEarliestStartTime(StateModel state, NodeModel node, int processor) {
-        if (state.isEmptyState()) {
+        if (state.isEmpty()) {
             return 0;
         }
 
@@ -246,6 +246,25 @@ public abstract class Scheduler {
         return scheduledNodes;
     }
 
+    protected int getEstimatedFinishTime(StateModel state) {
+        int estimatedFinishTime = state.getFCost();
+
+        for (NodeModel node : getAvailableNodes(state)) {
+            int bestStartTime = INFINITY_32;
+
+            for (int processor = 0; processor < processors; processor++) {
+                int earliestStartTime = getEarliestStartTime(state, node, processor);
+
+                if (earliestStartTime < bestStartTime) {
+                    bestStartTime = earliestStartTime;
+                }
+            }
+
+            estimatedFinishTime = Math.max(estimatedFinishTime, bestStartTime + bottomLevelPathLengths[node.getByteId()]);
+        }
+
+        return estimatedFinishTime;
+    }
 
     /**
      * Method checks if all predecessors have been scheduled.

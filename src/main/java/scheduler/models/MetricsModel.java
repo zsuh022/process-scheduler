@@ -1,7 +1,7 @@
 package scheduler.models;
 
 import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
+import com.sun.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -14,14 +14,12 @@ public class MetricsModel {
     private StateModel bestState;
 
     private final AtomicInteger numberOfOpenedStates;
-
     private final AtomicInteger numberOfClosedStates;
 
+    private float memoryUsed;
+    private float elapsedTime;
 
-    private double memoryUsed;
-    private double elapsedTime;
-
-    private List<Double> cpuUsage;
+    private final List<Float> cpuUsage;
 
     private ScheduledExecutorService scheduledExecutorService;
 
@@ -105,7 +103,7 @@ public class MetricsModel {
      *
      * @param elapsedTime the elapsed time
      */
-    public void setElapsedTime(double elapsedTime) {
+    public void setElapsedTime(float elapsedTime) {
         this.elapsedTime = elapsedTime;
     }
 
@@ -114,7 +112,7 @@ public class MetricsModel {
      *
      * @return the memory used
      */
-    public double getMemoryUsed() {
+    public float getMemoryUsed() {
         return this.memoryUsed;
     }
 
@@ -123,11 +121,11 @@ public class MetricsModel {
      *
      * @param memoryUsed the memory used
      */
-    public void setMemoryUsed(double memoryUsed) {
+    public void setMemoryUsed(float memoryUsed) {
         this.memoryUsed = memoryUsed;
     }
 
-    public List<Double> getPeriodicCpuUsage() {
+    public List<Float> getPeriodicCpuUsage() {
         return this.cpuUsage;
     }
 
@@ -144,34 +142,13 @@ public class MetricsModel {
     }
 
     private void capturePeriodicMetrics() {
-        double cpuUsage = getCurrentCpuLoad();
-
-        this.cpuUsage.add(cpuUsage);
-        double currentCpuUsage = getCurrentCpuLoad();
-
-        // if CPU usage is NaN
-        if (Double.isNaN(currentCpuUsage)) {
-            System.out.println("**** NaN ****");
-            if (!this.cpuUsage.isEmpty()) {
-                // use previously recorded value
-                currentCpuUsage = this.cpuUsage.get(this.cpuUsage.size() - 1);
-            } else {
-                // use 0.0%
-                currentCpuUsage = 0.0;
-            }
-        }
-
-        this.cpuUsage.add(currentCpuUsage);
+        this.cpuUsage.add(getCurrentCpuLoad());
     }
 
-    private double getCurrentCpuLoad() {
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+    private float getCurrentCpuLoad() {
+        OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
-        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
-            return ((com.sun.management.OperatingSystemMXBean) osBean).getCpuLoad() * 100;
-        }
-
-        return -1;
+        return (osBean == null) ? -1.0f : (float) (osBean.getCpuLoad() * 100.0);
     }
 
     /**

@@ -12,52 +12,43 @@ import static scheduler.constants.Constants.INFINITY_32;
 public class AStarScheduler extends Scheduler {
     private final PriorityQueue<StateModel> openedStates;
 
-    protected final StateModel validState;
+    protected volatile StateModel bestState;
 
     public AStarScheduler(GraphModel graph, byte processors) {
         super(graph, processors);
 
         this.openedStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
 
-        this.validState = getValidSchedule();
+        this.bestState = this.getValidSchedule();
     }
 
     @Override
     public void schedule() {
-        boolean isBestStateFound = false;
-
         this.openedStates.add(new StateModel(processors, numberOfNodes));
 
         while (!this.openedStates.isEmpty()) {
             StateModel state = this.openedStates.poll();
 
             if (state.areAllNodesScheduled()) {
-                metrics.setBestState(state);
-                isBestStateFound = true;
+                System.out.println(state.getMaximumFinishTime());
+                this.bestState = state;
 
                 break;
             }
 
-            closedStates.add(state);
-
             for (NodeModel node : getAvailableNodes(state)) {
-                for (int processor = 0; processor < processors; processor++) {
+                for (int processor = 0; processor < this.processors; processor++) {
                     expandState(state, node, processor);
                 }
             }
         }
 
-        // If the best state is not found, then the most optimal state has to be the valid state
-        if (!isBestStateFound) {
-            metrics.setBestState(this.validState);
-        }
-
+        metrics.setBestState(this.bestState);
         metrics.setNumberOfClosedStates(closedStates.size());
     }
 
     private void expandState(StateModel state, NodeModel node, int processor) {
-        // Skip tasks that are not in the fixed order defined
-        if (!isFirstAvailableNode(state, node)) {
+        if (isFirstAvailableNode(state, node)) {
             return;
         }
 
@@ -66,6 +57,7 @@ public class AStarScheduler extends Scheduler {
         int earliestStartTime = getEarliestStartTime(state, node, processor);
 
         nextState.addNode(node, processor, earliestStartTime);
+        nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
 
         if (!canPruneState(nextState)) {
             this.openedStates.add(nextState);
@@ -80,16 +72,16 @@ public class AStarScheduler extends Scheduler {
         for (NodeModel equivalentNode : equivalentNodeGroup) {
             // both tasks are both the same, so we can continue with scheduling it
             if (equivalentNode.equals(node)) {
-                return true;
+                return false;
             }
 
             // if there is an earlier equivalent task that is not scheduled
             if (!state.isNodeScheduled(equivalentNode)) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     protected StateModel getValidSchedule() {
@@ -111,21 +103,19 @@ public class AStarScheduler extends Scheduler {
             state.addNode(node, processorWithBestStartTime, bestStartTime);
         }
 
-        this.openedStates.add(state);
-
         return state;
     }
 
     protected boolean canPruneState(StateModel state) {
-        if (closedStates.contains(state)) {
+        if (!closedStates.add(state)) {
             return true;
         }
 
-        return getFCost(state) >= validState.getMaximumFinishTime();
+        return state.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
     }
 
     protected int getFCost(StateModel state) {
-        if (state.isEmptyState()) {
+        if (state.isEmpty()) {
             return getLowerBound();
         }
 
@@ -133,10 +123,15 @@ public class AStarScheduler extends Scheduler {
         int maximumDataReadyTime = getMaximumDataReadyTime(state);
         int maximumBottomLevelPathLength = getMaximumBottomLevelPathLength(state);
 
-        return Math.max(idleTime, Math.max(maximumBottomLevelPathLength, maximumDataReadyTime));
+        int fCost = Math.max(idleTime, Math.max(maximumBottomLevelPathLength, maximumDataReadyTime));
+
+        state.setFCost(fCost);
+        state.setMaximumBottomLevelPathLength(maximumBottomLevelPathLength);
+
+        return fCost;
     }
 
-    protected int getLowerBound() {
+    private int getLowerBound() {
         double loadBalancedTime = (double) graph.getTotalNodeWeight() / processors;
 
         return (int) Math.max(Math.ceil(loadBalancedTime), getCriticalPathLength());
@@ -148,20 +143,19 @@ public class AStarScheduler extends Scheduler {
         return (int) Math.ceil(totalWeight / processors);
     }
 
-    // V2- can be reduced to O(1) but with increased memory? I'll see if it is worth it
-    // note: fbl(s)=max(fbl(s_parent),ts(last)+bl(last))
-    protected int getMaximumBottomLevelPathLength(StateModel state) {
-        int maximumBottomLevelPathLength = 0;
-
-        for (NodeModel node : getScheduledNodes(state)) {
-            int cost = state.getNodeStartTime(node) + bottomLevelPathLengths[node.getByteId()];
-            maximumBottomLevelPathLength = Math.max(maximumBottomLevelPathLength, cost);
+     protected int getMaximumBottomLevelPathLength(StateModel state) {
+        if (state.isEmpty()) {
+            return 0;
         }
 
-        return maximumBottomLevelPathLength;
+        byte lastNodeId = state.getLastNode();
+
+        int estimatedFinishTime = state.getNodeStartTime(lastNodeId) + bottomLevelPathLengths[lastNodeId];
+        int parentBottomLevelPathLength = state.getParentMaximumBottomLevelPathLength();
+
+        return Math.max(parentBottomLevelPathLength, estimatedFinishTime);
     }
 
-    // This is actually amortised O(1) from O(|free(s)| * |P|)
     protected int getMaximumDataReadyTime(StateModel state) {
         int maximumDataReadyTime = 0;
 
