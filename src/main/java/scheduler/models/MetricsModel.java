@@ -154,8 +154,17 @@ public class MetricsModel {
 
     private float getCurrentCpuLoad() {
         OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        float cpuLoad = (osBean == null) ? -1.0f : (float) (osBean.getCpuLoad() * 100.0);
 
-        return (osBean == null) ? -1.0f : (float) (osBean.getCpuLoad() * 100.0);
+        if (Float.isNaN(cpuLoad)) {
+            if (!cpuUsage.isEmpty()) {
+                // return last cpu load value
+                return cpuUsage.get(cpuUsage.size() - 1);
+            }
+            return 0.0f;
+        }
+
+        return cpuLoad;
     }
 
     private float getCurrentRamUsage() {
