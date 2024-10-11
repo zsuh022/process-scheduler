@@ -13,8 +13,6 @@ import static scheduler.constants.Constants.INFINITY_32;
 public class AStarScheduler extends Scheduler {
     private final PriorityQueue<StateModel> openedStates;
 
-    protected volatile StateModel bestState;
-
     public AStarScheduler(GraphModel graph, byte processors) {
         super(graph, processors);
 
@@ -38,11 +36,6 @@ public class AStarScheduler extends Scheduler {
                 break;
             }
 
-//            for (NodeModel node : getAvailableNodes(state)) {
-//                for (int processor = 0; processor < this.processors; processor++) {
-//                    expandState(state, node, processor);
-//                }
-//            }
             expandStates(state);
         }
 

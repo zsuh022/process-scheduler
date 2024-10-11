@@ -82,7 +82,7 @@ public class Main {
     private static void initialiseScheduler(Arguments arguments) throws IOException {
         graph = new GraphModel(arguments.getInputDOTFilePath());
 
-        if (arguments.getCores() == 0) {
+        if (arguments.getCores() == 1) {
             scheduler = new AStarScheduler(graph, arguments.getProcessors());
         } else {
             scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());

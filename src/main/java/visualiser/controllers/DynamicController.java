@@ -1,6 +1,10 @@
 package visualiser.controllers;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -10,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
 import scheduler.models.NodeModel;
@@ -22,6 +27,10 @@ import visualiser.Visualiser;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class DynamicController {
 
@@ -102,7 +111,23 @@ public class DynamicController {
     }
 
     private void startTracking() {
-        this.scheduler.schedule();
+        Task<Void> schedulingTask = new Task<>() {
+            @Override
+            protected Void call() {
+                scheduler.schedule();
+                return null;
+            }
+        };
+
+        schedulingTask.setOnSucceeded(event -> {
+            try {
+                scheduler.saveBestState(arguments);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        new Thread(schedulingTask).start();
 
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -122,16 +147,17 @@ public class DynamicController {
             timeElapsed += PERIODIC_INTERVAL_MS;
 
             Platform.runLater(() -> {
+                ganttChart.clear();
                 seriesCpu.getData().add(new XYChart.Data<>(String.valueOf(timeElapsed), currentCpuUsage));
                 seriesRam.getData().add(new XYChart.Data<>(String.valueOf(timeElapsed), currentRamUsage));
 
                 lblTimeElapsed.setText(String.valueOf(timeElapsed));
 
                 // number of data points visible
-                if (seriesCpu.getData().size() > 20) {
+                if (seriesCpu.getData().size() > 10) {
                     seriesCpu.getData().remove(0);
                 }
-                if (seriesRam.getData().size() > 20) {
+                if (seriesRam.getData().size() > 10) {
                     seriesRam.getData().remove(0);
                 }
 
@@ -164,10 +190,10 @@ public class DynamicController {
             return;
         }
 
-        for (byte nodeByteId : currentState.getScheduledNodes()) {
-            NodeModel node = nodes[nodeByteId];
-            System.out.println(node.getId());
-            addTask(currentState.getNodeProcessor(node), currentState.getNodeStartTime(node), node.getWeight(), node.getId());
+        for (NodeModel node : nodes) {
+            if (currentState.isNodeScheduled(node.getByteId())) {
+                addTask(currentState.getNodeProcessor(node), currentState.getNodeStartTime(node), node.getWeight(), node.getId());
+            }
         }
     }
 }
