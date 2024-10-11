@@ -2,13 +2,13 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.chart.BubbleChart?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
@@ -70,6 +70,7 @@
                                     <Font size="32.0" />
                                  </font>
                               </Text>
+                              <Label fx:id="nodesLabel" text="Label" />
                            </children>
                         </VBox>
                         <VBox layoutX="319.0" prefHeight="295.0" prefWidth="320.0">
@@ -79,6 +80,7 @@
                                     <Font size="32.0" />
                                  </font>
                               </Text>
+                              <Label fx:id="edgesLabel" text="Label" />
                            </children>
                         </VBox>
                         <VBox layoutY="295.0" prefHeight="334.0" prefWidth="320.0">
@@ -88,6 +90,7 @@
                                     <Font size="32.0" />
                                  </font>
                               </Text>
+                              <Label fx:id="processorsLabel" text="Label" />
                            </children>
                         </VBox>
                         <VBox layoutX="319.0" layoutY="295.0" prefHeight="334.0" prefWidth="320.0">
@@ -97,6 +100,7 @@
                                     <Font size="32.0" />
                                  </font>
                               </Text>
+                              <Label fx:id="coresLabel" text="Label" />
                            </children>
                         </VBox>
                      </children>
@@ -108,14 +112,7 @@
                               <Font size="32.0" />
                            </font>
                         </Text>
-                        <BubbleChart layoutX="54.0" layoutY="74.0" title="Geary gear gear">
-                          <xAxis>
-                            <NumberAxis side="BOTTOM" />
-                          </xAxis>
-                          <yAxis>
-                            <NumberAxis side="LEFT" />
-                          </yAxis>
-                        </BubbleChart>
+                        <Pane fx:id="graphPane" layoutX="41.0" layoutY="67.0" prefHeight="486.0" prefWidth="517.0" />
                      </children>
                   </AnchorPane>
               </items>
