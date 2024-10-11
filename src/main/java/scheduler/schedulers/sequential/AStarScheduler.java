@@ -107,7 +107,7 @@ public class AStarScheduler extends Scheduler {
         return state;
     }
 
-    protected void expandStates(StateModel state) {
+    private void expandStates(StateModel state) {
         List<NodeModel> availableNodes = getAvailableNodes(state);
 
         NodeModel fixedNode = getFixedNodeOrder(state, availableNodes);

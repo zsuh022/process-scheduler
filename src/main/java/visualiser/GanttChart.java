@@ -207,38 +207,38 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
     @Override
     protected void updateAxisRange() {
         final Axis<X> xAxis = getXAxis();
-    final Axis<Y> yAxis = getYAxis();
+        final Axis<Y> yAxis = getYAxis();
 
-    List<X> xData = null;
-    List<Y> yData = null;
+        List<X> xData = null;
+        List<Y> yData = null;
 
-    if (xAxis.isAutoRanging()) {
-        xData = new ArrayList<>();
-    }
-    if (yAxis.isAutoRanging()) {
-        yData = new ArrayList<>();
-    }
+        if (xAxis.isAutoRanging()) {
+            xData = new ArrayList<>();
+        }
+        if (yAxis.isAutoRanging()) {
+            yData = new ArrayList<>();
+        }
 
-    if (xData != null || yData != null) {
-        for (Series<X, Y> series : getData()) {
-            for (Data<X, Y> data : series.getData()) {
-                if (xData != null) {
-                    // Add start and end positions of each task (x axis)
-                    xData.add(data.getXValue());
-                    xData.add(xAxis.toRealValue(xAxis.toNumericValue(data.getXValue()) + getLength(data.getExtraValue())));
-                }
-                if (yData != null) {
-                    // Add y-values (task categories)
-                    yData.add(data.getYValue());
+        if (xData != null || yData != null) {
+            for (Series<X, Y> series : getData()) {
+                for (Data<X, Y> data : series.getData()) {
+                    if (xData != null) {
+                        // Add start and end positions of each task (x axis)
+                        xData.add(data.getXValue());
+                        xData.add(xAxis.toRealValue(xAxis.toNumericValue(data.getXValue()) + getLength(data.getExtraValue())));
+                    }
+                    if (yData != null) {
+                        // Add y-values (task categories)
+                        yData.add(data.getYValue());
+                    }
                 }
             }
+            if (xData != null) {
+                xAxis.invalidateRange(xData);  // Update the range of the X axis
+            }
+            if (yData != null) {
+                yAxis.invalidateRange(yData);  // Update the range of the Y axis
+            }
         }
-        if (xData != null) {
-            xAxis.invalidateRange(xData);  // Update the range of the X axis
-        }
-        if (yData != null) {
-            yAxis.invalidateRange(yData);  // Update the range of the Y axis
-        }
-    }
     }
 }
