@@ -102,8 +102,8 @@ public class GraphModel {
 
             edges.put(id, new EdgeModel(id, source, destination, weight));
 
-            source.getSuccessors().add(destination);
-            destination.getPredecessors().add(source);
+            source.addSuccessor(destination);
+            destination.addPredecessor(source);
         });
 
         this.edges = edges;

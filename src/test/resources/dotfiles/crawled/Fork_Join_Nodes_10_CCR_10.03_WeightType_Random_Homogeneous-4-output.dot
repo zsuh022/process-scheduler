@@ -1,14 +1,14 @@
 digraph {
-	"0" ["Weight"=10];
-	"1" ["Weight"=9];
-	"2" ["Weight"=8];
-	"3" ["Weight"=2];
-	"4" ["Weight"=9];
-	"5" ["Weight"=8];
-	"6" ["Weight"=8];
-	"7" ["Weight"=7];
-	"8" ["Weight"=7];
-	"9" ["Weight"=5];
+	"0" ["Start"=0,"Weight"=10,"Processor"=1];
+	"1" ["Start"=51,"Weight"=9,"Processor"=1];
+	"2" ["Start"=35,"Weight"=8,"Processor"=1];
+	"3" ["Start"=33,"Weight"=2,"Processor"=1];
+	"4" ["Start"=10,"Weight"=9,"Processor"=1];
+	"5" ["Start"=60,"Weight"=8,"Processor"=1];
+	"6" ["Start"=43,"Weight"=8,"Processor"=1];
+	"7" ["Start"=19,"Weight"=7,"Processor"=1];
+	"8" ["Start"=26,"Weight"=7,"Processor"=1];
+	"9" ["Start"=68,"Weight"=5,"Processor"=1];
 	"0" -> "1" ["Weight"=43];
 	"8" -> "9" ["Weight"=57];
 	"0" -> "2" ["Weight"=64];

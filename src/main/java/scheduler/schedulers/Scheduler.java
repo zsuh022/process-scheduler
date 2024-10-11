@@ -141,8 +141,7 @@ public abstract class Scheduler {
         int[] bottomLevelPathLengths = new int[this.numberOfNodes];
 
         for (NodeModel node : this.nodes) {
-            int numberOfSucessors = node.getSuccessors().size();
-            bottomLevelPathLengths[node.getByteId()] = numberOfSucessors == 0 ? node.getWeight() : -INFINITY_32;
+            bottomLevelPathLengths[node.getByteId()] = (node.getOutDegree() == 0) ? node.getWeight() : -INFINITY_32;
         }
 
         for (int i = this.numberOfNodes - 1; i >= 0; i--) {
