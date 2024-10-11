@@ -60,7 +60,9 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 
     public GanttChart(@NamedArg("xAxis") Axis<X> xAxis, @NamedArg("yAxis") Axis<Y> yAxis) {
         super(xAxis, yAxis);
-        setData(FXCollections.observableArrayList()); 
+        setData(FXCollections.observableArrayList());
+
+        this.setAnimated(false);
         
     }
 
@@ -248,7 +250,6 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
     }
 
     public void clear() {
-//        this.getPlotChildren().clear();
         this.getData().clear();
     }
 }

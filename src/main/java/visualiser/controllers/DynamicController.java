@@ -34,7 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 public class DynamicController {
 
-    private static final int PERIODIC_INTERVAL_MS = 500;
+    private static final int PERIODIC_INTERVAL_MS = 100;
+    private static final int GANTT_INTERVAL_MS = 10;
 
     @FXML
     private Label lblTimeElapsed;
@@ -60,6 +61,7 @@ public class DynamicController {
     private MetricsModel metricsModel;
 
     private Timer timer;
+    private Timer ganttChartTimer;
     private int timeElapsed = 0;
 
     @FXML
@@ -72,7 +74,7 @@ public class DynamicController {
 
         // Create the axes
         NumberAxis xAxis = new NumberAxis();
-        xAxis.setLabel("Time in Seconds");
+        xAxis.setLabel("Time");
         CategoryAxis yAxis = new CategoryAxis();
         // Initialize the GanttChart
         ganttChart = new GanttChart<>(xAxis, yAxis);
@@ -84,6 +86,12 @@ public class DynamicController {
         Pane pane = new Pane();
         pane.getChildren().add(ganttChart);
         chartPane.setContent(pane);
+
+        ganttChartTimer = new Timer();
+        timer = new Timer();
+
+        lineChartCpu.setAnimated(false);
+        lineChartRam.setAnimated(false);
 
 //        startTracking();
     }
@@ -121,7 +129,10 @@ public class DynamicController {
 
         schedulingTask.setOnSucceeded(event -> {
             try {
+                addAllTask();
                 scheduler.saveBestState(arguments);
+                ganttChartTimer.cancel();
+                timer.cancel();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -129,7 +140,16 @@ public class DynamicController {
 
         new Thread(schedulingTask).start();
 
-        timer = new Timer();
+        ganttChartTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    ganttChart.clear();
+                    addAllTask();
+                });
+            }
+        }, 0, GANTT_INTERVAL_MS);
+
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -139,19 +159,25 @@ public class DynamicController {
     }
 
     private void updateLineCharts() {
-        int index = metricsModel.getPeriodicCpuUsage().size() - 1;
+        int cpuUsageSize = metricsModel.getPeriodicCpuUsage().size();
+        int ramUsageSize = metricsModel.getPeriodicRamUsage().size();
+
+        // Use the minimum size for safety
+        int index = Math.min(cpuUsageSize, ramUsageSize) - 1;
+
         if (index >= 0) {
             float currentCpuUsage = metricsModel.getPeriodicCpuUsage().get(index);
             float currentRamUsage = metricsModel.getPeriodicRamUsage().get(index);
 
             timeElapsed += PERIODIC_INTERVAL_MS;
 
-            Platform.runLater(() -> {
-                ganttChart.clear();
-                seriesCpu.getData().add(new XYChart.Data<>(String.valueOf(timeElapsed), currentCpuUsage));
-                seriesRam.getData().add(new XYChart.Data<>(String.valueOf(timeElapsed), currentRamUsage));
+            double timeInSeconds = timeElapsed / 1000.0;
 
-                lblTimeElapsed.setText(String.valueOf(timeElapsed));
+            Platform.runLater(() -> {
+                seriesCpu.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), currentCpuUsage));
+                seriesRam.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), currentRamUsage));
+
+                lblTimeElapsed.setText(String.format("%.1f s", timeInSeconds)); // Display time in seconds
 
                 // number of data points visible
                 if (seriesCpu.getData().size() > 10) {
@@ -160,8 +186,6 @@ public class DynamicController {
                 if (seriesRam.getData().size() > 10) {
                     seriesRam.getData().remove(0);
                 }
-
-                addAllTask();
             });
         }
     }
@@ -174,14 +198,6 @@ public class DynamicController {
         // Add the series to the Gantt chart
         ganttChart.getData().add(series);
     }
-
-//    public void addAllTask() throws IOException {
-//        String tasks = arguments.getOutputDOTFilePath();
-//        GraphModel graphModel = new GraphModel(tasks);
-//        for (NodeModel node : graphModel.getNodes().values()) {
-//            addTask(node.getProcessor(), node.getStartTime(), node.getWeight(), node.getId());
-//        }
-//    }
 
     public void addAllTask() {
         StateModel currentState = this.scheduler.getCurrentState();
