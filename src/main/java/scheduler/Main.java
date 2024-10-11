@@ -10,6 +10,7 @@ import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.Scheduler;
+import scheduler.schedulers.parallel.ParallelSchedulerDynamic;
 import scheduler.schedulers.parallel.ParallelSchedulerStatic;
 import scheduler.schedulers.sequential.AStarScheduler;
 import visualiser.Visualiser;
@@ -24,8 +25,8 @@ import static scheduler.constants.Constants.RANDOM_OUTPUT_DOT_FILE_PATH;
 public class Main {
     private static Scheduler scheduler;
     private static void runScheduler(Arguments arguments) throws IOException {
-//        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
-        GraphModel graph = GraphGenerator.getRandomGraph();
+        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
+//        GraphModel graph = GraphGenerator.getRandomGraph();
         String filename = "Random_Graph.dot";
         InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
 
@@ -44,7 +45,7 @@ public class Main {
 
         for (byte i = 1; i <= 8; i++) {
             arguments.setCores(i);
-            Scheduler scheduler = new ParallelSchedulerStatic(graph, arguments.getProcessors(), arguments.getCores());
+            Scheduler scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());
 
             MetricsModel metrics = scheduler.getMetrics();
             // track memory and cpu usage every x ms

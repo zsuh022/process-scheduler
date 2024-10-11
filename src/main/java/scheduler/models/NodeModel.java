@@ -173,6 +173,14 @@ public class NodeModel {
         return this.inDegree;
     }
 
+    public NodeModel getPredecessor(int id) {
+        return this.predecessors.get(id);
+    }
+
+    public NodeModel getSuccessor(int id) {
+        return this.successors.get(id);
+    }
+
     /**
      * Returns the out-degree of this node.
      *
