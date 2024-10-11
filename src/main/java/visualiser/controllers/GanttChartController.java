@@ -2,6 +2,7 @@ package visualiser.controllers;
 
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import scheduler.models.StateModel;
 import visualiser.GanttChart;
 import visualiser.Visualiser;
 
@@ -64,8 +65,12 @@ public class GanttChartController {
         }
     }
 
+//    public void addAllTask() {
+//        StateModel currentState = scheduler;
+//    }
+
     @FXML
     void showMetrics(MouseEvent event) throws IOException {
-        Visualiser.setScreen("visualiser");  
+        Visualiser.setScene("visualiser");
     }
 }

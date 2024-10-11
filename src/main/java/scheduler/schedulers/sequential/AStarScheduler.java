@@ -30,6 +30,8 @@ public class AStarScheduler extends Scheduler {
         while (!this.openedStates.isEmpty()) {
             StateModel state = this.openedStates.poll();
 
+            setCurrentState(state);
+
             if (state.areAllNodesScheduled()) {
                 this.bestState = state;
 

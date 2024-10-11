@@ -14,6 +14,7 @@ import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
 import scheduler.models.NodeModel;
 import scheduler.parsers.Arguments;
+import scheduler.schedulers.Scheduler;
 import visualiser.GanttChart;
 import visualiser.Visualiser;
 
@@ -43,6 +44,7 @@ public class DynamicController {
     private GanttChart<Number, String> ganttChart;
 
     private Arguments arguments;
+    private Scheduler scheduler;
 
     private MetricsModel metricsModel;
 
@@ -77,12 +79,17 @@ public class DynamicController {
 
     @FXML
     void showMetrics(MouseEvent event) throws IOException {
-        Visualiser.setScreen("visualiser");
+        Visualiser.setScene("visualiser");
     }
 
     public void setArguments(Arguments arguments) throws IOException {
         this.arguments = arguments;
-        addAllTask();
+//        addAllTask();
+    }
+
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+
     }
 
     public void setMetricsModel(MetricsModel metricsModel) {
@@ -141,5 +148,9 @@ public class DynamicController {
         for (NodeModel node : graphModel.getNodes().values()) {
             addTask(node.getProcessor(), node.getStartTime(), node.getWeight(), node.getId());
         }
+    }
+
+    public void addAllTask() {
+
     }
 }

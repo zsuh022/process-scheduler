@@ -5,8 +5,8 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-#readonly INPUT_DOT_FILE=src/main/resources/dotfiles/input/Nodes_11_OutTree.dot
-readonly INPUT_DOT_FILE=src/test/resources/dotfiles/crawled/Fork_Join_Nodes_10_CCR_10.03_WeightType_Random_Homogeneous-4.dot
+readonly INPUT_DOT_FILE=src/main/resources/dotfiles/input/Nodes_11_OutTree.dot
+#readonly INPUT_DOT_FILE=src/test/resources/dotfiles/crawled/Fork_Join_Nodes_10_CCR_10.03_WeightType_Random_Homogeneous-4.dot
 readonly PROCESSORS=4
 
 if [ "$1" = "main" ]; then

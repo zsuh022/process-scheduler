@@ -146,6 +146,6 @@ public class ProcessorController {
 
     @FXML
     void showMetrics(MouseEvent event) throws IOException{
-        Visualiser.setScreen("visualiser");
+        Visualiser.setScene("visualiser");
     }
 }

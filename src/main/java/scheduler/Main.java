@@ -24,9 +24,11 @@ import static scheduler.constants.Constants.RANDOM_OUTPUT_DOT_FILE_PATH;
  */
 public class Main {
     private static Scheduler scheduler;
+
+    private static GraphModel graph;
+
     private static void runScheduler(Arguments arguments) throws IOException {
-//        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
-        GraphModel graph = GraphGenerator.getRandomGraph();
+        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
         String filename = "Random_Graph.dot";
         InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
 
@@ -77,12 +79,22 @@ public class Main {
         arguments.displayOutputDOTFilePath();
     }
 
+    private static void initialiseScheduler(Arguments arguments) throws IOException {
+        graph = new GraphModel(arguments.getInputDOTFilePath());
+
+        if (arguments.getCores() == 0) {
+            scheduler = new AStarScheduler(graph, arguments.getProcessors());
+        } else {
+            scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());
+        }
+    }
+
     /**
      * The main method for executing the main driver code.
      *
      * @param CLIArguments CLIArguments the arguments passed by the user
      */
-    public static void main(String[] CLIArguments){
+    public static void main(String[] CLIArguments) {
         Arguments arguments;
 
         try {
@@ -93,14 +105,21 @@ public class Main {
         }
 
         try {
-            runScheduler(arguments);
-        } catch (IOException e) {
-            e.printStackTrace();
+            initialiseScheduler(arguments);
+        } catch (IOException exception) {
+            exception.printStackTrace();
             return;
         }
 
         if (arguments.isVisualiseSearch()) {
             Visualiser.run(arguments, scheduler);
+            return;
+        }
+
+        try {
+            runScheduler(arguments);
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 }

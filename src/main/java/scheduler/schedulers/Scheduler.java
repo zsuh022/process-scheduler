@@ -17,6 +17,8 @@ public abstract class Scheduler {
 
     protected NodeModel[] nodes;
 
+    protected StateModel currentState;
+
     protected Set<StateModel> closedStates;
 
     protected byte processors;
@@ -281,6 +283,14 @@ public abstract class Scheduler {
         }
 
         return true;
+    }
+
+    protected StateModel getCurrentState() {
+        return this.currentState;
+    }
+
+    protected void setCurrentState(StateModel state) {
+        this.currentState = state;
     }
 
     public MetricsModel getMetrics() {
