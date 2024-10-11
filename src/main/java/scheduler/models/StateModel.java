@@ -320,6 +320,10 @@ public class StateModel {
         return this.nodeProcessors[node.getByteId()];
     }
 
+    public byte getNodeProcessor(byte nodeId) {
+        return this.nodeProcessors[nodeId];
+    }
+
     /**
      * Returns the finish time for a specific processor.
      *

@@ -285,7 +285,7 @@ public abstract class Scheduler {
         return true;
     }
 
-    protected StateModel getCurrentState() {
+    public StateModel getCurrentState() {
         return this.currentState;
     }
 
@@ -295,5 +295,9 @@ public abstract class Scheduler {
 
     public MetricsModel getMetrics() {
         return this.metrics;
+    }
+
+    public NodeModel[] getNodes() {
+        return this.nodes;
     }
 }

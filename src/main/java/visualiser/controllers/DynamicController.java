@@ -13,6 +13,7 @@ import javafx.scene.layout.Pane;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
 import scheduler.models.NodeModel;
+import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
 import scheduler.schedulers.Scheduler;
 import visualiser.GanttChart;
@@ -45,6 +46,7 @@ public class DynamicController {
 
     private Arguments arguments;
     private Scheduler scheduler;
+    private NodeModel[] nodes;
 
     private MetricsModel metricsModel;
 
@@ -74,7 +76,7 @@ public class DynamicController {
         pane.getChildren().add(ganttChart);
         chartPane.setContent(pane);
 
-        startTracking();
+//        startTracking();
     }
 
     @FXML
@@ -89,16 +91,19 @@ public class DynamicController {
 
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
-
+        this.nodes = scheduler.getNodes();
+        startTracking();
     }
 
     public void setMetricsModel(MetricsModel metricsModel) {
         this.metricsModel = metricsModel;
         this.metricsModel.startPeriodicTracking(PERIODIC_INTERVAL_MS);
-        startTracking();
+//        startTracking();
     }
 
     private void startTracking() {
+        this.scheduler.schedule();
+
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -123,12 +128,14 @@ public class DynamicController {
                 lblTimeElapsed.setText(String.valueOf(timeElapsed));
 
                 // number of data points visible
-                if (seriesCpu.getData().size() > 25) {
+                if (seriesCpu.getData().size() > 20) {
                     seriesCpu.getData().remove(0);
                 }
-                if (seriesRam.getData().size() > 25) {
+                if (seriesRam.getData().size() > 20) {
                     seriesRam.getData().remove(0);
                 }
+
+                addAllTask();
             });
         }
     }
@@ -142,15 +149,25 @@ public class DynamicController {
         ganttChart.getData().add(series);
     }
 
-    public void addAllTask() throws IOException {
-        String tasks = arguments.getOutputDOTFilePath();
-        GraphModel graphModel = new GraphModel(tasks);
-        for (NodeModel node : graphModel.getNodes().values()) {
-            addTask(node.getProcessor(), node.getStartTime(), node.getWeight(), node.getId());
-        }
-    }
+//    public void addAllTask() throws IOException {
+//        String tasks = arguments.getOutputDOTFilePath();
+//        GraphModel graphModel = new GraphModel(tasks);
+//        for (NodeModel node : graphModel.getNodes().values()) {
+//            addTask(node.getProcessor(), node.getStartTime(), node.getWeight(), node.getId());
+//        }
+//    }
 
     public void addAllTask() {
+        StateModel currentState = this.scheduler.getCurrentState();
 
+        if (currentState == null) {
+            return;
+        }
+
+        for (byte nodeByteId : currentState.getScheduledNodes()) {
+            NodeModel node = nodes[nodeByteId];
+            System.out.println(node.getId());
+            addTask(currentState.getNodeProcessor(node), currentState.getNodeStartTime(node), node.getWeight(), node.getId());
+        }
     }
 }
