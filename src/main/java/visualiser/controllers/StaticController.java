@@ -8,15 +8,11 @@ import org.graphstream.graph.Graph;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.fx_viewer.FxViewPanel;
 import scheduler.enums.SceneType;
-import scheduler.models.GraphModel;
 import scheduler.parsers.Arguments;
 import scheduler.parsers.InputOutputParser;
 import visualiser.Visualiser;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 
 public class StaticController {
     @FXML
@@ -61,6 +57,8 @@ public class StaticController {
 
     private void initialiseGraph() throws IOException {
         this.graph = InputOutputParser.readDOTFile(this.arguments.getInputDOTFilePath());
+
+        visualiseGraph();
     }
 
     private void initialiseLabels() {
@@ -87,51 +85,12 @@ public class StaticController {
         Visualiser.setScene(SceneType.DYNAMIC);
     }
 
-    private void loadDotFile(String filePath) throws IOException {
-        HashMap<String, Integer> stats = new HashMap<>();
-        int nodeCount = 0;
-        int edgeCount = 0;
+    private void visualiseGraph() {
+        FxViewer viewer = new FxViewer(this.graph, FxViewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+        viewer.enableAutoLayout();
 
-        // Read the DOT file to extract information
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains("->")) {
-                    edgeCount++; // Counting edges
-                } else if (line.contains("[Weight=")) {
-                    nodeCount++; // Counting nodes
-                }
-            }
-        }
+        FxViewPanel viewPanel = (FxViewPanel) viewer.addDefaultView(false);
 
-        stats.put("nodes", nodeCount);
-        stats.put("edges", edgeCount);
-        stats.put("processors", 2);
-        stats.put("cores", 4);
-
-        // Update labels
-        nodesLabel.setText("Nodes: " + stats.get("nodes"));
-        edgesLabel.setText("Edges: " + stats.get("edges"));
-        processorsLabel.setText("Processors: " + stats.get("processors"));
-        coresLabel.setText("Cores: " + stats.get("cores"));
-    }
-
-    private void visualizeGraph(String dotFilePath) {
-        try {
-
-            Graph graph = InputOutputParser.readDOTFile(dotFilePath);
-
-            FxViewer viewer = new FxViewer(graph, FxViewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-            viewer.enableAutoLayout();
-    
-
-            FxViewPanel viewPanel = (FxViewPanel) viewer.addDefaultView(false);
-    
-            // Add the viewPanel directly to the JavaFX Pane
-            graphPane.getChildren().add(viewPanel);
-    
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.graphPane.getChildren().add(viewPanel);
     }
 }
