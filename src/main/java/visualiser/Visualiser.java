@@ -3,6 +3,7 @@ package visualiser;
 import java.io.IOException;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -56,6 +57,10 @@ public class Visualiser extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFxml("dynamic"), 1280, 720);
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0); 
+        });
 
         stage.setScene(scene);
         stage.show();
