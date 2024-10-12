@@ -142,11 +142,11 @@ public class SequentialSchedulerIT extends BaseSchedulerIT {
     @Test
     public void testCrawledDOTFiles() throws IOException {
         for (String crawledDOTFile : crawledDOTFiles) {
-            testSingleCrawledDOTFile(crawledDOTFile);
+            testCrawledDOTFile(crawledDOTFile);
         }
     }
 
-    public void testSingleCrawledDOTFile(String filename) throws IOException {
+    public void testCrawledDOTFile(String filename) throws IOException {
         Graph graph = InputOutputParser.readDOTFile(filename);
 
         setProcessors(graph);
