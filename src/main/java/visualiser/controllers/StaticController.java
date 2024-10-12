@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.fx_viewer.FxViewPanel;
 import scheduler.enums.SceneType;
@@ -58,7 +59,52 @@ public class StaticController {
     private void initialiseGraph() throws IOException {
         this.graph = InputOutputParser.readDOTFile(this.arguments.getInputDOTFilePath());
 
+        // Set graph style
+        String css = """
+        node {
+            shape: circle;
+            size: 20px;
+            fill-color: rgb(%1$d, %2$d, %3$d); /* Random color */
+            text-mode: normal;
+            text-background-mode: rounded-box;
+            text-background-color: white;
+            text-size: 15px;
+            text-alignment: center;
+            text-color: black;
+        }
+
+        edge {
+            fill-color: black;
+            arrow-shape: arrow;
+            arrow-size: 10px, 5px;
+        }
+        """;
+
+        applyRandomColorsAndLabels(css);
+
         visualiseGraph();
+    }
+
+    private void applyRandomColorsAndLabels(String css) {
+        // Add style and label to each node
+        for (Node node : this.graph) {
+            node.setAttribute("ui.label", node.getId()); // Add ID as label
+
+            // Generate random colors
+            int r = (int) (Math.random() * 255);
+            int g = (int) (Math.random() * 255);
+            int b = (int) (Math.random() * 255);
+
+            // Apply node style with random color
+            String nodeStyle = String.format(
+                    "shape: circle; size: 30px; fill-color: rgb(%d,%d,%d); " +
+                            "stroke-color: black; stroke-width: 2px; " +  // Add border color and width
+                            "text-mode: normal; text-size: 15px; text-color: black; text-alignment: center;",
+                    r, g, b
+            );
+            node.setAttribute("ui.style", nodeStyle);
+
+        }
     }
 
     private void initialiseLabels() {
