@@ -21,7 +21,6 @@ import visualiser.Visualiser;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,7 +53,7 @@ public class DynamicController {
     private Timer ganttChartTimer;
     private Timer cpuAndRamUsageTimer;
 
-    private int timeElapsed = 0;
+    private int timeElapsed;
 
     @FXML
     public void initialize() {
@@ -109,6 +108,8 @@ public class DynamicController {
 
         this.ganttChartTimer = new Timer();
         this.cpuAndRamUsageTimer = new Timer();
+
+        this.timeElapsed = 0;
     }
 
     @FXML
@@ -220,7 +221,7 @@ public class DynamicController {
 
         series.getData().add(new XYChart.Data<>(startTime, "Processor " + processor, new GanttChart.ExtraData(length, "JONKLERBLOCK", taskName)));
 
-        ganttChart.getData().add(series);
+        this.ganttChart.getData().add(series);
     }
 
     public void addAllTask() {
@@ -230,7 +231,7 @@ public class DynamicController {
             return;
         }
 
-        for (NodeModel node : nodes) {
+        for (NodeModel node : this.nodes) {
             if (currentState.isNodeScheduled(node.getByteId())) {
                 addTask(currentState.getNodeProcessor(node), currentState.getNodeStartTime(node), node.getWeight(), node.getId());
             }
