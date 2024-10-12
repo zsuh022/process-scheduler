@@ -65,33 +65,34 @@ public class DynamicController {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Time");
 
-        ganttChart = new GanttChart<>(xAxis, new CategoryAxis());
+        this.ganttChart = new GanttChart<>(xAxis, new CategoryAxis());
 
-        ganttChart.setPrefHeight(GANTT_CHART_WIDTH);
-        ganttChart.setPrefWidth(GANTT_CHART_HEIGHT);
-        ganttChart.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        ganttChart.setLegendVisible(false);
+        this.ganttChart.setPrefHeight(GANTT_CHART_WIDTH);
+        this.ganttChart.setPrefWidth(GANTT_CHART_HEIGHT);
+        this.ganttChart.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        this.ganttChart.setLegendVisible(false);
 
         Pane pane = new Pane();
-        pane.getChildren().add(ganttChart);
-        ganttChartScrollPane.setContent(pane);
+        pane.getChildren().add(this.ganttChart);
+
+        this.ganttChartScrollPane.setContent(pane);
     }
 
     private void initialiseMiscellaneous() {
-        seriesRam = new XYChart.Series<>();
-        seriesCpu = new XYChart.Series<>();
+        this.seriesRam = new XYChart.Series<>();
+        this.seriesCpu = new XYChart.Series<>();
 
-        lineChartRam.getData().addAll(seriesRam);
-        lineChartCpu.getData().addAll(seriesCpu);
+        this.lineChartRam.getData().addAll(seriesRam);
+        this.lineChartCpu.getData().addAll(seriesCpu);
 
-        lineChartCpu.setAnimated(false);
-        lineChartCpu.setLegendVisible(false);
+        this.lineChartCpu.setAnimated(false);
+        this.lineChartCpu.setLegendVisible(false);
 
-        lineChartRam.setAnimated(false);
-        lineChartRam.setLegendVisible(false);
+        this.lineChartRam.setAnimated(false);
+        this.lineChartRam.setLegendVisible(false);
 
-        ganttChartTimer = new Timer();
-        cpuAndRamUsageTimer = new Timer();
+        this.ganttChartTimer = new Timer();
+        this.cpuAndRamUsageTimer = new Timer();
     }
 
     @FXML
@@ -112,77 +113,99 @@ public class DynamicController {
     }
 
     private void startTracking() {
+        Task<Void> schedulingTask = getVoidTask();
+
+        new Thread(schedulingTask).start();
+
+        startGanttChartTimer();
+        startCpuAndRamUsageTimer();
+    }
+
+    private void startGanttChartTimer() {
+        this.ganttChartTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    updateGanttChart();
+                });
+            }
+        }, 0, GANTT_CHART_UPDATE_INTERVAL);
+    }
+
+    private void startCpuAndRamUsageTimer() {
+        this.cpuAndRamUsageTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                updateCpuAndRamUsageCharts();
+            }
+        }, 0, CPU_AND_RAM_UPDATE_INTERVAL);
+    }
+
+    private Task<Void> getVoidTask() {
         Task<Void> schedulingTask = new Task<>() {
             @Override
             protected Void call() {
                 scheduler.schedule();
+
                 return null;
             }
         };
 
         schedulingTask.setOnSucceeded(event -> {
             try {
-                ganttChart.clear();
-                addAllTask();
-                scheduler.saveBestState(arguments);
-                ganttChartTimer.cancel();
-                cpuAndRamUsageTimer.cancel();
+                updateGanttChart();
+
+                this.scheduler.saveBestState(this.arguments);
+
+                this.ganttChartTimer.cancel();
+                this.cpuAndRamUsageTimer.cancel();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
 
-        new Thread(schedulingTask).start();
-
-        ganttChartTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    ganttChart.clear();
-                    addAllTask();
-                });
-            }
-        }, 0, GANTT_CHART_UPDATE_INTERVAL);
-
-        cpuAndRamUsageTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                updateLineCharts();
-            }
-        }, 0, CPU_AND_RAM_UPDATE_INTERVAL);
+        return schedulingTask;
     }
 
-    private void updateLineCharts() {
+    private void updateGanttChart() {
+        this.ganttChart.clear();
+
+        addAllTask();
+    }
+
+    private void updateCpuAndRamUsageCharts() {
         float cpuUsage = Utility.getCpuUsage();
         float ramUsage = Utility.getRamUsage(); 
 
-        timeElapsed += CPU_AND_RAM_UPDATE_INTERVAL;
+        this.timeElapsed += CPU_AND_RAM_UPDATE_INTERVAL;
 
-        double timeInSeconds = timeElapsed / 1000.0;
+        double timeInSeconds = this.timeElapsed / 1000.0;
 
         Platform.runLater(() -> {
-            seriesCpu.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), cpuUsage));
-            seriesRam.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), ramUsage));
-
-            lblTimeElapsed.setText(String.format("%.1f s", timeInSeconds)); // Display time in seconds
-
-            // number of data points visible
-            if (seriesCpu.getData().size() > 10) {
-                seriesCpu.getData().remove(0);
-            }
-
-            if (seriesRam.getData().size() > 10) {
-                seriesRam.getData().remove(0);
-            }
+            plotNewPointsOnCpuAndRamCharts(cpuUsage, ramUsage, timeInSeconds);
         });
     }
 
+    private void plotNewPointsOnCpuAndRamCharts(float cpuUsage, float ramUsage, double timeInSeconds) {
+        seriesCpu.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), cpuUsage));
+        seriesRam.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), ramUsage));
+
+        lblTimeElapsed.setText(String.format("%.1f s", timeInSeconds)); // Display time in seconds
+
+        if (seriesCpu.getData().size() > 10) {
+            seriesCpu.getData().remove(0);
+        }
+
+        if (seriesRam.getData().size() > 10) {
+            seriesRam.getData().remove(0);
+        }
+    }
+
     public void addTask(int processor, int startTime, int length, String taskName) {
-        // Create a new series for the task
         XYChart.Series<Number, String> series = new XYChart.Series<>();
-        // Add the task to the series
+
         series.getData().add(new XYChart.Data<>(startTime, "Processor " + processor, new GanttChart.ExtraData(length, "JONKLERBLOCK", taskName)));
-        // Add the series to the Gantt chart
+
         ganttChart.getData().add(series);
     }
 
