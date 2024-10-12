@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualiser.controllers.StaticController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualiser.controllers.StaticController">
    <children>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #e0e0e0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -31,7 +31,7 @@
                         <Bloom threshold="0.1" />
                      </effect>
                   </ImageView>
-                  <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Input Graph Visualiser" wrappingWidth="400.8359375">
+                  <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Input Graph Visualiser" wrappingWidth="455.8359375">
                      <font>
                         <Font name="System Bold" size="40.0" />
                      </font>
@@ -42,15 +42,21 @@
                         <Glow />
                      </effect>
                   </Text>
-                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#switchToDynamicVisualiser" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Show Schedule Chart" textFill="WHITE">
+                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#switchToDynamicVisualiser" prefHeight="47.0" prefWidth="373.0" stylesheets="@../css/header.css" text="Show Schedule" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                      <HBox.margin>
-                        <Insets left="440.0" />
+                        <Insets left="440.0" right="20.0" />
                      </HBox.margin>
                   </Button>
                </children>
+               <opaqueInsets>
+                  <Insets left="20.0" />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </HBox>
             <HBox>
                <children>
@@ -60,7 +66,7 @@
                            <children>
                               <Pane fx:id="nodesPane" maxWidth="336.0" minWidth="1.0" prefHeight="273.0" prefWidth="336.0" style="-fx-background-color: #FFFFFF; -fx-border-radius: 20px; -fx-background-radius: 10px;" VBox.vgrow="NEVER">
                                  <children>
-                                    <Text layoutX="73.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nodes" textAlignment="CENTER" wrappingWidth="131.13671875">
+                                    <Text layoutX="73.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nodes" textAlignment="CENTER" wrappingWidth="131.13671875">
                                        <font>
                                           <Font name="System Bold" size="32.0" />
                                        </font>
@@ -81,7 +87,7 @@
                            <children>
                               <Pane fx:id="edgesPane" maxWidth="336.0" minWidth="1.0" prefHeight="273.0" prefWidth="336.0" style="-fx-background-color: #FFFFFF; -fx-border-radius: 20px; -fx-background-radius: 10px;">
                                  <children>
-                                    <Text layoutX="73.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Edges" textAlignment="CENTER" wrappingWidth="131.13671875">
+                                    <Text layoutX="81.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Edges" textAlignment="CENTER" wrappingWidth="131.13671875">
                                        <font>
                                           <Font name="System Bold" size="32.0" />
                                        </font>
@@ -144,10 +150,10 @@
                   </AnchorPane>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
-                        <Pane fx:id="graphPane" layoutX="20.0" layoutY="98.0" prefHeight="510.0" prefWidth="594.0" style="-fx-background-color: #FFFFFF; -fx-border-radius: 20; -fx-background-radius: 10;" />
-                        <Pane fx:id="edgesPane1" layoutX="20.0" layoutY="20.0" maxWidth="594.0" minWidth="1.0" prefHeight="60.0" prefWidth="594.0" style="-fx-background-color: #FFFFFF; -fx-border-radius: 20px; -fx-background-radius: 10px;">
+                        <Pane fx:id="graphPane" layoutX="20.0" layoutY="98.0" prefHeight="510.0" prefWidth="600.0" style="-fx-background-color: #FFFFFF; -fx-border-radius: 20; -fx-background-radius: 10;" AnchorPane.bottomAnchor="-2.0" AnchorPane.topAnchor="78.0" />
+                        <Pane fx:id="edgesPane1" layoutX="20.0" layoutY="20.0" maxWidth="600.0" minWidth="1.0" prefHeight="60.0" prefWidth="600.0" style="-fx-background-color: #FFFFFF; -fx-border-radius: 20px; -fx-background-radius: 10px;">
                            <children>
-                              <Text layoutX="179.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Input Graph" textAlignment="CENTER" wrappingWidth="236.13671875">
+                              <Text layoutX="182.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Input Graph" textAlignment="CENTER" wrappingWidth="236.13671875">
                                  <font>
                                     <Font name="System Bold" size="32.0" />
                                  </font>

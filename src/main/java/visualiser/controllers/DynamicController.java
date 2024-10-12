@@ -194,8 +194,8 @@ public class DynamicController {
 
                 this.ganttChartTimer.cancel();
                 this.cpuAndRamUsageTimer.cancel();
-                this.alertFinish();
 
+                this.alertFinish();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -213,20 +213,24 @@ public class DynamicController {
     @FXML
     public void closePopup() {
         FadeTransition fade = new FadeTransition();
+
         fade.setNode(popup);
         fade.setDuration(Duration.seconds(0.5));
         fade.setFromValue(1);
         fade.setToValue(0);
         fade.setOnFinished(event -> popup.setDisable(true));
+
         fade.play();
         
     }
 
     private void alertFinish() {
         TranslateTransition translate = new TranslateTransition();
+
         translate.setNode(popup);
         translate.setDuration(Duration.seconds(0.5));
-        translate.setByY(-92);
+        translate.setByY(-111);
+
         translate.play();
     }
 
@@ -275,12 +279,11 @@ public class DynamicController {
     public void addAllTask() {
         StateModel state = this.scheduler.getCurrentState();
         
-
         if (state == null) {
             return;
         }
-        int unitFinishTime = state.getMaximumFinishTime();
-        this.lblFinishTime.setText(String.valueOf((int) unitFinishTime));
+
+        this.lblFinishTime.setText(String.valueOf(state.getMaximumFinishTime()));
 
         for (NodeModel node : this.nodes) {
             if (state.isNodeScheduled(node.getByteId())) {

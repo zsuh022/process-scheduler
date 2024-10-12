@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -8,6 +9,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.effect.Bloom?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -19,7 +22,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualiser.controllers.DynamicController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualiser.controllers.DynamicController">
    <children>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #e0e0e0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -36,15 +39,18 @@
                         <Bloom threshold="0.1" />
                      </effect>
                   </ImageView>
-                  <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule Visualisation" wrappingWidth="400.8359375">
+                  <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule Visualisation" wrappingWidth="454.8359375">
                      <font>
                         <Font name="System Bold" size="40.0" />
                      </font>
                      <HBox.margin>
                         <Insets bottom="5.0" left="20.0" />
                      </HBox.margin>
+                     <effect>
+                        <Glow />
+                     </effect>
                   </Text>
-                  <Button fx:id="btnStartSchedule" focusTraversable="false" mnemonicParsing="false" onAction="#onStartScheduleClicked" prefHeight="46.0" prefWidth="234.0" stylesheets="@../css/header.css" text="Start Schedule" textFill="WHITE">
+                  <Button fx:id="btnStartSchedule" focusTraversable="false" mnemonicParsing="false" onAction="#onStartScheduleClicked" prefHeight="46.0" prefWidth="234.0" stylesheets="@../css/header.css" text="Start Schedule" textFill="WHITE" HBox.hgrow="NEVER">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
@@ -52,15 +58,18 @@
                         <Insets left="110.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#switchToStaticVisualiser" prefHeight="46.0" prefWidth="234.0" stylesheets="@../css/header.css" text="Show Schedule Chart" textFill="WHITE">
+                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#switchToStaticVisualiser" prefHeight="46.0" prefWidth="234.0" stylesheets="@../css/header.css" text="Show Graph" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                      <HBox.margin>
-                        <Insets left="100.0" />
+                        <Insets left="80.0" />
                      </HBox.margin>
                   </Button>
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </HBox>
             <HBox VBox.vgrow="ALWAYS">
                <VBox.margin>
@@ -193,9 +202,13 @@
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1190.0" />
          </content>
       </ScrollPane>
-      <Pane fx:id="popup" layoutX="927.0" layoutY="721.0" onMousePressed="#closePopup" prefHeight="94.0" prefWidth="355.0">
+      <Pane fx:id="popup" layoutX="927.0" layoutY="740.0" onMousePressed="#closePopup" prefHeight="94.0" prefWidth="355.0">
          <children>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#001840" height="96.0" layoutX="-3.0" layoutY="2.0" stroke="BLACK" strokeType="INSIDE" width="359.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#001840" height="96.0" layoutX="-3.0" layoutY="-3.0" stroke="BLACK" strokeType="INSIDE" width="359.0">
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </Rectangle>
             <ImageView fitHeight="90.0" fitWidth="200.0" layoutX="-8.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../images/jonklerlogo.png" />
@@ -211,10 +224,16 @@
             </Text>
             <Text fill="WHITE" fontSmoothingType="LCD" layoutX="74.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule has finished">
                <font>
-                  <Font name="System Bold" size="30.0" />
+                  <Font name="System Bold" size="24.0" />
                </font>
             </Text>
          </children>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <effect>
+            <DropShadow />
+         </effect>
       </Pane>
    </children>
 </AnchorPane>
