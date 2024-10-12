@@ -11,6 +11,7 @@ import org.graphstream.ui.fx_viewer.FxViewPanel;
 import scheduler.enums.SceneType;
 import scheduler.parsers.Arguments;
 import scheduler.parsers.InputOutputParser;
+import scheduler.utilities.Utility;
 import visualiser.Visualiser;
 
 import java.io.IOException;
@@ -59,52 +60,49 @@ public class StaticController {
     private void initialiseGraph() throws IOException {
         this.graph = InputOutputParser.readDOTFile(this.arguments.getInputDOTFilePath());
 
-        // Set graph style
-        String css = """
-        node {
-            shape: circle;
-            size: 20px;
-            fill-color: rgb(%1$d, %2$d, %3$d); /* Random color */
-            text-mode: normal;
-            text-background-mode: rounded-box;
-            text-background-color: white;
-            text-size: 15px;
-            text-alignment: center;
-            text-color: black;
-        }
-
-        edge {
-            fill-color: black;
-            arrow-shape: arrow;
-            arrow-size: 10px, 5px;
-        }
-        """;
-
-        applyRandomColorsAndLabels(css);
+        applyNodeStyle();
+        applyEdgeStyle();
 
         visualiseGraph();
     }
 
-    private void applyRandomColorsAndLabels(String css) {
-        // Add style and label to each node
+    private void applyNodeStyle() {
         for (Node node : this.graph) {
-            node.setAttribute("ui.label", node.getId()); // Add ID as label
-
-            // Generate random colors
-            int r = (int) (Math.random() * 255);
-            int g = (int) (Math.random() * 255);
-            int b = (int) (Math.random() * 255);
-
-            // Apply node style with random color
-            String nodeStyle = String.format(
-                    "shape: circle; size: 30px; fill-color: rgb(%d,%d,%d); " +
-                            "stroke-color: black; stroke-width: 2px; " +  // Add border color and width
-                            "text-mode: normal; text-size: 15px; text-color: black; text-alignment: center;",
-                    r, g, b
-            );
-            node.setAttribute("ui.style", nodeStyle);
-
+            node.setAttribute("ui.label", node.getId());
+            node.setAttribute("ui.style", getNodeStyle());
         }
+    }
+
+    private void applyEdgeStyle() {
+        this.graph.edges().forEach(edge -> {
+            edge.setAttribute("ui.style", getEdgeStyle());
+        });
+    }
+
+    private String getNodeStyle() {
+        int[] rgb = Utility.getRandomRgb();
+
+        return String.format(
+                "shape: circle;" +
+                "size: 30px;" +
+                "fill-color: rgb(%d,%d,%d);" +
+                "stroke-mode: plain;" +
+                "stroke-color: black;" +
+                "stroke-width: 1px;" +
+                "text-mode: normal;" +
+                "text-size: 14px;" +
+                "text-color: black;" +
+                "text-alignment: center;",
+                rgb[0], rgb[1], rgb[2]
+        );
+    }
+
+    private String getEdgeStyle() {
+        return "size: 1px;" +
+                "fill-color: black;" +
+                "stroke-mode: plain;" +
+                "stroke-color: black;" +
+                "stroke-width: 1px;";
     }
 
     private void initialiseLabels() {
@@ -127,15 +125,19 @@ public class StaticController {
     }
 
     @FXML
-    private void showSchedule() throws IOException {
+    private void switchToDynamicVisualiser() throws IOException {
         Visualiser.setScene(SceneType.DYNAMIC);
     }
 
     private void visualiseGraph() {
         FxViewer viewer = new FxViewer(this.graph, FxViewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+
         viewer.enableAutoLayout();
 
         FxViewPanel viewPanel = (FxViewPanel) viewer.addDefaultView(false);
+
+        viewPanel.prefWidthProperty().bind(this.graphPane.widthProperty());
+        viewPanel.prefHeightProperty().bind(this.graphPane.heightProperty());
 
         this.graphPane.getChildren().add(viewPanel);
     }
