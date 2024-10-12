@@ -1,61 +1,89 @@
 package visualiser;
 
 import java.io.IOException;
+import java.util.EnumMap;
+import java.util.Map;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import scheduler.models.MetricsModel;
+import scheduler.enums.SceneType;
 import scheduler.parsers.Arguments;
 import scheduler.schedulers.Scheduler;
 import visualiser.controllers.DynamicController;
-import visualiser.controllers.GanttChartController;
-import visualiser.controllers.ProcessorController;
-import visualiser.controllers.VisualiserController;
+import visualiser.controllers.StaticController;
+
+import static scheduler.constants.Constants.WINDOW_HEIGHT;
+import static scheduler.constants.Constants.WINDOW_WIDTH;
 
 public class Visualiser extends Application {
-    private static Arguments arguments;
     private static Scene scene;
+
+    private static Arguments arguments;
+
     private static Scheduler scheduler;
-    public static void run(Arguments arguments, Scheduler scheduler){
+
+    private static Map<SceneType, Parent> scenes;
+
+    public static void run(Arguments arguments, Scheduler scheduler) {
         Visualiser.arguments = arguments;
         Visualiser.scheduler = scheduler;
+
         launch();
     }
-    private static Parent loadFxml(final String fxml) throws IOException {
-        FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/fxml/" + fxml + ".fxml"));
+
+    private static String getResource(SceneType sceneType) {
+        String filename = sceneType.toString().toLowerCase();
+
+        return "/fxml/" + filename + ".fxml";
+    }
+
+    private static Parent loadFxml(SceneType sceneType) throws IOException {
+        if (scenes.containsKey(sceneType)) {
+            return scenes.get(sceneType);
+        }
+
+        String resource = getResource(sceneType);
+
+        FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource(resource));
+
         Parent root = loader.load();
-        
-        if (fxml.equals("dynamic")) {
+
+        if (sceneType == SceneType.DYNAMIC) {
             DynamicController controller = loader.getController();
-            MetricsModel metricsModel = new MetricsModel();
+
             controller.setArguments(arguments);
             controller.setScheduler(scheduler);
-        } else if (fxml.equals("visualiser")){
-            VisualiserController controller = loader.getController();
+        } else {
+            StaticController controller = loader.getController();
+
             controller.setArguments(arguments);
-            MetricsModel metrics = scheduler.getMetrics();
-            controller.setMetrics(metrics);
-            //MetricsModel metrics = scheduler.getMetrics();
-//            controller.setMetrics(metrics);
-        } else if (fxml.equals("processor")){
-            ProcessorController controller = loader.getController();
-            controller.setArguments(arguments);
+
+            controller.initialise();
         }
+
+        scenes.put(sceneType, root);
+
         return root;
     }
 
-    public static void setScene(String fxml) throws IOException{
-        scene.setRoot(loadFxml(fxml));
+    public static void setScene(SceneType sceneType) throws IOException{
+        scene.setRoot(loadFxml(sceneType));
     }
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFxml("dynamic"), 1280, 720);
+        scenes = new EnumMap<>(SceneType.class);
+
+        scene = new Scene(loadFxml(SceneType.DYNAMIC), WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
 
         stage.setScene(scene);
         stage.show();
