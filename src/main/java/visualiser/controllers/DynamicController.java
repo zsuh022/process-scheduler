@@ -31,7 +31,7 @@ import static scheduler.constants.Constants.*;
 public class DynamicController {
     @FXML
     private Button btnStartSchedule;
-  
+
     @FXML
     private Label lblTimeElapsed;
 

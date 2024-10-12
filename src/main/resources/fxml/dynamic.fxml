@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -36,34 +35,30 @@
                         <Bloom threshold="0.1" />
                      </effect>
                   </ImageView>
-                  <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule Visualisation">
+                  <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule Visualisation" wrappingWidth="400.8359375">
                      <font>
                         <Font name="System Bold" size="40.0" />
                      </font>
                      <HBox.margin>
-                        <Insets bottom="10.0" left="20.0" />
+                        <Insets bottom="5.0" left="20.0" />
                      </HBox.margin>
                   </Text>
-                  <StackPane>
-                     <children>
-                        <Rectangle arcHeight="30.0" arcWidth="30.0" fill="#002e72" height="46.0" onMouseClicked="#switchToStaticVisualiser" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" width="230.0">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Rectangle>
-                        <Text fill="WHITE" fontSmoothingType="LCD" onMouseClicked="#switchToStaticVisualiser" strokeType="OUTSIDE" strokeWidth="0.0" text="Show Schedule Chart">
-                           <font>
-                              <Font name="System Bold" size="20.0" />
-                           </font>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Text>
-                     </children>
+                  <Button fx:id="btnStartSchedule" focusTraversable="false" mnemonicParsing="false" onAction="#onStartScheduleClicked" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Start Schedule" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="20.0" />
+                     </font>
                      <HBox.margin>
-                        <Insets left="450.0" />
+                        <Insets left="110.0" />
                      </HBox.margin>
-                  </StackPane>
+                  </Button>
+                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#switchToStaticVisualiser" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Show Schedule Chart" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="20.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="100.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
             </HBox>
             <HBox VBox.vgrow="ALWAYS">
@@ -86,7 +81,7 @@
                               <Insets left="10.0" />
                            </StackPane.margin>
                         </Rectangle>
-                        <LineChart fx:id="lineChartRam" title="RAM" StackPane.alignment="CENTER">
+                        <LineChart fx:id="lineChartRam" stylesheets="@../css/linechart.css" title="RAM" StackPane.alignment="CENTER">
                           <xAxis>
                             <CategoryAxis label="Time (s)" side="BOTTOM" />
                           </xAxis>
@@ -117,7 +112,7 @@
                               <Insets right="10.0" />
                            </StackPane.margin>
                         </Rectangle>
-                        <LineChart fx:id="lineChartCpu" title="CPU" StackPane.alignment="CENTER">
+                        <LineChart fx:id="lineChartCpu" stylesheets="@../css/linechart.css" title="CPU" StackPane.alignment="CENTER">
                            <xAxis>
                               <CategoryAxis label="Time (s)" side="BOTTOM" />
                            </xAxis>
@@ -170,14 +165,6 @@
                               <Insets bottom="27.5" left="610.0" />
                            </StackPane.margin>
                         </Label>
-                        <Button fx:id="btnStartSchedule" focusTraversable="false" mnemonicParsing="false" onAction="#onStartScheduleClicked" prefHeight="35.0" prefWidth="169.0" text="Start Schedule" textFill="#777777" StackPane.alignment="BOTTOM_LEFT">
-                           <font>
-                              <Font name="System Bold" size="18.0" />
-                           </font>
-                           <StackPane.margin>
-                              <Insets bottom="23.0" left="45.0" />
-                           </StackPane.margin>
-                        </Button>
                      </children>
                   </StackPane>
                </children>
