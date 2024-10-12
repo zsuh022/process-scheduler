@@ -7,6 +7,7 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -30,6 +31,9 @@
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin>
+                     <effect>
+                        <Bloom threshold="0.1" />
+                     </effect>
                   </ImageView>
                   <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule Visualisation">
                      <font>
@@ -171,7 +175,7 @@
             </HBox>
          </children>
       </VBox>
-      <ScrollPane fx:id="chartPane" layoutX="45.0" layoutY="350.0" prefHeight="280.0" prefWidth="1190.0">
+      <ScrollPane fx:id="ganttChartScrollPane" layoutX="45.0" layoutY="350.0" prefHeight="280.0" prefWidth="1190.0">
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1190.0" />
          </content>

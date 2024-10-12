@@ -1,8 +1,5 @@
 package visualiser.controllers;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -14,8 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.util.Duration;
-import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
@@ -28,16 +23,10 @@ import visualiser.Visualiser;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import static scheduler.constants.Constants.*;
 
 public class DynamicController {
-
-    private static final int PERIODIC_INTERVAL_MS = 100;
-    private static final int GANTT_INTERVAL_MS = 10;
-
     @FXML
     private Label lblTimeElapsed;
 
@@ -48,7 +37,7 @@ public class DynamicController {
     private LineChart<String, Number> lineChartCpu;
 
     @FXML
-    private ScrollPane chartPane;
+    private ScrollPane ganttChartScrollPane;
 
     private XYChart.Series<String, Number> seriesRam;
     private XYChart.Series<String, Number> seriesCpu;
@@ -56,45 +45,53 @@ public class DynamicController {
     private GanttChart<Number, String> ganttChart;
 
     private Arguments arguments;
+
     private Scheduler scheduler;
+
     private NodeModel[] nodes;
 
-    private MetricsModel metricsModel;
-
-    private Timer timer;
     private Timer ganttChartTimer;
+    private Timer cpuAndRamUsageTimer;
+
     private int timeElapsed = 0;
 
     @FXML
     public void initialize() {
+        initialiseGanttChart();
+        initialiseMiscellaneous();
+    }
+
+    private void initialiseGanttChart() {
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Time");
+
+        ganttChart = new GanttChart<>(xAxis, new CategoryAxis());
+
+        ganttChart.setPrefHeight(GANTT_CHART_WIDTH);
+        ganttChart.setPrefWidth(GANTT_CHART_HEIGHT);
+        ganttChart.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        ganttChart.setLegendVisible(false);
+
+        Pane pane = new Pane();
+        pane.getChildren().add(ganttChart);
+        ganttChartScrollPane.setContent(pane);
+    }
+
+    private void initialiseMiscellaneous() {
         seriesRam = new XYChart.Series<>();
         seriesCpu = new XYChart.Series<>();
 
         lineChartRam.getData().addAll(seriesRam);
         lineChartCpu.getData().addAll(seriesCpu);
 
-        // Create the axes
-        NumberAxis xAxis = new NumberAxis();
-        xAxis.setLabel("Time");
-        CategoryAxis yAxis = new CategoryAxis();
-        // Initialize the GanttChart
-        ganttChart = new GanttChart<>(xAxis, yAxis);
-        ganttChart.setPrefHeight(270);
-        ganttChart.setPrefWidth(1180);
-        ganttChart.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        ganttChart.setLegendVisible(false);
-        // Add the GanttChart to the Pane
-        Pane pane = new Pane();
-        pane.getChildren().add(ganttChart);
-        chartPane.setContent(pane);
+        lineChartCpu.setAnimated(false);
+        lineChartCpu.setLegendVisible(false);
+
+        lineChartRam.setAnimated(false);
+        lineChartRam.setLegendVisible(false);
 
         ganttChartTimer = new Timer();
-        timer = new Timer();
-
-        lineChartCpu.setAnimated(false);
-        lineChartRam.setAnimated(false);
-
-//        startTracking();
+        cpuAndRamUsageTimer = new Timer();
     }
 
     @FXML
@@ -102,20 +99,16 @@ public class DynamicController {
         Visualiser.setScene("visualiser");
     }
 
-    public void setArguments(Arguments arguments) throws IOException {
+    public void setArguments(Arguments arguments) {
         this.arguments = arguments;
-//        addAllTask();
     }
 
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
-        this.nodes = scheduler.getNodes();
-        startTracking();
-    }
 
-    public void setMetricsModel(MetricsModel metricsModel) {
-        this.metricsModel = metricsModel;
-//        startTracking();
+        this.nodes = scheduler.getNodes();
+
+        startTracking();
     }
 
     private void startTracking() {
@@ -133,7 +126,7 @@ public class DynamicController {
                 addAllTask();
                 scheduler.saveBestState(arguments);
                 ganttChartTimer.cancel();
-                timer.cancel();
+                cpuAndRamUsageTimer.cancel();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -149,21 +142,21 @@ public class DynamicController {
                     addAllTask();
                 });
             }
-        }, 0, GANTT_INTERVAL_MS);
+        }, 0, GANTT_CHART_UPDATE_INTERVAL);
 
-        timer.scheduleAtFixedRate(new TimerTask() {
+        cpuAndRamUsageTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 updateLineCharts();
             }
-        }, 0, PERIODIC_INTERVAL_MS);
+        }, 0, CPU_AND_RAM_UPDATE_INTERVAL);
     }
 
     private void updateLineCharts() {
         float cpuUsage = Utility.getCpuUsage();
         float ramUsage = Utility.getRamUsage(); 
 
-        timeElapsed += PERIODIC_INTERVAL_MS;
+        timeElapsed += CPU_AND_RAM_UPDATE_INTERVAL;
 
         double timeInSeconds = timeElapsed / 1000.0;
 
@@ -177,6 +170,7 @@ public class DynamicController {
             if (seriesCpu.getData().size() > 10) {
                 seriesCpu.getData().remove(0);
             }
+
             if (seriesRam.getData().size() > 10) {
                 seriesRam.getData().remove(0);
             }

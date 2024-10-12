@@ -33,7 +33,6 @@ public class Visualiser extends Application {
         if (fxml.equals("dynamic")) {
             DynamicController controller = loader.getController();
             MetricsModel metricsModel = new MetricsModel();
-            controller.setMetricsModel(metricsModel);
             controller.setArguments(arguments);
             controller.setScheduler(scheduler);
         } else if (fxml.equals("visualiser")){

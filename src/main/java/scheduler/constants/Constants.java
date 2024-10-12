@@ -18,6 +18,10 @@ public class Constants {
     public static final int NUMBER_OF_NODES_UPPER_BOUND = 20;
     public static final int WEIGHT_LOWER_BOUND = 100;
     public static final int WEIGHT_UPPER_BOUND = 1000;
+    public static final int CPU_AND_RAM_UPDATE_INTERVAL = 100;
+    public static final int GANTT_CHART_UPDATE_INTERVAL = 10;
+    public static final int GANTT_CHART_WIDTH = 270;
+    public static final int GANTT_CHART_HEIGHT = 1180;
 
     public static final double EDGE_RATIO_LOWER_BOUND = 0.6;
     public static final double EDGE_RATIO_UPPER_BOUND = 1.0;
