@@ -153,9 +153,7 @@ public class DynamicController {
         this.ganttChartTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    updateGanttChart();
-                });
+                Platform.runLater(() -> updateGanttChart());
             }
         }, 0, GANTT_CHART_UPDATE_INTERVAL);
     }
