@@ -51,7 +51,7 @@
                         <Insets left="133.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#showMetrics" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Show Schedule Chart" textFill="WHITE">
+                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#onShowScheduleChartClicked" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Show Schedule Chart" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
