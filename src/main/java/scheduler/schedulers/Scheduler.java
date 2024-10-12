@@ -1,8 +1,11 @@
 package scheduler.schedulers;
 
+import java.io.IOException;
 import java.util.*;
 
 import scheduler.models.*;
+import scheduler.parsers.Arguments;
+import scheduler.parsers.InputOutputParser;
 
 import static scheduler.constants.Constants.INFINITY_32;
 
@@ -16,6 +19,9 @@ public abstract class Scheduler {
     protected MetricsModel metrics;
 
     protected NodeModel[] nodes;
+
+    protected volatile StateModel bestState;
+    protected volatile StateModel currentState;
 
     protected Set<StateModel> closedStates;
 
@@ -283,7 +289,31 @@ public abstract class Scheduler {
         return true;
     }
 
+    public StateModel getCurrentState() {
+        return this.currentState;
+    }
+
+    protected void setCurrentState(StateModel state) {
+        this.currentState = state;
+    }
+
     public MetricsModel getMetrics() {
         return this.metrics;
+    }
+
+    public NodeModel[] getNodes() {
+        return this.nodes;
+    }
+
+    public StateModel getBestState() {
+        return this.bestState;
+    }
+
+    public void saveBestState(Arguments arguments) throws IOException {
+        this.graph.setNodesAndEdgesForState(this.bestState);
+
+        InputOutputParser.outputDOTFile(this.graph, arguments.getOutputDOTFilePath());
+
+        arguments.displayOutputDOTFilePath();
     }
 }

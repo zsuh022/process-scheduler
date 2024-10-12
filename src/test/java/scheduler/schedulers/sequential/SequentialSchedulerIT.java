@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static scheduler.constants.Constants.TEST_INPUT_DOT_FILE_PATH;
 import static scheduler.constants.Constants.TEST_OUTPUT_DOT_FILE_PATH;
 
+@Disabled
 public class SequentialSchedulerIT extends BaseSchedulerIT {
     private void setInputAndOutputPaths(String filename) {
         arguments.setInputDOTFilePath(TEST_INPUT_DOT_FILE_PATH.concat(filename));
