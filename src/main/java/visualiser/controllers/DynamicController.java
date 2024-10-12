@@ -1,5 +1,6 @@
 package visualiser.controllers;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -8,7 +9,6 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -207,11 +207,23 @@ public class DynamicController {
         addAllTask();
     }
 
+    @FXML
+    public void closePopup() {
+        FadeTransition fade = new FadeTransition();
+        fade.setNode(popup);
+        fade.setDuration(Duration.seconds(0.5));
+        fade.setFromValue(1);
+        fade.setToValue(0);
+        fade.setOnFinished(event -> popup.setDisable(true));
+        fade.play();
+        
+    }
+
     private void alertFinish() {
         TranslateTransition translate = new TranslateTransition();
         translate.setNode(popup);
         translate.setDuration(Duration.seconds(0.5));
-        translate.setByY(-100);
+        translate.setByY(-92);
         translate.play();
     }
 
