@@ -35,7 +35,7 @@
                         <Bloom threshold="0.1" />
                      </effect>
                   </ImageView>
-                  <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule Visualisation">
+                  <Text fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule Visualisation" wrappingWidth="400.8359375">
                      <font>
                         <Font name="System Bold" size="40.0" />
                      </font>
@@ -43,20 +43,20 @@
                         <Insets bottom="5.0" left="20.0" />
                      </HBox.margin>
                   </Text>
-                  <Button fx:id="btnStartSchedule" focusTraversable="false" mnemonicParsing="false" onAction="#switchToStaticVisualiser" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Start Schedule" textFill="WHITE">
+                  <Button fx:id="btnStartSchedule" focusTraversable="false" mnemonicParsing="false" onAction="#onStartScheduleClicked" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Start Schedule" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                      <HBox.margin>
-                        <Insets left="133.0" />
+                        <Insets left="110.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#onShowScheduleChartClicked" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Show Schedule Chart" textFill="WHITE">
+                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#switchToStaticVisualiser" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Show Schedule Chart" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                      <HBox.margin>
-                        <Insets left="97.0" />
+                        <Insets left="100.0" />
                      </HBox.margin>
                   </Button>
                </children>
