@@ -46,12 +46,12 @@
                   </Text>
                   <StackPane>
                      <children>
-                        <Rectangle arcHeight="30.0" arcWidth="30.0" fill="#002e72" height="46.0" onMouseClicked="#showMetrics" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" width="230.0">
+                        <Rectangle arcHeight="30.0" arcWidth="30.0" fill="#002e72" height="46.0" onMouseClicked="#switchToStaticVisualiser" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" width="230.0">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Rectangle>
-                        <Text fill="WHITE" fontSmoothingType="LCD" onMouseClicked="#showMetrics" strokeType="OUTSIDE" strokeWidth="0.0" text="Show Schedule Chart">
+                        <Text fill="WHITE" fontSmoothingType="LCD" onMouseClicked="#switchToStaticVisualiser" strokeType="OUTSIDE" strokeWidth="0.0" text="Show Schedule Chart">
                            <font>
                               <Font name="System Bold" size="20.0" />
                            </font>
