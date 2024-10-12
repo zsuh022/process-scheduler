@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.effect.Bloom?>
@@ -40,29 +40,25 @@
                         <Font name="System Bold" size="40.0" />
                      </font>
                      <HBox.margin>
-                        <Insets bottom="10.0" left="20.0" />
+                        <Insets bottom="5.0" left="20.0" />
                      </HBox.margin>
                   </Text>
-                  <StackPane>
-                     <children>
-                        <Rectangle arcHeight="30.0" arcWidth="30.0" fill="#002e72" height="46.0" onMouseClicked="#showMetrics" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" width="230.0">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Rectangle>
-                        <Text fill="WHITE" fontSmoothingType="LCD" onMouseClicked="#showMetrics" strokeType="OUTSIDE" strokeWidth="0.0" text="Show Schedule Chart">
-                           <font>
-                              <Font name="System Bold" size="20.0" />
-                           </font>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Text>
-                     </children>
+                  <Button fx:id="btnStartSchedule" focusTraversable="false" mnemonicParsing="false" onAction="#onStartScheduleClicked" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Start Schedule" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="20.0" />
+                     </font>
                      <HBox.margin>
-                        <Insets left="450.0" />
+                        <Insets left="133.0" />
                      </HBox.margin>
-                  </StackPane>
+                  </Button>
+                  <Button fx:id="btnShowScheduleChart" focusTraversable="false" mnemonicParsing="false" onAction="#showMetrics" prefHeight="46.0" prefWidth="230.0" stylesheets="@../css/header.css" text="Show Schedule Chart" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="20.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="97.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
             </HBox>
             <HBox VBox.vgrow="ALWAYS">
@@ -175,23 +171,6 @@
             </HBox>
          </children>
       </VBox>
-      <StackPane fx:id="startScheduleStackPane" layoutX="640.0" layoutY="22.0">
-         <children>
-            <Rectangle arcHeight="30.0" arcWidth="30.0" fill="#002e72" height="46.0" onMouseClicked="#onStartScheduleClicked" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" width="230.0">
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </Rectangle>
-            <Text fill="WHITE" fontSmoothingType="LCD" onMouseClicked="#onStartScheduleClicked" strokeType="OUTSIDE" strokeWidth="0.0" text="Start Schedule">
-               <font>
-                  <Font name="System Bold" size="20.0" />
-               </font>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </Text>
-         </children>
-      </StackPane>
       <ScrollPane fx:id="ganttChartScrollPane" layoutX="45.0" layoutY="350.0" prefHeight="280.0" prefWidth="1190.0">
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1190.0" />
