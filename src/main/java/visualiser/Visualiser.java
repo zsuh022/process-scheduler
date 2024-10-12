@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -78,6 +79,11 @@ public class Visualiser extends Application {
         scenes = new EnumMap<>(SceneType.class);
 
         scene = new Scene(loadFxml(SceneType.DYNAMIC), WINDOW_WIDTH, WINDOW_HEIGHT);
+        scene = new Scene(loadFxml("dynamic"), 1280, 720);
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
 
         stage.setScene(scene);
         stage.show();
