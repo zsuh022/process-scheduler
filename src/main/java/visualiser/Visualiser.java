@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import scheduler.models.MetricsModel;
 import scheduler.parsers.Arguments;
 import scheduler.schedulers.Scheduler;
+import visualiser.controllers.DynamicController;
 import visualiser.controllers.GanttChartController;
 import visualiser.controllers.ProcessorController;
 import visualiser.controllers.VisualiserController;
@@ -29,9 +30,11 @@ public class Visualiser extends Application {
         FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/fxml/" + fxml + ".fxml"));
         Parent root = loader.load();
         
-        if (fxml.equals("ganttChart")) {
-            GanttChartController controller = loader.getController();
+        if (fxml.equals("dynamic")) {
+            DynamicController controller = loader.getController();
+            MetricsModel metricsModel = new MetricsModel();
             controller.setArguments(arguments);
+            controller.setScheduler(scheduler);
         } else if (fxml.equals("visualiser")){
             VisualiserController controller = loader.getController();
             controller.setArguments(arguments);
@@ -46,21 +49,14 @@ public class Visualiser extends Application {
         return root;
     }
 
-    public static void setScreen(String fxml) throws IOException{
+    public static void setScene(String fxml) throws IOException{
         scene.setRoot(loadFxml(fxml));
     }
 
     @Override
     public void start(Stage stage) throws IOException {
-        // String javaVersion = System.getProperty("java.version");
-        // String javafxVersion = System.getProperty("javafx.version");
-        // Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        //Scene scene = new Scene(loadFxml("visualiser"), 1280, 720);
-        //above is for milestone 2
-        //Scene scene = new Scene(new StackPane(l), 640, 480);
-        
-        scene = new Scene(loadFxml("visualiser"), 1280, 720);
-        // Used for milestone 2
+        scene = new Scene(loadFxml("dynamic"), 1280, 720);
+
         stage.setScene(scene);
         stage.show();
     }
