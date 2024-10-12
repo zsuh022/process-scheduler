@@ -7,6 +7,7 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
@@ -27,6 +28,9 @@ import java.util.TimerTask;
 import static scheduler.constants.Constants.*;
 
 public class DynamicController {
+    @FXML
+    private Button btnStartSchedule;
+  
     @FXML
     private Label lblTimeElapsed;
 
@@ -117,6 +121,14 @@ public class DynamicController {
         Visualiser.setScene("visualiser");
     }
 
+    @FXML
+    void onStartScheduleClicked() {
+        btnStartSchedule.setDisable(true);
+        btnStartSchedule.setVisible(false);
+
+        startTracking();
+    }
+
     public void setArguments(Arguments arguments) {
         this.arguments = arguments;
     }
@@ -125,8 +137,6 @@ public class DynamicController {
         this.scheduler = scheduler;
 
         this.nodes = scheduler.getNodes();
-
-        startTracking();
     }
 
     private void startTracking() {
