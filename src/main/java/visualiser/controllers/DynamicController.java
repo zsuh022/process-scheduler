@@ -9,9 +9,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import scheduler.models.MetricsModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
@@ -21,6 +19,9 @@ import visualiser.GanttChart;
 import visualiser.Visualiser;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -67,9 +68,12 @@ public class DynamicController {
 
         this.ganttChart = new GanttChart<>(xAxis, new CategoryAxis());
 
+
         this.ganttChart.setPrefHeight(GANTT_CHART_WIDTH);
         this.ganttChart.setPrefWidth(GANTT_CHART_HEIGHT);
-        this.ganttChart.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+
+        applyGanttChartStyleSheet();
+
         this.ganttChart.setLegendVisible(false);
 
         Pane pane = new Pane();
@@ -78,12 +82,24 @@ public class DynamicController {
         this.ganttChartScrollPane.setContent(pane);
     }
 
+    private void applyGanttChartStyleSheet() {
+        URL stylesheetUrl = getClass().getResource("/css/style.css");
+
+        if (stylesheetUrl == null) {
+            throw new NullPointerException("Stylesheet not found: /css/style.css");
+        }
+
+        String stylesheet = stylesheetUrl.toExternalForm();
+
+        this.ganttChart.getStylesheets().add(stylesheet);
+    }
+
     private void initialiseMiscellaneous() {
         this.seriesRam = new XYChart.Series<>();
         this.seriesCpu = new XYChart.Series<>();
 
-        this.lineChartRam.getData().addAll(seriesRam);
-        this.lineChartCpu.getData().addAll(seriesCpu);
+        Collections.addAll(this.lineChartRam.getData(), seriesRam);
+        Collections.addAll(this.lineChartCpu.getData(), seriesCpu);
 
         this.lineChartCpu.setAnimated(false);
         this.lineChartCpu.setLegendVisible(false);
@@ -96,7 +112,7 @@ public class DynamicController {
     }
 
     @FXML
-    void showMetrics(MouseEvent event) throws IOException {
+    void showMetrics() throws IOException {
         Visualiser.setScene("visualiser");
     }
 
@@ -175,29 +191,27 @@ public class DynamicController {
 
     private void updateCpuAndRamUsageCharts() {
         float cpuUsage = Utility.getCpuUsage();
-        float ramUsage = Utility.getRamUsage(); 
+        float ramUsage = Utility.getRamUsage();
 
         this.timeElapsed += CPU_AND_RAM_UPDATE_INTERVAL;
 
         double timeInSeconds = this.timeElapsed / 1000.0;
 
-        Platform.runLater(() -> {
-            plotNewPointsOnCpuAndRamCharts(cpuUsage, ramUsage, timeInSeconds);
-        });
+        Platform.runLater(() -> plotNewPointsOnCpuAndRamCharts(cpuUsage, ramUsage, timeInSeconds));
     }
 
     private void plotNewPointsOnCpuAndRamCharts(float cpuUsage, float ramUsage, double timeInSeconds) {
-        seriesCpu.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), cpuUsage));
-        seriesRam.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), ramUsage));
+        this.seriesCpu.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), cpuUsage));
+        this.seriesRam.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), ramUsage));
 
-        lblTimeElapsed.setText(String.format("%.1f s", timeInSeconds)); // Display time in seconds
+        this.lblTimeElapsed.setText(String.format("%.1f s", timeInSeconds));
 
-        if (seriesCpu.getData().size() > 10) {
-            seriesCpu.getData().remove(0);
+        if (this.seriesCpu.getData().size() > MAXIMUM_NUMBER_OF_DATA_POINTS) {
+            this.seriesCpu.getData().remove(0);
         }
 
-        if (seriesRam.getData().size() > 10) {
-            seriesRam.getData().remove(0);
+        if (this.seriesRam.getData().size() > MAXIMUM_NUMBER_OF_DATA_POINTS) {
+            this.seriesRam.getData().remove(0);
         }
     }
 
