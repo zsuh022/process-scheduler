@@ -36,6 +36,9 @@ public class DynamicController {
     private Label lblTimeElapsed;
 
     @FXML
+    private Label lblFinishTime;
+
+    @FXML
     private LineChart<String, Number> lineChartRam;
 
     @FXML
