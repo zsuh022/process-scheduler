@@ -22,7 +22,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualiser.controllers.DynamicController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualiser.controllers.DynamicController">
    <children>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #e0e0e0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -154,43 +154,51 @@
                               <Insets left="45.0" top="15.0" />
                            </StackPane.margin>
                         </Text>
-                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="40.0" stroke="TRANSPARENT" strokeType="INSIDE" width="1210.0" StackPane.alignment="BOTTOM_CENTER">
+                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="40.0" stroke="TRANSPARENT" strokeType="INSIDE" width="600.0" StackPane.alignment="BOTTOM_LEFT">
                            <StackPane.margin>
-                              <Insets bottom="20.0" />
+                              <Insets bottom="20.0" left="35.0" />
                            </StackPane.margin>
                         </Rectangle>
-                        <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Total Elapsed Time (s):   " textAlignment="RIGHT" StackPane.alignment="BOTTOM_CENTER">
+                        <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Total Elapsed Time (s):   " textAlignment="RIGHT" StackPane.alignment="BOTTOM_LEFT">
                            <font>
                               <Font name="System Bold" size="18.0" />
                            </font>
                            <StackPane.margin>
-                              <Insets bottom="29.0" right="500.0" />
+                              <Insets bottom="28.0" left="53.0" />
                            </StackPane.margin>
                         </Text>
+                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="40.0" stroke="TRANSPARENT" strokeType="INSIDE" width="600.0" StackPane.alignment="BOTTOM_RIGHT">
+                           <StackPane.margin>
+                              <Insets bottom="20.0" right="35.0" />
+                           </StackPane.margin>
+                        </Rectangle>
                         <Label fx:id="lblTimeElapsed" prefHeight="27.0" prefWidth="200.0" text="0" textFill="#777777" StackPane.alignment="BOTTOM_LEFT">
                            <font>
                               <Font name="System Bold" size="18.0" />
                            </font>
                            <StackPane.margin>
-                              <Insets bottom="27.5" left="500.0" />
+                              <Insets bottom="25.0" left="255.0" />
                            </StackPane.margin>
+                        </Label>
+                        <Label fx:id="lblFinishTime" prefHeight="27.0" prefWidth="73.0" text="0" textFill="#777777" StackPane.alignment="BOTTOM_CENTER">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                           <StackPane.margin>
+                              <Insets bottom="25.0" left="485.0" />
+                           </StackPane.margin>
+                           <padding>
+                              <Insets left="5.0" />
+                           </padding>
                         </Label>
                         <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule Finish Time:" textAlignment="RIGHT" StackPane.alignment="BOTTOM_CENTER">
                            <font>
                               <Font name="System Bold" size="18.0" />
                            </font>
                            <StackPane.margin>
-                              <Insets bottom="29.0" left="400.0" />
+                              <Insets bottom="28.0" left="230.0" />
                            </StackPane.margin>
                         </Text>
-                        <Label fx:id="lblFinishTime" prefHeight="27.0" prefWidth="200.0" text="0" textFill="#777777" StackPane.alignment="BOTTOM_CENTER">
-                           <font>
-                              <Font name="System Bold" size="18.0" />
-                           </font>
-                           <StackPane.margin>
-                              <Insets bottom="27.5" left="825.0" />
-                           </StackPane.margin>
-                        </Label>
                      </children>
                   </StackPane>
                </children>
