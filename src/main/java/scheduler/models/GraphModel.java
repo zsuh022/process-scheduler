@@ -15,6 +15,7 @@ public class GraphModel {
     private final Graph graph;
 
     private int numberOfNodes;
+    private int numberOfEdges;
     private int totalNodeWeight;
 
     private Map<String, NodeModel> nodes;
@@ -78,8 +79,9 @@ public class GraphModel {
                 nodeModel.setProcessor(processor);
             }
 
-            ++this.numberOfNodes;
             this.totalNodeWeight += weight;
+
+            ++this.numberOfNodes;
         });
 
         this.nodes = nodes;
@@ -104,6 +106,8 @@ public class GraphModel {
 
             source.addSuccessor(destination);
             destination.addPredecessor(source);
+
+            ++this.numberOfEdges;
         });
 
         this.edges = edges;
@@ -216,6 +220,10 @@ public class GraphModel {
      */
     public int getNumberOfNodes() {
         return this.numberOfNodes;
+    }
+
+    public int getNumberOfEdges() {
+        return this.numberOfEdges;
     }
 
     /**
