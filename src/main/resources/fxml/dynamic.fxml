@@ -175,7 +175,7 @@
             </HBox>
          </children>
       </VBox>
-      <StackPane layoutX="640.0" layoutY="22.0">
+      <StackPane fx:id="startScheduleStackPane" layoutX="640.0" layoutY="22.0">
          <children>
             <Rectangle arcHeight="30.0" arcWidth="30.0" fill="#002e72" height="46.0" onMouseClicked="#onStartScheduleClicked" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" width="230.0">
                <cursor>

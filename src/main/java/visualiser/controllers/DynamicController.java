@@ -7,10 +7,10 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
@@ -29,9 +29,6 @@ import static scheduler.constants.Constants.*;
 
 public class DynamicController {
     @FXML
-    private Button btnStartSchedule;
-  
-    @FXML
     private Label lblTimeElapsed;
 
     @FXML
@@ -42,6 +39,9 @@ public class DynamicController {
 
     @FXML
     private ScrollPane ganttChartScrollPane;
+
+    @FXML
+    private StackPane startScheduleStackPane;
 
     private XYChart.Series<String, Number> seriesRam;
     private XYChart.Series<String, Number> seriesCpu;
@@ -123,8 +123,8 @@ public class DynamicController {
 
     @FXML
     void onStartScheduleClicked() {
-        btnStartSchedule.setDisable(true);
-        btnStartSchedule.setVisible(false);
+        startScheduleStackPane.setDisable(true);
+        startScheduleStackPane.setVisible(false);
 
         startTracking();
     }
