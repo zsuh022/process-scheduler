@@ -150,7 +150,7 @@
                   </AnchorPane>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
-                        <Pane fx:id="graphPane" layoutX="20.0" layoutY="98.0" prefHeight="510.0" prefWidth="600.0" style="-fx-background-color: #FFFFFF; -fx-border-radius: 20; -fx-background-radius: 10;" AnchorPane.bottomAnchor="-2.0" AnchorPane.topAnchor="78.0" />
+                        <Pane fx:id="graphPane" layoutX="20.0" layoutY="98.0" prefHeight="510.0" prefWidth="600.0" style="-fx-background-color: #FFFFFF; -fx-border-radius: 20; -fx-background-radius: 10;" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="78.0" />
                         <Pane fx:id="edgesPane1" layoutX="20.0" layoutY="20.0" maxWidth="600.0" minWidth="1.0" prefHeight="60.0" prefWidth="600.0" style="-fx-background-color: #FFFFFF; -fx-border-radius: 20px; -fx-background-radius: 10px;">
                            <children>
                               <Text layoutX="182.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Input Graph" textAlignment="CENTER" wrappingWidth="236.13671875">
