@@ -4,7 +4,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.web.WebView;
+
+import org.graphstream.graph.Graph;
+import org.graphstream.ui.fx_viewer.FxViewer;
+import org.graphstream.ui.fx_viewer.FxViewPanel;
+import scheduler.parsers.InputOutputParser;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -23,8 +28,8 @@ public class StaticVisualiserController {
     @FXML
     private Pane graphPane;
 
-    private String dotFilePath = "src/main/resources/dotfiles/input/Nodes_10_Random.dot";  
-    private String dotOutputFilePath = "src/main/resources/dotfiles/input/Nodes_10_Random-output.dot"; 
+    private String dotFilePath = "src/main/resources/dotfiles/input/Nodes_10_Random.dot";
+    private String dotOutputFilePath = "src/main/resources/dotfiles/input/Nodes_10_Random-output.dot";
 
     @FXML
     public void initialize() {
@@ -38,7 +43,7 @@ public class StaticVisualiserController {
 
     @FXML
     private void showSchedule(MouseEvent event) {
-    // Your logic for showing the schedule
+        // Your logic for showing the schedule
     }
 
     private void loadDotFile(String filePath) throws IOException {
@@ -60,8 +65,8 @@ public class StaticVisualiserController {
 
         stats.put("nodes", nodeCount);
         stats.put("edges", edgeCount);
-        stats.put("processors", 2); 
-        stats.put("cores", 4); 
+        stats.put("processors", 2);
+        stats.put("cores", 4);
 
         // Update labels
         nodesLabel.setText("Nodes: " + stats.get("nodes"));
@@ -70,17 +75,23 @@ public class StaticVisualiserController {
         coresLabel.setText("Cores: " + stats.get("cores"));
     }
 
-    private void visualizeGraph(String dotOutputFilePath) {
-        WebView webView = new WebView();
-        graphPane.getChildren().add(webView);
+    private void visualizeGraph(String dotFilePath) {
+        try {
 
-        
-        String graphSvgPath = convertDotToSvg(dotOutputFilePath);
-        webView.getEngine().load("file:///" + graphSvgPath);
-    }
+            Graph graph = InputOutputParser.readDOTFile(dotFilePath);
 
-    private String convertDotToSvg(String dotOutputFilePath) {
- 
-        return "";
+            FxViewer viewer = new FxViewer(graph, FxViewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+            viewer.enableAutoLayout();
+    
+
+            FxViewPanel viewPanel = (FxViewPanel) viewer.addDefaultView(false);
+    
+            // Add the viewPanel directly to the JavaFX Pane
+            graphPane.getChildren().add(viewPanel);
+    
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+    
 }
