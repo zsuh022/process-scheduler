@@ -4,6 +4,7 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
+import scheduler.enums.GraphType;
 import scheduler.models.GraphModel;
 import scheduler.parsers.InputOutputParser;
 import scheduler.utilities.Utility;
@@ -21,10 +22,14 @@ public class GraphGenerator {
     }
 
     public static GraphModel getRandomGraph() {
-        GraphInformation.numberOfNodes = getRandomNumberOfNodes();
-        GraphInformation.numberOfEdges = getRandomNumberOfEdges();
+        initialiseGraphInformation();
 
         return new GraphModel(generateRandomGraph());
+    }
+
+    private static void initialiseGraphInformation() {
+        GraphInformation.numberOfNodes = getRandomNumberOfNodes();
+        GraphInformation.numberOfEdges = getRandomNumberOfEdges();
     }
 
     private static boolean isCyclic(boolean[][] adjacencyMatrix) {
@@ -42,8 +47,8 @@ public class GraphGenerator {
 
     private static boolean isCyclic(int sourceId, boolean[][] adjacencyMatrix, boolean[] visited, boolean[] stack) {
         if (!visited[sourceId]) {
-            visited[sourceId] = true;
             stack[sourceId] = true;
+            visited[sourceId] = true;
 
             for (int destinationId = 0; destinationId < GraphInformation.numberOfNodes; destinationId++) {
                 if (adjacencyMatrix[sourceId][destinationId]) {
@@ -218,11 +223,110 @@ public class GraphGenerator {
         return isSourceNode;
     }
 
-    public static void createAndSaveRandomGraphs(int numberOfRandomGraphs) throws IOException {
+    public static void createRandomGraphs(int numberOfRandomGraphs) throws IOException {
         for (int graphIndex = 0; graphIndex < numberOfRandomGraphs; graphIndex++) {
             String filename = "Random_%d_Graph.dot".formatted(graphIndex);
 
             InputOutputParser.writeDOTFile(generateRandomGraph(), filename);
         }
+    }
+
+    public static void createForkAndJoinGraph() throws IOException {
+        Graph graph = new SingleGraph("graph");
+
+        initialiseGraphInformation();
+
+        boolean[][] adjacencyMatrix = new boolean[GraphInformation.numberOfNodes][GraphInformation.numberOfNodes];
+
+        for (int nodeId = 1; nodeId < GraphInformation.numberOfNodes - 1; nodeId++) {
+            adjacencyMatrix[0][nodeId] = true;
+            adjacencyMatrix[nodeId][GraphInformation.numberOfNodes - 1] = true;
+        }
+
+        createGraphFromAdjacencyMatrix(graph, adjacencyMatrix);
+
+        InputOutputParser.writeDOTFile(graph, getFilename(GraphType.FORK_AND_JOIN));
+    }
+
+    public static void createForkGraph() throws IOException {
+        Graph graph = new SingleGraph("graph");
+
+        initialiseGraphInformation();
+
+        boolean[][] adjacencyMatrix = new boolean[GraphInformation.numberOfNodes][GraphInformation.numberOfNodes];
+
+        for (int nodeId = 1; nodeId < GraphInformation.numberOfNodes; nodeId++) {
+            adjacencyMatrix[0][nodeId] = true;
+        }
+
+        createGraphFromAdjacencyMatrix(graph, adjacencyMatrix);
+
+        InputOutputParser.writeDOTFile(graph, getFilename(GraphType.FORK));
+    }
+
+    public static void createJoinGraph() throws IOException {
+        Graph graph = new SingleGraph("graph");
+
+        initialiseGraphInformation();
+
+        boolean[][] adjacencyMatrix = new boolean[GraphInformation.numberOfNodes][GraphInformation.numberOfNodes];
+
+        for (int nodeId = 0; nodeId < GraphInformation.numberOfNodes - 1; nodeId++) {
+            adjacencyMatrix[nodeId][GraphInformation.numberOfNodes - 1] = true;
+        }
+
+        createGraphFromAdjacencyMatrix(graph, adjacencyMatrix);
+
+        InputOutputParser.writeDOTFile(graph, getFilename(GraphType.JOIN));
+    }
+
+    public static void createIndependentGraph() throws IOException {
+        Graph graph = new SingleGraph("graph");
+
+        initialiseGraphInformation();
+
+        for (int nodeId = 0; nodeId < GraphInformation.numberOfNodes; nodeId++) {
+            addNode(graph, Integer.toString(nodeId));
+        }
+
+        InputOutputParser.writeDOTFile(graph, getFilename(GraphType.INDEPENDENT));
+    }
+
+    public static void createChainGraph() throws IOException {
+        Graph graph = new SingleGraph("graph");
+
+        initialiseGraphInformation();
+
+        boolean[][] adjacencyMatrix = new boolean[GraphInformation.numberOfNodes][GraphInformation.numberOfNodes];
+
+        for (int nodeId = 0; nodeId < GraphInformation.numberOfNodes - 1; nodeId++) {
+            adjacencyMatrix[nodeId][nodeId + 1] = true;
+        }
+
+        createGraphFromAdjacencyMatrix(graph, adjacencyMatrix);
+
+        InputOutputParser.writeDOTFile(graph, getFilename(GraphType.CHAIN));
+    }
+
+    private static String getFilename(GraphType graphType) {
+        return getFilenamePrefix(graphType).concat(getFilenameSuffix());
+    }
+
+    private static String getFilenamePrefix(GraphType graphType) {
+        return switch (graphType) {
+            case FORK -> "fork";
+            case JOIN -> "join";
+            case CHAIN -> "chain";
+            case RANDOM -> "random";
+            case INDEPENDENT -> "independent";
+            case FORK_AND_JOIN -> "fork_and_join";
+        };
+    }
+
+    private static String getFilenameSuffix() {
+        return "_nodes_%d_edges_%d".formatted(
+                GraphInformation.numberOfNodes,
+                GraphInformation.numberOfEdges
+        );
     }
 }

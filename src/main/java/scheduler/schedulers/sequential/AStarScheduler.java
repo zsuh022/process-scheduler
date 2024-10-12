@@ -2,6 +2,7 @@ package scheduler.schedulers.sequential;
 
 import java.util.*;
 
+import scheduler.models.EdgeModel;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
@@ -11,8 +12,6 @@ import static scheduler.constants.Constants.INFINITY_32;
 
 public class AStarScheduler extends Scheduler {
     private final PriorityQueue<StateModel> openedStates;
-
-    protected volatile StateModel bestState;
 
     public AStarScheduler(GraphModel graph, byte processors) {
         super(graph, processors);
@@ -29,17 +28,15 @@ public class AStarScheduler extends Scheduler {
         while (!this.openedStates.isEmpty()) {
             StateModel state = this.openedStates.poll();
 
+            setCurrentState(state);
+
             if (state.areAllNodesScheduled()) {
                 this.bestState = state;
 
                 break;
             }
 
-            for (NodeModel node : getAvailableNodes(state)) {
-                for (int processor = 0; processor < this.processors; processor++) {
-                    expandState(state, node, processor);
-                }
-            }
+            expandStates(state);
         }
 
         metrics.setBestState(this.bestState);
@@ -105,6 +102,24 @@ public class AStarScheduler extends Scheduler {
         return state;
     }
 
+    private void expandStates(StateModel state) {
+        List<NodeModel> availableNodes = getAvailableNodes(state);
+
+        NodeModel fixedNode = getFixedNodeOrder(state, availableNodes);
+
+        if (fixedNode != null) {
+            for (int processor = 0; processor < processors; processor++) {
+                expandState(state, fixedNode, processor);
+            }
+        } else {
+            for (NodeModel node : availableNodes) {
+                for (int processor = 0; processor < processors; processor++) {
+                    expandState(state, node, processor);
+                }
+            }
+        }
+    }
+
     protected boolean canPruneState(StateModel state) {
         if (!closedStates.add(state)) {
             return true;
@@ -164,6 +179,117 @@ public class AStarScheduler extends Scheduler {
         }
 
         return maximumDataReadyTime;
+    }
+
+    protected NodeModel getFixedNodeOrder(StateModel state, List<NodeModel> availableNodes) {
+        Set<NodeModel> availableSuccessors = new HashSet<>();
+        Set<NodeModel> availablePredecessors = new HashSet<>();
+
+        // For each free node
+        for (NodeModel node : availableNodes) {
+            // Free node must have at most one parent and child
+            if (node.getInDegree() > 1 || node.getOutDegree() > 1) {
+                return null;
+            }
+
+            // get parent and children
+            if (node.getInDegree() > 0) {
+                availablePredecessors.add(node.getPredecessor(0));
+            }
+
+            if (node.getOutDegree() > 0) {
+                availableSuccessors.add(node.getSuccessor(0));
+            }
+        }
+
+        //2. if tasks have children, they all must share the same child
+        if (availableSuccessors.size() > 1) {
+            return null;
+        }
+
+        //3. if tasks have parents, they must be scheduled on the same processor
+        if (!availablePredecessors.isEmpty()) {
+            Set<Byte> predecessorProcessors = new HashSet<>();
+
+            for (NodeModel predecessor : availablePredecessors) {
+                if (!state.isNodeScheduled(predecessor)) {
+                    return null;
+                }
+
+                predecessorProcessors.add(state.getNodeProcessor(predecessor));
+            }
+
+            if (predecessorProcessors.size() > 1) {
+                return null;
+            }
+        }
+
+        // return the fixed order nodes if parents are not scheduled on the same processor
+        return getSortedNode(state, availableNodes);
+    }
+
+    protected NodeModel getSortedNode(StateModel state, List<NodeModel> availableNodes) {
+        List<NodeModel> sortedNodes = new ArrayList<>(availableNodes);
+
+        sortedNodes.sort((nodeA, nodeB) -> {
+            int dataReadyTimeA = getDataReadyTime(state, nodeA);
+            int dataReadyTimeB = getDataReadyTime(state, nodeB);
+
+            // Non-increasing drt
+            if (dataReadyTimeA != dataReadyTimeB) {
+                return Integer.compare(dataReadyTimeA, dataReadyTimeB);
+            }
+
+            // There is a tie, so we break it by using decreasing child edge cost
+            int successorEdgeCostA = getSuccessorEdgeCost(nodeA);
+            int successorEdgeCostB = getSuccessorEdgeCost(nodeB);
+
+            return Integer.compare(successorEdgeCostB, successorEdgeCostA);
+        });
+
+        // Verify that the tasks are in decreasing child edge cost order
+        for (int nodeId = 1; nodeId < sortedNodes.size(); nodeId++) {
+            int currentEdgeCost = getSuccessorEdgeCost(sortedNodes.get(nodeId));
+            int previousEdgeCost = getSuccessorEdgeCost(sortedNodes.get(nodeId - 1));
+
+            if (previousEdgeCost < currentEdgeCost) {
+                return null;
+            }
+        }
+
+        if (sortedNodes.isEmpty()) {
+            return null;
+        }
+
+        return sortedNodes.get(0);
+    }
+
+    protected int getSuccessorEdgeCost(NodeModel node) {
+        if (node.getOutDegree() == 0) {
+            return 0;
+        }
+
+        return getEdge(node, node.getSuccessor(0)).getWeight();
+    }
+
+    protected int getDataReadyTime(StateModel state, NodeModel node) {
+        if (node.getInDegree() == 0) {
+            return 0;
+        }
+
+        NodeModel predecessor = node.getPredecessor(0);
+
+        if (!state.isNodeScheduled(predecessor)) {
+            return INFINITY_32;
+        }
+
+        int dataReadyTime = state.getNodeStartTime(predecessor) + predecessor.getWeight();
+
+        if (state.getNodeProcessor(predecessor) == state.getNodeProcessor(node)) {
+            return dataReadyTime;
+        }
+
+        return dataReadyTime + getEdge(predecessor, node).getWeight();
     }
 
     protected int getMinimumDataReadyTime(StateModel state, NodeModel node) {

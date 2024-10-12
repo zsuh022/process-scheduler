@@ -29,7 +29,7 @@ public class VisualiserController {
 
     @FXML
     void showSchedule(MouseEvent event) throws IOException{
-        Visualiser.setScreen("processor");
+        Visualiser.setScene("processor");
     }
 
     public void setArguments(Arguments args) {

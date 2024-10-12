@@ -5,9 +5,9 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-readonly INPUT_DOT_FILE=src/main/resources/dotfiles/input/Nodes_11_OutTree.dot
-#readonly INPUT_DOT_FILE=src/test/resources/dotfiles/crawled/Fork_Join_Nodes_16_CCR_0.10_WeightType_Random#1_Homogeneous-2.dot
-readonly PROCESSORS=4
+#readonly INPUT_DOT_FILE=src/main/resources/dotfiles/input/Nodes_11_OutTree.dot
+readonly INPUT_DOT_FILE=src/test/resources/dotfiles/crawled/Fork_Join_Nodes_10_CCR_10.03_WeightType_Random_Homogeneous-4.dot
+readonly PROCESSORS=1
 
 if [ "$1" = "main" ]; then
     mvn clean compile package
