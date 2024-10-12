@@ -1,5 +1,7 @@
 package visualiser.controllers;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -11,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import scheduler.enums.SceneType;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
@@ -36,6 +39,9 @@ public class DynamicController {
     private Label lblTimeElapsed;
 
     @FXML
+    private Label lblFinishTime;
+
+    @FXML
     private LineChart<String, Number> lineChartRam;
 
     @FXML
@@ -43,6 +49,9 @@ public class DynamicController {
 
     @FXML
     private ScrollPane ganttChartScrollPane;
+
+    @FXML
+    private Pane popup;
 
     private XYChart.Series<String, Number> seriesRam;
     private XYChart.Series<String, Number> seriesCpu;
@@ -185,6 +194,8 @@ public class DynamicController {
 
                 this.ganttChartTimer.cancel();
                 this.cpuAndRamUsageTimer.cancel();
+                this.alertFinish();
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -197,6 +208,26 @@ public class DynamicController {
         this.ganttChart.clear();
 
         addAllTask();
+    }
+
+    @FXML
+    public void closePopup() {
+        FadeTransition fade = new FadeTransition();
+        fade.setNode(popup);
+        fade.setDuration(Duration.seconds(0.5));
+        fade.setFromValue(1);
+        fade.setToValue(0);
+        fade.setOnFinished(event -> popup.setDisable(true));
+        fade.play();
+        
+    }
+
+    private void alertFinish() {
+        TranslateTransition translate = new TranslateTransition();
+        translate.setNode(popup);
+        translate.setDuration(Duration.seconds(0.5));
+        translate.setByY(-92);
+        translate.play();
     }
 
     private void updateCpuAndRamUsageCharts() {
@@ -214,7 +245,7 @@ public class DynamicController {
         this.seriesCpu.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), cpuUsage));
         this.seriesRam.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), ramUsage));
 
-        this.lblTimeElapsed.setText(String.format("%.1f s", timeInSeconds));
+        this.lblTimeElapsed.setText(String.format("%.1f", timeInSeconds));
 
         if (this.seriesCpu.getData().size() > MAXIMUM_NUMBER_OF_DATA_POINTS) {
             this.seriesCpu.getData().remove(0);
@@ -243,10 +274,13 @@ public class DynamicController {
 
     public void addAllTask() {
         StateModel state = this.scheduler.getCurrentState();
+        
 
         if (state == null) {
             return;
         }
+        int unitFinishTime = state.getMaximumFinishTime();
+        this.lblFinishTime.setText(String.valueOf((int) unitFinishTime));
 
         for (NodeModel node : this.nodes) {
             if (state.isNodeScheduled(node.getByteId())) {
