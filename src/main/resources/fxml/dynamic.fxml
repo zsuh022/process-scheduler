@@ -87,7 +87,7 @@
                         </Rectangle>
                         <LineChart fx:id="lineChartRam" title="RAM" StackPane.alignment="CENTER">
                           <xAxis>
-                            <CategoryAxis label="Time (ms)" side="BOTTOM" />
+                            <CategoryAxis label="Time (s)" side="BOTTOM" />
                           </xAxis>
                           <yAxis>
                             <NumberAxis label="Memory Usage (MB)" side="LEFT" />
@@ -118,7 +118,7 @@
                         </Rectangle>
                         <LineChart fx:id="lineChartCpu" title="CPU" StackPane.alignment="CENTER">
                            <xAxis>
-                              <CategoryAxis label="Time (ms)" side="BOTTOM" />
+                              <CategoryAxis label="Time (s)" side="BOTTOM" />
                            </xAxis>
                            <yAxis>
                               <NumberAxis label="CPU Usage (%)" side="LEFT" />
@@ -158,7 +158,7 @@
                               <Font name="System Bold" size="18.0" />
                            </font>
                            <StackPane.margin>
-                              <Insets bottom="30.0" right="610.0" />
+                              <Insets bottom="27.5" right="610.0" />
                            </StackPane.margin>
                         </Text>
                         <Label fx:id="lblTimeElapsed" prefHeight="21.1" prefWidth="605.0" text="0" textFill="#777777" StackPane.alignment="BOTTOM_CENTER">
@@ -166,7 +166,7 @@
                               <Font name="System Bold" size="18.0" />
                            </font>
                            <StackPane.margin>
-                              <Insets bottom="28.0" left="610.0" />
+                              <Insets bottom="27.5" left="610.0" />
                            </StackPane.margin>
                         </Label>
                      </children>
