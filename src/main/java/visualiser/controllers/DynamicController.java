@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import scheduler.enums.SceneType;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
@@ -117,8 +118,8 @@ public class DynamicController {
     }
 
     @FXML
-    void showMetrics() throws IOException {
-        Visualiser.setScene("visualiser");
+    void switchToStaticVisualiser() throws IOException {
+        Visualiser.setScene(SceneType.STATIC);
     }
 
     @FXML
@@ -152,9 +153,7 @@ public class DynamicController {
         this.ganttChartTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    updateGanttChart();
-                });
+                Platform.runLater(() -> updateGanttChart());
             }
         }, 0, GANTT_CHART_UPDATE_INTERVAL);
     }

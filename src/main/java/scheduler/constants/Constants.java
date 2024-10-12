@@ -23,6 +23,8 @@ public class Constants {
     public static final int GANTT_CHART_WIDTH = 270;
     public static final int GANTT_CHART_HEIGHT = 1180;
     public static final int MAXIMUM_NUMBER_OF_DATA_POINTS = 10;
+    public static final int WINDOW_WIDTH = 1280;
+    public static final int WINDOW_HEIGHT = 720;
 
     public static final double EDGE_RATIO_LOWER_BOUND = 0.6;
     public static final double EDGE_RATIO_UPPER_BOUND = 1.0;

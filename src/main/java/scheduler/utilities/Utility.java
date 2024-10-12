@@ -74,4 +74,8 @@ public class Utility {
         System.out.printf("  %-25s %.3f%%%n", "CPU Usage:", cpuUsage);
         System.out.printf("  %-25s %dMB%n", "RAM Usage:", ramUsage);
     }
+
+    public static int[] getRandomRgb() {
+        return new int[]{getRandomInteger(0, 255), getRandomInteger(0, 255), getRandomInteger(0, 255)};
+    }
 }
