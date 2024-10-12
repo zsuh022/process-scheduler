@@ -216,24 +216,32 @@ public class DynamicController {
         }
     }
 
-    public void addTask(int processor, int startTime, int length, String taskName) {
+    public void addTask(StateModel state, NodeModel node) {
+        String id = node.getId();
+
+        int length = node.getWeight();
+        int processor = state.getNodeProcessor(node);
+        int startTime = state.getNodeStartTime(node);
+
         XYChart.Series<Number, String> series = new XYChart.Series<>();
 
-        series.getData().add(new XYChart.Data<>(startTime, "Processor " + processor, new GanttChart.ExtraData(length, "JONKLERBLOCK", taskName)));
+        GanttChart.ExtraData extraData = new GanttChart.ExtraData(length, "JONKLERBLOCK", id);
+
+        series.getData().add(new XYChart.Data<>(startTime, "Processor " + processor, extraData));
 
         this.ganttChart.getData().add(series);
     }
 
     public void addAllTask() {
-        StateModel currentState = this.scheduler.getCurrentState();
+        StateModel state = this.scheduler.getCurrentState();
 
-        if (currentState == null) {
+        if (state == null) {
             return;
         }
 
         for (NodeModel node : this.nodes) {
-            if (currentState.isNodeScheduled(node.getByteId())) {
-                addTask(currentState.getNodeProcessor(node), currentState.getNodeStartTime(node), node.getWeight(), node.getId());
+            if (state.isNodeScheduled(node.getByteId())) {
+                addTask(state, node);
             }
         }
     }
