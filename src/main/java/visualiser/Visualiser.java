@@ -6,46 +6,42 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import scheduler.models.MetricsModel;
 import scheduler.parsers.Arguments;
 import scheduler.schedulers.Scheduler;
 import visualiser.controllers.DynamicController;
-import visualiser.controllers.GanttChartController;
-import visualiser.controllers.ProcessorController;
-import visualiser.controllers.VisualiserController;
+
+import static scheduler.constants.Constants.WINDOW_HEIGHT;
+import static scheduler.constants.Constants.WINDOW_WIDTH;
 
 public class Visualiser extends Application {
-    private static Arguments arguments;
     private static Scene scene;
+
+    private static Arguments arguments;
+
     private static Scheduler scheduler;
-    public static void run(Arguments arguments, Scheduler scheduler){
+
+    public static void run(Arguments arguments, Scheduler scheduler) {
         Visualiser.arguments = arguments;
         Visualiser.scheduler = scheduler;
+
         launch();
     }
     private static Parent loadFxml(final String fxml) throws IOException {
         FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/fxml/" + fxml + ".fxml"));
         Parent root = loader.load();
-        
+
+
         if (fxml.equals("dynamic")) {
             DynamicController controller = loader.getController();
-            MetricsModel metricsModel = new MetricsModel();
+
             controller.setArguments(arguments);
             controller.setScheduler(scheduler);
-        } else if (fxml.equals("visualiser")){
-            VisualiserController controller = loader.getController();
-            controller.setArguments(arguments);
-            MetricsModel metrics = scheduler.getMetrics();
-            controller.setMetrics(metrics);
-            //MetricsModel metrics = scheduler.getMetrics();
-//            controller.setMetrics(metrics);
-        } else if (fxml.equals("processor")){
-            ProcessorController controller = loader.getController();
-            controller.setArguments(arguments);
+        } else if (fxml.equals("visualiser")) {
+
         }
+
         return root;
     }
 
@@ -55,7 +51,7 @@ public class Visualiser extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFxml("dynamic"), 1280, 720);
+        scene = new Scene(loadFxml("dynamic"), WINDOW_WIDTH, WINDOW_HEIGHT);
 
         stage.setScene(scene);
         stage.show();

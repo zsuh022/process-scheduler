@@ -16,15 +16,18 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class StaticVisualiserController {
-
     @FXML
     private Label nodesLabel;
+
     @FXML
     private Label edgesLabel;
+
     @FXML
     private Label processorsLabel;
+
     @FXML
     private Label coresLabel;
+
     @FXML
     private Pane graphPane;
 
