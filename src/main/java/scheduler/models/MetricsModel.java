@@ -16,14 +16,7 @@ public class MetricsModel {
     private final AtomicInteger numberOfOpenedStates;
     private final AtomicInteger numberOfClosedStates;
 
-    private float memoryUsed;
     private float elapsedTime;
-    private long interval;
-
-    private final List<Float> cpuUsage;
-    private final List<Float> ramUsage;
-
-    private ScheduledExecutorService scheduledExecutorService;
 
     /**
      * Constructor for MetricsModel class.
@@ -31,9 +24,6 @@ public class MetricsModel {
     public MetricsModel() {
         this.numberOfOpenedStates = new AtomicInteger(0);
         this.numberOfClosedStates = new AtomicInteger(0);
-
-        this.cpuUsage = new ArrayList<>();
-        this.ramUsage = new ArrayList<>();
     }
 
     /**
@@ -111,76 +101,6 @@ public class MetricsModel {
     }
 
     /**
-     * Method returns the memory used in bytes.
-     *
-     * @return the memory used
-     */
-    public float getMemoryUsed() {
-        return this.memoryUsed;
-    }
-
-    /**
-     * Method sets the memory used in bytes.
-     *
-     * @param memoryUsed the memory used
-     */
-    public void setMemoryUsed(float memoryUsed) {
-        this.memoryUsed = memoryUsed;
-    }
-
-    public List<Float> getPeriodicCpuUsage() {
-        return this.cpuUsage;
-    }
-
-    public List<Float> getPeriodicRamUsage() {
-        return this.ramUsage;
-    }
-
-    public void startPeriodicTracking(long interval) {
-        this.interval = interval;
-
-        this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
-
-        this.scheduledExecutorService.scheduleAtFixedRate(this::capturePeriodicMetrics, 0, interval, TimeUnit.MILLISECONDS);
-    }
-
-    public long getInterval() {
-        return this.interval;
-    }
-
-    public void stopPeriodicTracking() {
-        if (this.scheduledExecutorService != null && !this.scheduledExecutorService.isShutdown()) {
-            this.scheduledExecutorService.shutdown();
-        }
-    }
-
-    private void capturePeriodicMetrics() {
-        this.cpuUsage.add(getCurrentCpuLoad());
-        this.ramUsage.add(getCurrentRamUsage());
-    }
-
-    private float getCurrentCpuLoad() {
-        OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-        float cpuLoad = (osBean == null) ? -1.0f : (float) (osBean.getCpuLoad() * 100.0);
-
-        if (Float.isNaN(cpuLoad)) {
-            if (!cpuUsage.isEmpty()) {
-                // return last cpu load value
-                return cpuUsage.get(cpuUsage.size() - 1);
-            }
-            return 0.0f;
-        }
-
-        return cpuLoad;
-    }
-
-    private float getCurrentRamUsage() {
-        Runtime runtime = Runtime.getRuntime();
-        long memoryUsed = runtime.totalMemory() - runtime.freeMemory();
-        return (float) memoryUsed / 1024 / 1024;
-    }
-
-    /**
      * Method displays the metrics recorded such as elapsed time, number of states, best schedule finish
      * time and memory used.
      */
@@ -190,19 +110,5 @@ public class MetricsModel {
         System.out.printf("  %-25s %d%n", "Number of opened states:", this.numberOfOpenedStates.get());
         System.out.printf("  %-25s %d%n", "Number of closed states:", this.numberOfClosedStates.get());
         System.out.printf("  %-25s %d%n", "Schedule finish time:", this.bestState.getMaximumFinishTime());
-        System.out.printf("  %-25s %.3fMB%n", "Memory used in MB:", getMegaBytesUsed());
-        displayPeriodicMetrics();
-    }
-
-    private double getMegaBytesUsed() {
-        return this.memoryUsed / 1024 / 1024;
-    }
-
-    private void displayPeriodicMetrics() {
-        System.out.println("\nPeriodic CPU Usage:");
-
-        for (int i = 0; i < this.cpuUsage.size(); i++) {
-            System.out.printf("  Interval %d - RAM: %.3fMB, CPU: %.3f%%%n", i + 1, this.ramUsage.get(i), this.cpuUsage.get(i));
-        }
     }
 }

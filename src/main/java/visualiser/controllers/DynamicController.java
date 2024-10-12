@@ -21,6 +21,7 @@ import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
 import scheduler.schedulers.Scheduler;
+import scheduler.utilities.Utility;
 import visualiser.GanttChart;
 import visualiser.Visualiser;
 
@@ -114,7 +115,6 @@ public class DynamicController {
 
     public void setMetricsModel(MetricsModel metricsModel) {
         this.metricsModel = metricsModel;
-        this.metricsModel.startPeriodicTracking(PERIODIC_INTERVAL_MS);
 //        startTracking();
     }
 
@@ -129,6 +129,7 @@ public class DynamicController {
 
         schedulingTask.setOnSucceeded(event -> {
             try {
+                ganttChart.clear();
                 addAllTask();
                 scheduler.saveBestState(arguments);
                 ganttChartTimer.cancel();
@@ -159,35 +160,27 @@ public class DynamicController {
     }
 
     private void updateLineCharts() {
-        int cpuUsageSize = metricsModel.getPeriodicCpuUsage().size();
-        int ramUsageSize = metricsModel.getPeriodicRamUsage().size();
+        float cpuUsage = Utility.getCpuUsage();
+        float ramUsage = Utility.getRamUsage(); 
 
-        // Use the minimum size for safety
-        int index = Math.min(cpuUsageSize, ramUsageSize) - 1;
+        timeElapsed += PERIODIC_INTERVAL_MS;
 
-        if (index >= 0) {
-            float currentCpuUsage = metricsModel.getPeriodicCpuUsage().get(index);
-            float currentRamUsage = metricsModel.getPeriodicRamUsage().get(index);
+        double timeInSeconds = timeElapsed / 1000.0;
 
-            timeElapsed += PERIODIC_INTERVAL_MS;
+        Platform.runLater(() -> {
+            seriesCpu.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), cpuUsage));
+            seriesRam.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), ramUsage));
 
-            double timeInSeconds = timeElapsed / 1000.0;
+            lblTimeElapsed.setText(String.format("%.1f s", timeInSeconds)); // Display time in seconds
 
-            Platform.runLater(() -> {
-                seriesCpu.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), currentCpuUsage));
-                seriesRam.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), currentRamUsage));
-
-                lblTimeElapsed.setText(String.format("%.1f s", timeInSeconds)); // Display time in seconds
-
-                // number of data points visible
-                if (seriesCpu.getData().size() > 10) {
-                    seriesCpu.getData().remove(0);
-                }
-                if (seriesRam.getData().size() > 10) {
-                    seriesRam.getData().remove(0);
-                }
-            });
-        }
+            // number of data points visible
+            if (seriesCpu.getData().size() > 10) {
+                seriesCpu.getData().remove(0);
+            }
+            if (seriesRam.getData().size() > 10) {
+                seriesRam.getData().remove(0);
+            }
+        });
     }
 
     public void addTask(int processor, int startTime, int length, String taskName) {
