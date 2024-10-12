@@ -13,6 +13,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
@@ -189,5 +190,28 @@
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="1190.0" />
          </content>
       </ScrollPane>
+      <Pane fx:id="popup" layoutX="926.0" layoutY="723.0" onMousePressed="#closePopup" prefHeight="94.0" prefWidth="355.0">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#001840" height="96.0" layoutX="-1.0" stroke="BLACK" strokeType="INSIDE" width="355.0" />
+            <ImageView fitHeight="90.0" fitWidth="200.0" layoutX="-8.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/jonklerlogo.png" />
+               </image>
+               <effect>
+                  <Bloom threshold="0.1" />
+               </effect>
+            </ImageView>
+            <Text fill="WHITE" fontSmoothingType="LCD" layoutX="145.0" layoutY="76.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Click to close">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Text>
+            <Text fill="WHITE" fontSmoothingType="LCD" layoutX="74.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule has finished">
+               <font>
+                  <Font name="System Bold" size="30.0" />
+               </font>
+            </Text>
+         </children>
+      </Pane>
    </children>
 </AnchorPane>

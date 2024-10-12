@@ -1,5 +1,6 @@
 package visualiser.controllers;
 
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -7,10 +8,12 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import scheduler.enums.SceneType;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
@@ -43,6 +46,9 @@ public class DynamicController {
 
     @FXML
     private ScrollPane ganttChartScrollPane;
+
+    @FXML
+    private Pane popup;
 
     private XYChart.Series<String, Number> seriesRam;
     private XYChart.Series<String, Number> seriesCpu;
@@ -185,6 +191,8 @@ public class DynamicController {
 
                 this.ganttChartTimer.cancel();
                 this.cpuAndRamUsageTimer.cancel();
+                this.alertFinish();
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -197,6 +205,14 @@ public class DynamicController {
         this.ganttChart.clear();
 
         addAllTask();
+    }
+
+    private void alertFinish() {
+        TranslateTransition translate = new TranslateTransition();
+        translate.setNode(popup);
+        translate.setDuration(Duration.seconds(0.5));
+        translate.setByY(-100);
+        translate.play();
     }
 
     private void updateCpuAndRamUsageCharts() {
