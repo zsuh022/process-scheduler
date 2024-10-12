@@ -36,6 +36,9 @@ public class DynamicController {
     private Label lblTimeElapsed;
 
     @FXML
+    private Label lblFinishTime;
+
+    @FXML
     private LineChart<String, Number> lineChartRam;
 
     @FXML
@@ -214,7 +217,7 @@ public class DynamicController {
         this.seriesCpu.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), cpuUsage));
         this.seriesRam.getData().add(new XYChart.Data<>(String.format("%.1f", timeInSeconds), ramUsage));
 
-        this.lblTimeElapsed.setText(String.format("%.1f s", timeInSeconds));
+        this.lblTimeElapsed.setText(String.format("%.1f", timeInSeconds));
 
         if (this.seriesCpu.getData().size() > MAXIMUM_NUMBER_OF_DATA_POINTS) {
             this.seriesCpu.getData().remove(0);
@@ -243,10 +246,13 @@ public class DynamicController {
 
     public void addAllTask() {
         StateModel state = this.scheduler.getCurrentState();
+        
 
         if (state == null) {
             return;
         }
+        int unitFinishTime = state.getMaximumFinishTime();
+        this.lblFinishTime.setText(String.valueOf((int) unitFinishTime));
 
         for (NodeModel node : this.nodes) {
             if (state.isNodeScheduled(node.getByteId())) {

@@ -79,7 +79,7 @@ public class Visualiser extends Application {
         scenes = new EnumMap<>(SceneType.class);
 
         scene = new Scene(loadFxml(SceneType.DYNAMIC), WINDOW_WIDTH, WINDOW_HEIGHT);
-
+        stage.setResizable(false);
         stage.setOnCloseRequest(e -> {
             Platform.exit();
             System.exit(0);
