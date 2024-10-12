@@ -2,6 +2,7 @@ package visualiser.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
 import java.io.BufferedReader;
@@ -22,8 +23,8 @@ public class StaticVisualiserController {
     @FXML
     private Pane graphPane;
 
-    private String dotFilePath = "../dotfiles/input/Nodes_10_Random-output.dot";  // Set the path to your DOT file
-    private String dotOutputFilePath = "src/main/resources/dotfiles/input/Nodes_10_Random-output.dot";  // Set the path to your processed DOT file
+    private String dotFilePath = "src/main/resources/dotfiles/input/Nodes_10_Random.dot";  
+    private String dotOutputFilePath = "src/main/resources/dotfiles/input/Nodes_10_Random-output.dot"; 
 
     @FXML
     public void initialize() {
@@ -33,6 +34,11 @@ public class StaticVisualiserController {
             e.printStackTrace();
         }
         visualizeGraph(dotOutputFilePath);
+    }
+
+    @FXML
+    private void showSchedule(MouseEvent event) {
+    // Your logic for showing the schedule
     }
 
     private void loadDotFile(String filePath) throws IOException {
@@ -54,8 +60,8 @@ public class StaticVisualiserController {
 
         stats.put("nodes", nodeCount);
         stats.put("edges", edgeCount);
-        stats.put("processors", 2); // Example: 2 processors (can be extracted dynamically)
-        stats.put("cores", 4); // Example: 4 cores (can be extracted dynamically)
+        stats.put("processors", 2); 
+        stats.put("cores", 4); 
 
         // Update labels
         nodesLabel.setText("Nodes: " + stats.get("nodes"));
@@ -68,14 +74,13 @@ public class StaticVisualiserController {
         WebView webView = new WebView();
         graphPane.getChildren().add(webView);
 
-        // Assuming you're using an external tool like Graphviz to render the DOT graph as an SVG
+        
         String graphSvgPath = convertDotToSvg(dotOutputFilePath);
         webView.getEngine().load("file:///" + graphSvgPath);
     }
 
     private String convertDotToSvg(String dotOutputFilePath) {
-        // Logic to convert the DOT file to an SVG image using Graphviz or similar
-        // This is just a placeholder method. You can implement Graphviz or any other visualization tool here.
-        return "path/to/generated/svg";
+ 
+        return "";
     }
 }
