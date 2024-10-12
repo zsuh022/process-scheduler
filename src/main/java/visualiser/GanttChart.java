@@ -12,6 +12,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.Node;
 import javafx.scene.chart.Axis;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 
 
@@ -124,7 +125,7 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 
                 // Set the size of the rectangle (task block)
                 double length = getLength(item.getExtraValue()) * widthScaling();
-                double height = getBlockHeight() * heightScaling();
+                double height = Math.min(170 * heightScaling(), getBlockHeight());
 
                 // Center block vertically
                 y -= height / 2;
@@ -155,6 +156,8 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
     private double heightScaling() {
         if (getYAxis() instanceof NumberAxis) {
             return Math.abs(((NumberAxis)getYAxis()).getScale());
+        } else if(getYAxis() instanceof CategoryAxis){
+            return (double)1/((CategoryAxis) getYAxis()).getCategories().size();
         } else {
             return 1;
         }

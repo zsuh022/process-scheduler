@@ -73,6 +73,14 @@
                <children>
                   <StackPane HBox.hgrow="ALWAYS">
                      <children>
+                        <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="RAM" StackPane.alignment="TOP_LEFT">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                           <StackPane.margin>
+                              <Insets left="45.0" top="35.0" />
+                           </StackPane.margin>
+                        </Text>
                         <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="210.0" stroke="TRANSPARENT" strokeType="INSIDE" width="580.0">
                            <StackPane.margin>
                               <Insets left="10.0" />
@@ -96,6 +104,14 @@
                   </StackPane>
                   <StackPane HBox.hgrow="ALWAYS">
                      <children>
+                        <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="CPU" StackPane.alignment="TOP_LEFT">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                           <StackPane.margin>
+                              <Insets left="45.0" top="35.0" />
+                           </StackPane.margin>
+                        </Text>
                         <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="210.0" stroke="TRANSPARENT" strokeType="INSIDE" width="580.0">
                            <StackPane.margin>
                               <Insets right="10.0" />
@@ -125,6 +141,14 @@
                               <Insets bottom="80.0" />
                            </StackPane.margin>
                         </Rectangle>
+                        <Text fill="#777777" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Schedule" StackPane.alignment="TOP_LEFT">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                           <StackPane.margin>
+                              <Insets left="45.0" top="15.0" />
+                           </StackPane.margin>
+                        </Text>
                         <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="40.0" stroke="TRANSPARENT" strokeType="INSIDE" width="1210.0" StackPane.alignment="BOTTOM_CENTER">
                            <StackPane.margin>
                               <Insets bottom="20.0" />
