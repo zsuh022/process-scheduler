@@ -195,7 +195,13 @@ public class DynamicController {
                 this.ganttChartTimer.cancel();
                 this.cpuAndRamUsageTimer.cancel();
 
+                
+                StaticController staticController =(StaticController) Visualiser.getController(SceneType.STATIC);
+                if (staticController != null) {
+                    staticController.alertFinish();
+                }
                 this.alertFinish();
+                
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -212,6 +218,14 @@ public class DynamicController {
 
     @FXML
     public void closePopup() {
+        StaticController staticController =(StaticController) Visualiser.getController(SceneType.STATIC);
+        if (staticController != null) {
+            staticController.closeCurrentPop();
+        }
+        closeCurrentPop();
+    }
+
+    public void closeCurrentPop(){
         FadeTransition fade = new FadeTransition();
 
         fade.setNode(popup);
@@ -221,7 +235,6 @@ public class DynamicController {
         fade.setOnFinished(event -> popup.setDisable(true));
 
         fade.play();
-        
     }
 
     private void alertFinish() {
