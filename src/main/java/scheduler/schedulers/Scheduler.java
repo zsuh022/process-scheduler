@@ -199,7 +199,7 @@ public abstract class Scheduler {
      * @param processor represents the processor to schedule the node on.
      * @return the earliest start time for a node on a given processor.
      */
-    protected int getEarliestStartTime(StateModel state, NodeModel node, int processor) {
+    protected int getEarliestStartTime(StateModel state, NodeModel node, byte processor) {
         if (state.isEmpty()) {
             return 0;
         }
@@ -209,6 +209,25 @@ public abstract class Scheduler {
 
         for (NodeModel predecessor : node.getPredecessors()) {
             int finishTime = state.getNodeStartTime(predecessor) + predecessor.getWeight();
+
+            if (state.getNodeProcessor(predecessor) == processor) {
+                earliestStartTime = Math.max(earliestStartTime, finishTime);
+            } else {
+                EdgeModel edge = getEdge(predecessor, node);
+                earliestStartTime = Math.max(earliestStartTime, finishTime + edge.getWeight());
+            }
+        }
+
+        return earliestStartTime;
+    }
+
+    protected int getEarliestStartTime(StateModel state, byte nodeId, int[] nodeStartTimes, byte processor, int startTime) {
+        NodeModel node = this.nodes[nodeId];
+
+        int earliestStartTime = startTime;
+
+        for (NodeModel predecessor : node.getPredecessors()) {
+            int finishTime = nodeStartTimes[predecessor.getByteId()] + predecessor.getWeight();
 
             if (state.getNodeProcessor(predecessor) == processor) {
                 earliestStartTime = Math.max(earliestStartTime, finishTime);
@@ -250,26 +269,6 @@ public abstract class Scheduler {
         }
 
         return scheduledNodes;
-    }
-
-    protected int getEstimatedFinishTime(StateModel state) {
-        int estimatedFinishTime = state.getFCost();
-
-        for (NodeModel node : getAvailableNodes(state)) {
-            int bestStartTime = INFINITY_32;
-
-            for (int processor = 0; processor < processors; processor++) {
-                int earliestStartTime = getEarliestStartTime(state, node, processor);
-
-                if (earliestStartTime < bestStartTime) {
-                    bestStartTime = earliestStartTime;
-                }
-            }
-
-            estimatedFinishTime = Math.max(estimatedFinishTime, bestStartTime + bottomLevelPathLengths[node.getByteId()]);
-        }
-
-        return estimatedFinishTime;
     }
 
     /**

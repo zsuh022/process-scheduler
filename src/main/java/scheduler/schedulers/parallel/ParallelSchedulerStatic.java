@@ -56,14 +56,14 @@ public class ParallelSchedulerStatic extends AStarScheduler {
             }
 
             for (NodeModel node : getAvailableNodes(state)) {
-                for (int processor = 0; processor < processors; processor++) {
+                for (byte processor = 0; processor < processors; processor++) {
                     expandState(state, node, processor);
                 }
             }
         }
     }
 
-    private void expandState(StateModel state, NodeModel node, int processor) {
+    private void expandState(StateModel state, NodeModel node, byte processor) {
         if (isFirstAvailableNode(state, node)) {
             return;
         }
@@ -160,13 +160,13 @@ public class ParallelSchedulerStatic extends AStarScheduler {
                     continue;
                 }
 
-                for (int processor = 0; processor < processors; processor++) {
+                for (byte processor = 0; processor < processors; processor++) {
                     expandState(state, node, processor);
                 }
             }
         }
 
-        private void expandState(StateModel state, NodeModel node, int processor) {
+        private void expandState(StateModel state, NodeModel node, byte processor) {
             StateModel nextState = state.clone();
 
             int earliestStartTime = getEarliestStartTime(state, node, processor);

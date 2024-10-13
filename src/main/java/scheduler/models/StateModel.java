@@ -1,7 +1,6 @@
 package scheduler.models;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents the state of a scheduling process at a given point in time.
@@ -89,12 +88,12 @@ public class StateModel {
      * @param processor the processor to schedule the node on
      * @param startTime the start time for the node
      */
-    public void addNode(NodeModel node, int processor, int startTime) {
+    public void addNode(NodeModel node, byte processor, int startTime) {
         byte nodeId = node.getByteId();
 
         updateTotalIdleTime(processor, startTime);
 
-        this.nodeProcessors[nodeId] = (byte) processor;
+        this.nodeProcessors[nodeId] = processor;
         this.nodeStartTimes[nodeId] = startTime;
         this.finishTimes[processor] = startTime + node.getWeight();
 
@@ -152,6 +151,19 @@ public class StateModel {
     public byte getNumberOfScheduledNodes() {
         return this.numberOfScheduledNodes;
     }
+
+    public int[] getNodeStartTimes() {
+        return this.nodeStartTimes;
+    }
+
+    public int[] getNodeStartTimesCopy() {
+        return this.nodeStartTimes.clone();
+    }
+
+    public byte[] getNodeProcessors() {
+        return this.nodeProcessors;
+    }
+
 
     public int getParentMaximumBottomLevelPathLength() {
         return this.parentMaximumBottomLevelPathLength;
@@ -222,6 +234,10 @@ public class StateModel {
      */
     public boolean areAllNodesScheduled() {
         return (this.numberOfScheduledNodes == this.numberOfNodes);
+    }
+
+    public int getNodeFinishTime(NodeModel node) {
+        return this.getNodeStartTime(node) + node.getWeight();
     }
 
     /**
@@ -324,12 +340,26 @@ public class StateModel {
         return this.nodeProcessors[nodeId];
     }
 
+    public List<Byte> getNodesOnSameProcessorSortedOnStartTime(byte processor) {
+        List<Byte> nodesOnSameProcessor = new ArrayList<>();
+
+        for (byte nodeId = 0; nodeId < this.numberOfNodes; nodeId++) {
+            if (this.nodeProcessors[nodeId] == processor) {
+                nodesOnSameProcessor.add(nodeId);
+            }
+        }
+
+        nodesOnSameProcessor.sort(Comparator.comparingInt(this::getNodeStartTime));
+
+        return nodesOnSameProcessor;
+    }
+
     /**
      * Returns the finish time for a specific processor.
      *
      * @return the finish time for a specific processor
      */
-    public int getFinishTime(int processor) {
+    public int getFinishTime(byte processor) {
         return this.finishTimes[processor];
     }
 
