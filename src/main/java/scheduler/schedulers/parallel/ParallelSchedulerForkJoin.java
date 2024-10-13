@@ -33,12 +33,15 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
     }
 
     @Override
-    public boolean canPruneState(StateModel state) {
-        if (!this.closedStates.add(state)) {
+    public boolean canPruneState(StateModel currentState) {
+        if (!this.closedStates.add(currentState)) {
+            // prune if already in closed states
             return true;
         }
 
-        return state.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
+        synchronized (bestStateLock) {
+            return currentState.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
+        }
     }
 
     @Override
