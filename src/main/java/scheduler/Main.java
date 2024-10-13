@@ -19,8 +19,6 @@ import visualiser.Visualiser;
 public class Main {
     private static Scheduler scheduler;
 
-    private static GraphModel graph;
-
     /**
      * The runScheduler method is responsible for running the scheduler and outputting the results to the user.
      * Different metrics are displayed such as the make-span, the number of processors used, the number of cores used,
@@ -55,7 +53,7 @@ public class Main {
      * @throws IOException when the I/O file does not exist
      */
     private static void initialiseScheduler(Arguments arguments) throws IOException {
-        graph = new GraphModel(arguments.getInputDOTFilePath());
+        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
 
         if (arguments.getCores() == 1) {
             scheduler = new AStarScheduler(graph, arguments.getProcessors());
