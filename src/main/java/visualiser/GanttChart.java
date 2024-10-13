@@ -16,49 +16,99 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 
 
-
+/**
+ * GanttChart is a custom implementation of XYChart that is used to create gantt charts.
+ * The tasks are represented by rectangles that have a start time and a length. 
+ */
 public class GanttChart<X,Y> extends XYChart<X,Y> {
 
     private double blockHeight = 30;
     private List<Text> taskTexts = new ArrayList<>();
 
+    /**
+     * A class to hold extra data for each task.
+     * The data consists of length, style, and its name.
+     */
     public static class ExtraData {
         private long length;
         private String styleClass;
         private String taskName;
 
 
+        /**
+         * Constructor for ExtraData
+         * 
+         * @param length Length of the task
+         * @param styleClass the style class for the task block
+         * @param taskName the name of the task
+         */
         public ExtraData(long length, String styleClass, String taskName) {
             this.length = length;
             this.styleClass = styleClass;
             this.taskName = taskName;
         }
 
+        /**
+         * Gets the length of the task
+         * 
+         * @return the length of the task
+         */
         public long getLength() {
             return length;
         }
 
+        /**
+         * Sets the length of the task
+         * 
+         * @param length the length of the task
+         */
         public void setLength(long length) {
             this.length = length;
         }
 
+        /**
+         * Gets the style class of the task
+         * 
+         * @return the style class of the task
+         */
         public String getStyleClass() {
             return styleClass;
         }
 
+        /**
+         * Sets the style class of the task
+         * 
+         * @param styleClass the style class of the task
+         */
         public void setStyleClass(String styleClass) {
             this.styleClass = styleClass;
         }
 
+        /**
+         * Gets the name of the task
+         * 
+         * @return the name of the task
+         */
         public String getTaskName() {
             return taskName;
         }
 
+        /**
+         * Sets the name of the task
+         * 
+         * @param taskName the name of the task
+         */
         public void setTaskName(String taskName) {
             this.taskName = taskName;
         }
     }
 
+    /**
+     * Constructor for GanttChart
+     * 
+     * @param xAxis the x-axis
+     * @param yAxis the y-axis
+     */
     public GanttChart(@NamedArg("xAxis") Axis<X> xAxis, @NamedArg("yAxis") Axis<Y> yAxis) {
         super(xAxis, yAxis);
         setData(FXCollections.observableArrayList());
@@ -67,31 +117,69 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         
     }
 
+    /**
+     * Constructor for GanttChart
+     * 
+     * @param xAxis the x-axis
+     * @param yAxis the y-axis
+     * @param data the data for the chart
+     */
     public GanttChart(@NamedArg("xAxis") Axis<X> xAxis, @NamedArg("yAxis") Axis<Y> yAxis, @NamedArg("data") ObservableList<Series<X,Y>> data) {
         super(xAxis, yAxis);
         setData(data);
     }
 
+    /**
+     * Gets the length of the task
+     * 
+     * @param obj the object to get the length from
+     * @return the length of the task
+     */
     private static double getLength(Object obj) {
         return ((ExtraData) obj).getLength();
     }
 
+    /**
+     * Gets the style class of the task
+     * 
+     * @param obj the object to get the style class from
+     * @return the style class of the task
+     */
     private static String getStyleClass(Object obj) {
         return ((ExtraData) obj).getStyleClass();
     }
 
+    /**
+     * Gets the name of the task
+     * 
+     * @param obj the object to get the name from
+     * @return the name of the task
+     */
     private static String getTaskName(Object obj) {
         return ((ExtraData) obj).getTaskName();
     }
 
+    /**
+     * Gets the height of the task block
+     * 
+     * @return the height of the task block
+     */
     public double getBlockHeight() {
         return blockHeight;
     }
 
+    /**
+     * Sets the height of the task block
+     * 
+     * @param blockHeight the height of the task block
+     */
     public void setBlockHeight(double blockHeight) {
         this.blockHeight = blockHeight;
     }
 
+    /**
+     * Lays out the task blocks and their labels on the graph. 
+     */
     @Override
     protected void layoutPlotChildren() {
         this.getPlotChildren().removeAll(taskTexts);
@@ -121,6 +209,7 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
                     getPlotChildren().add(rect);  // Add the Rectangle to the plot
                 }
 
+                // Adds the styling to the task.
                 rect.getStyleClass().add(getStyleClass(item.getExtraValue()));
 
                 // Set the size of the rectangle (task block)
@@ -136,6 +225,7 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
                 rect.setWidth(length);
                 rect.setHeight(height);
 
+                // Create a text object for the task name
                 String taskName = getTaskName(item.getExtraValue());
                 Text text = new Text(taskName);
 
@@ -153,6 +243,11 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         }
     }
 
+    /**
+     * Scales the height of the task block based on the y-axis
+     * 
+     * @return the scaling factor for the height
+     */
     private double heightScaling() {
         if (getYAxis() instanceof NumberAxis) {
             return Math.abs(((NumberAxis)getYAxis()).getScale());
@@ -163,6 +258,11 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         }
     }
 
+    /**
+     * Scales the width of the task block based on the x-axis
+     * 
+     * @return the scaling factor for the width
+     */
     private double widthScaling() {
         if (getXAxis() instanceof NumberAxis) {
             return Math.abs(((NumberAxis)getXAxis()).getScale());
@@ -171,6 +271,13 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         }
     }
 
+    /**
+     * Adds a task to the chart
+     * 
+     * @param series the series to add the task to
+     * @param itemIndex the index of the task
+     * @param item the task to add
+     */
     @Override
     protected void dataItemAdded(Series<X, Y> series, int itemIndex, Data<X, Y> item) {
         Node block = item.getNode();
@@ -178,17 +285,33 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         getPlotChildren().add(block);
     }
 
+    /**
+     * Removes a task from the chart
+     * 
+     * @param item the task to remove
+     * @param series the series to remove the task from
+     */
     @Override
     protected void dataItemRemoved(Data<X, Y> item, Series<X, Y> series) {
         Node block = item.getNode();
         getPlotChildren().remove(block);
     }
 
+    /**
+     * Updates the data of a task.
+     * This method is not used in the implementation of a gantt chart
+     * 
+     * @param item the task to update
+     */
     @Override
-    protected void dataItemChanged(Data<X, Y> item) {
-        
-    }
+    protected void dataItemChanged(Data<X, Y> item) {}
 
+    /**
+     * Adds a series of tasks to the chart
+     * 
+     * @param series the series of task to add
+     * @param seriesIndex the index of the series
+     */
     @Override
     protected void seriesAdded(Series<X, Y> series, int seriesIndex) {
         for (int j=0; j<series.getData().size(); j++) {
@@ -205,6 +328,11 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         }
     }
 
+    /**
+     * Removes a series of tasks from the chart
+     * 
+     * @param series the series of tasks to remove
+     */
     @Override
     protected void seriesRemoved(Series<X, Y> series) {
         for (Data<X, Y> d : series.getData()) {
@@ -213,7 +341,9 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         }
     }
 
-
+    /**
+     * Updates the range of the x-axis and y-axis
+     */
     @Override
     protected void updateAxisRange() {
         final Axis<X> xAxis = getXAxis();

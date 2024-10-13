@@ -31,6 +31,10 @@ import java.util.TimerTask;
 
 import static scheduler.constants.Constants.*;
 
+/**
+ * The controller for the dynamic visualiser.
+ * This class is responsible for managing the dynamic visualiser's logic.
+ */
 public class DynamicController {
     @FXML
     private Button btnStartSchedule;
@@ -69,12 +73,19 @@ public class DynamicController {
 
     private int timeElapsed;
 
+    /**
+     * Initialises the dynamic visualiser.
+     */
     @FXML
     public void initialize() {
         initialiseGanttChart();
         initialiseMiscellaneous();
     }
 
+    /**
+     * Initialises the Gantt chart.
+     * The Gantt chart is used to visualise the schedule.
+     */
     private void initialiseGanttChart() {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Time");
@@ -95,6 +106,9 @@ public class DynamicController {
         this.ganttChartScrollPane.setContent(pane);
     }
 
+    /**
+     * Applies the custom stylesheet to the Gantt chart for styling
+     */
     private void applyGanttChartStyleSheet() {
         URL stylesheetUrl = getClass().getResource("/css/style.css");
 
@@ -107,6 +121,10 @@ public class DynamicController {
         this.ganttChart.getStylesheets().add(stylesheet);
     }
 
+    /**
+     * Initialises miscellaneous components.
+     * These miscellaneous components are the graphs and timers for cpu and ram usage.
+     */
     private void initialiseMiscellaneous() {
         this.seriesRam = new XYChart.Series<>();
         this.seriesCpu = new XYChart.Series<>();
@@ -126,11 +144,19 @@ public class DynamicController {
         this.timeElapsed = 0;
     }
 
+    /**
+     * Switches to the static visualiser.
+     * @throws IOException if the fxml file cannot be loaded
+     */
     @FXML
     void switchToStaticVisualiser() throws IOException {
         Visualiser.setScene(SceneType.STATIC);
     }
 
+    /**
+     * Handles the start schedule button click event.
+     * The button is disabled and the starts the tracking when clicked.
+     */
     @FXML
     void onStartScheduleClicked() {
         btnStartSchedule.setDisable(true);
@@ -139,16 +165,29 @@ public class DynamicController {
         startTracking();
     }
 
+    /**
+     * Sets the arguments for the dynamic visualiser.
+     * 
+     * @param arguments the arguments
+     */
     public void setArguments(Arguments arguments) {
         this.arguments = arguments;
     }
 
+    /**
+     * Sets the scheduler for the dynamic visualiser.
+     * 
+     * @param scheduler the scheduler
+     */
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
 
         this.nodes = scheduler.getNodes();
     }
 
+    /**
+     * Starts tracking the schedule.
+     */
     private void startTracking() {
         Task<Void> schedulingTask = getVoidTask();
 
@@ -158,6 +197,9 @@ public class DynamicController {
         startCpuAndRamUsageTimer();
     }
 
+    /**
+     * Starts the Gantt chart timer.
+     */
     private void startGanttChartTimer() {
         this.ganttChartTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -167,6 +209,9 @@ public class DynamicController {
         }, 0, GANTT_CHART_UPDATE_INTERVAL);
     }
 
+    /**
+     * Starts the CPU and RAM usage timer.
+     */
     private void startCpuAndRamUsageTimer() {
         this.cpuAndRamUsageTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -176,6 +221,11 @@ public class DynamicController {
         }, 0, CPU_AND_RAM_UPDATE_INTERVAL);
     }
 
+    /**
+     * Creates and returns a scheduling task
+     * 
+     * @return the scheduling task
+     */
     private Task<Void> getVoidTask() {
         Task<Void> schedulingTask = new Task<>() {
             @Override
@@ -197,6 +247,9 @@ public class DynamicController {
         return schedulingTask;
     }
 
+    /**
+     * Updates all the elements on schedule completion
+     */
     private void updateElementsUponScheduleCompletion() throws IOException {
         updateGanttChart();
 
@@ -214,12 +267,18 @@ public class DynamicController {
         this.alertFinish();
     }
 
+    /**
+     * Updates the Gantt chart with all tasks.
+     */
     private void updateGanttChart() {
         this.ganttChart.clear();
 
         addAllTask();
     }
 
+    /**
+     * Closes the notification popup of when the task is done
+     */
     @FXML
     public void closePopup() {
         StaticController staticController = (StaticController) Visualiser.getController(SceneType.STATIC);
@@ -231,7 +290,11 @@ public class DynamicController {
         closeCurrentPop();
     }
 
-    public void closeCurrentPop() {
+
+    /**
+     * Closes the popup in the current scene
+     */
+    public void closeCurrentPop(){
         FadeTransition fade = new FadeTransition();
 
         fade.setNode(popup);
@@ -243,6 +306,9 @@ public class DynamicController {
         fade.play();
     }
 
+    /**
+     * Alerts the user that the task is done through a popup
+     */
     private void alertFinish() {
         TranslateTransition translate = new TranslateTransition();
 
@@ -253,6 +319,9 @@ public class DynamicController {
         translate.play();
     }
 
+    /**
+     * Updates the CPU and RAM usage charts with new data points.
+     */
     private void updateCpuAndRamUsageCharts() {
         float cpuUsage = Utility.getCpuUsage();
         float ramUsage = Utility.getRamUsage();
@@ -279,6 +348,12 @@ public class DynamicController {
         }
     }
 
+    /**
+     * Adds a task to the Gantt chart.
+     * 
+     * @param state the state
+     * @param node the node
+     */
     public void addTask(StateModel state, NodeModel node) {
         String id = node.getId();
 
@@ -295,6 +370,9 @@ public class DynamicController {
         this.ganttChart.getData().add(series);
     }
 
+    /**
+     * Adds all tasks to the Gantt chart.
+     */
     public void addAllTask() {
         StateModel state = this.scheduler.getCurrentState();
         

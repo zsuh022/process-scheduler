@@ -19,6 +19,10 @@ import visualiser.controllers.StaticController;
 import static scheduler.constants.Constants.WINDOW_HEIGHT;
 import static scheduler.constants.Constants.WINDOW_WIDTH;
 
+/**
+ * The main class for visualiser.
+ * This class is responsible for the managing the scenes used in visualiser.
+ */
 public class Visualiser extends Application {
     private static Scene scene;
 
@@ -30,6 +34,11 @@ public class Visualiser extends Application {
 
     private static Map<SceneType, Object> controllers;
 
+    /**
+     * Runs the visualiser.
+     * @param arguments arguments passed to the visualiser made of input and output files and processors and cores.
+     * @param scheduler the scheduling algorithm responsible for managing schedule logic.
+     */
     public static void run(Arguments arguments, Scheduler scheduler) {
         Visualiser.arguments = arguments;
         Visualiser.scheduler = scheduler;
@@ -37,12 +46,23 @@ public class Visualiser extends Application {
         launch();
     }
 
+    /**
+     * Gets the resource for the scene.
+     * @param sceneType the scene's enum
+     * @return the resource for the scene
+     */
     private static String getResource(SceneType sceneType) {
         String filename = sceneType.toString().toLowerCase();
 
         return "/fxml/" + filename + ".fxml";
     }
 
+    /**
+     * Loads the fxml file for the scene. If not found it creates a new one.
+     * @param sceneType the scene's enum
+     * @return the parent node of the scene
+     * @throws IOException if the fxml file cannot be loaded
+     */
     private static Parent loadFxml(SceneType sceneType) throws IOException {
         if (scenes.containsKey(sceneType)) {
             return scenes.get(sceneType);
@@ -74,10 +94,20 @@ public class Visualiser extends Application {
         return root;
     }
 
+    /**
+     * Sets the scene for the visualiser.
+     * @param sceneType the scene's enum
+     * @throws IOException if the fxml file cannot be loaded
+     */
     public static void setScene(SceneType sceneType) throws IOException{
         scene.setRoot(loadFxml(sceneType));
     }
 
+    /**
+     * Gets the controller for the scene.
+     * @param scene the scene's enum
+     * @return the controller for the scene
+     */
     public static Object getController(SceneType scene) {
         if (controllers.containsKey(scene)) {
           return controllers.get(scene);
@@ -86,6 +116,12 @@ public class Visualiser extends Application {
         }
       }
 
+    /**
+     * Starts the visualiser.
+     * It initializes the scenes, sets up the window, and displays it.
+     * @param stage the stage for the visualiser
+     * @throws IOException if the fxml file cannot be loaded
+     */
     @Override
     public void start(Stage stage) throws IOException {
         scenes = new EnumMap<>(SceneType.class);
