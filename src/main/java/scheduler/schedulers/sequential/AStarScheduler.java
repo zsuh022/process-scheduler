@@ -39,6 +39,8 @@ public class AStarScheduler extends Scheduler {
             expandStates(state);
         }
 
+        setCurrentState(this.bestState);
+
         metrics.setBestState(this.bestState);
         metrics.setNumberOfClosedStates(closedStates.size());
     }
