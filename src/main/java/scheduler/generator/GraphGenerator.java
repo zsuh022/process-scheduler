@@ -127,6 +127,14 @@ public class GraphGenerator {
     return graph;
   }
 
+  /**
+   * Creates a graph from an adjacency matrix. The adjacency matrix is used to determine the edges
+   * in the graph. The graph is created by iterating through the adjacency matrix and adding nodes
+   * and edges to the graph.
+   *
+   * @param graph
+   * @param adjacencyMatrix
+   */
   private static void createGraphFromAdjacencyMatrix(Graph graph, boolean[][] adjacencyMatrix) {
     for (int sourceIndex = 0; sourceIndex < GraphInformation.numberOfNodes; sourceIndex++) {
       for (int destinationIndex = 0;
