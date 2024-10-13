@@ -5,13 +5,14 @@ import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.schedulers.sequential.AStarScheduler;
 
+import java.util.Comparator;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ParallelSchedulerForkJoin extends AStarScheduler {
+    private final PriorityBlockingQueue<StateModel> priorityQueue;
+
     private final ForkJoinPool forkJoinPool;
 
     private final Set<StateModel> closedStates;
@@ -22,6 +23,8 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
 
     public ParallelSchedulerForkJoin(GraphModel graph, byte processors, byte cores) {
         super(graph, processors);
+
+        this.priorityQueue = new PriorityBlockingQueue<>(11, Comparator.comparingInt(this::getFCost));
 
         this.forkJoinPool = new ForkJoinPool(cores);
 
@@ -35,6 +38,7 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
     @Override
     public boolean canPruneState(StateModel currentState) {
         if (!this.closedStates.add(currentState)) {
+            // prune if already in closed states
             return true;
         }
 
@@ -47,37 +51,39 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
     public void schedule() {
         StateModel initialState = new StateModel(this.processors, this.numberOfNodes);
 
-        this.forkJoinPool.invoke(new ParallelScheduleTask(initialState));
+        this.priorityQueue.add(initialState);
+
+        this.forkJoinPool.invoke(new ParallelScheduleTask());
 
         metrics.setBestState(this.bestState);
         metrics.setNumberOfClosedStates(this.closedStates.size());
     }
 
     private class ParallelScheduleTask extends RecursiveTask<Void> {
-        private final StateModel currentState;
-
-        public ParallelScheduleTask(StateModel state) {
-            this.currentState = state;
-        }
 
         @Override
         protected Void compute() {
-            if (currentState.areAllNodesScheduled()) {
-                updateBestState(currentState);
+            while (!priorityQueue.isEmpty()) {
+                StateModel currentState = priorityQueue.poll();
 
-                return null;
-            }
+                if (currentState == null || isBestStateFound.get()) {
+                    return null;
+                }
 
-            for (NodeModel node : getAvailableNodes(currentState)) {
-                for (byte processor = 0; processor < processors; processor++) {
-                    StateModel nextState = expandState(currentState, node, processor);
+                if (currentState.areAllNodesScheduled()) {
+                    updateBestState(currentState);
+                    isBestStateFound.set(true);
+                    return null;
+                }
 
-                    if (nextState == null) {
-                        continue;
+                for (NodeModel node : getAvailableNodes(currentState)) {
+                    for (int processor = 0; processor < processors; processor++) {
+                        StateModel nextState = expandState(currentState, node, processor);
+
+                        if (nextState != null) {
+                            priorityQueue.add(nextState);
+                        }
                     }
-
-                    ParallelScheduleTask task = new ParallelScheduleTask(nextState);
-                    task.fork();
                 }
             }
 
@@ -92,16 +98,16 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
             }
         }
 
-        private StateModel expandState(StateModel state, NodeModel node, byte processor) {
+        private StateModel expandState(StateModel state, NodeModel node, int processor) {
             if (isFirstAvailableNode(state, node)) {
                 return null;
             }
 
             StateModel nextState = state.clone();
 
-            int earliestStartTime = getEarliestStartTime(state, node, processor);
+            int earliestStartTime = getEarliestStartTime(state, node, (byte) processor);
 
-            nextState.addNode(node, processor, earliestStartTime);
+            nextState.addNode(node, (byte) processor, earliestStartTime);
             nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
 
             if (canPruneState(nextState)) {
