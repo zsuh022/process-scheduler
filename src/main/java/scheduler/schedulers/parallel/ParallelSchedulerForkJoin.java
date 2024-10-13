@@ -1,6 +1,7 @@
 package scheduler.schedulers.parallel;
 
 import scheduler.models.GraphModel;
+import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.schedulers.sequential.AStarScheduler;
 
@@ -51,15 +52,32 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
     }
 
     private class ParallelScheduler extends RecursiveTask<Void> {
-        private final StateModel state;
+        private final StateModel currentState;
 
         public ParallelScheduler(StateModel state) {
-            this.state = state;
+            this.currentState = state;
         }
 
         @Override
         protected Void compute() {
             return null;
+        }
+
+        private void expandState(StateModel state, NodeModel node, int processor) {
+            if (isFirstAvailableNode(state, node)) {
+                return;
+            }
+
+            StateModel nextState = state.clone();
+
+            int earliestStartTime = getEarliestStartTime(state, node, processor);
+
+            nextState.addNode(node, processor, earliestStartTime);
+            nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
+
+            if (!canPruneState(nextState)) {
+                metrics.incrementNumberOfOpenedStates();
+            }
         }
     }
 }
