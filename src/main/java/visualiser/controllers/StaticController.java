@@ -118,7 +118,6 @@ public class StaticController {
         initialiseLabel(this.processorsLabel, this.processorsPane, String.valueOf(this.arguments.getProcessors()));
     }
 
-
     private void initialiseLabel(Label label, Pane pane, String text) {
         label.setText(text);
 
@@ -137,10 +136,12 @@ public class StaticController {
 
     @FXML
     public void closePopup() {
-        DynamicController dynamicController =(DynamicController) Visualiser.getController(SceneType.DYNAMIC);
+        DynamicController dynamicController = (DynamicController) Visualiser.getController(SceneType.DYNAMIC);
+
         if(dynamicController != null) {
             dynamicController.closeCurrentPop();
         }
+
         closeCurrentPop();
     }
     public void closeCurrentPop(){

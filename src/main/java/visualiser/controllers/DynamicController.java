@@ -188,26 +188,30 @@ public class DynamicController {
 
         schedulingTask.setOnSucceeded(event -> {
             try {
-                updateGanttChart();
-
-                this.scheduler.saveBestState(this.arguments);
-
-                this.ganttChartTimer.cancel();
-                this.cpuAndRamUsageTimer.cancel();
-
-                
-                StaticController staticController =(StaticController) Visualiser.getController(SceneType.STATIC);
-                if (staticController != null) {
-                    staticController.alertFinish();
-                }
-                this.alertFinish();
-                
+               updateElementsUponScheduleCompletion();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
 
         return schedulingTask;
+    }
+
+    private void updateElementsUponScheduleCompletion() throws IOException {
+        updateGanttChart();
+
+        this.scheduler.saveBestState(this.arguments);
+
+        this.ganttChartTimer.cancel();
+        this.cpuAndRamUsageTimer.cancel();
+
+        StaticController staticController = (StaticController) Visualiser.getController(SceneType.STATIC);
+
+        if (staticController != null) {
+            staticController.alertFinish();
+        }
+
+        this.alertFinish();
     }
 
     private void updateGanttChart() {
@@ -218,14 +222,16 @@ public class DynamicController {
 
     @FXML
     public void closePopup() {
-        StaticController staticController =(StaticController) Visualiser.getController(SceneType.STATIC);
+        StaticController staticController = (StaticController) Visualiser.getController(SceneType.STATIC);
+
         if (staticController != null) {
             staticController.closeCurrentPop();
         }
+
         closeCurrentPop();
     }
 
-    public void closeCurrentPop(){
+    public void closeCurrentPop() {
         FadeTransition fade = new FadeTransition();
 
         fade.setNode(popup);
@@ -251,11 +257,11 @@ public class DynamicController {
         float cpuUsage = Utility.getCpuUsage();
         float ramUsage = Utility.getRamUsage();
 
-        this.timeElapsed += CPU_AND_RAM_UPDATE_INTERVAL;
-
         double timeInSeconds = this.timeElapsed / 1000.0;
 
         Platform.runLater(() -> plotNewPointsOnCpuAndRamCharts(cpuUsage, ramUsage, timeInSeconds));
+
+        this.timeElapsed += CPU_AND_RAM_UPDATE_INTERVAL;
     }
 
     private void plotNewPointsOnCpuAndRamCharts(float cpuUsage, float ramUsage, double timeInSeconds) {
