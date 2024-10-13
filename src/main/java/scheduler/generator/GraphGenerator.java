@@ -197,7 +197,7 @@ public class GraphGenerator {
 
   /**
    * Generates a stencil graph with a random number of layers and nodes per layer, and then outputs
-   * the graph to a DOT file located in the resources folder.
+   * the graph to a DOT file located in the resources folder as specified by the InputOutputParser.
    *
    * @throws IOException if an I/O error occurs while writing the graph to a DOT file.
    */
