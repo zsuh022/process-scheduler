@@ -187,7 +187,7 @@ public class GraphGenerator {
         }
         Collections.shuffle(nextLayerNodes);
 
-        // Ensure connection to at least 2 nodes in the next layer
+        // Ensure each node in the current layer is connected to at least 2 nodes in the next.
         for (int i = 0; i < 2; i++) {
           int nextLayerNode = nextLayerNodes.get(i);
           addEdge(graph, Integer.toString(currentNode), Integer.toString(nextLayerNode));
