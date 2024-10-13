@@ -175,15 +175,12 @@ public class GraphGenerator {
   public static void createStencilGraphWithRandomLayersAndNodes() throws IOException {
     Graph graph = new SingleGraph("stencil-graph");
 
-    // Get random number of layers and nodes per layer
     int numLayers = getRandomNumberOfLayers();
     int numNodesPerLayer = getRandomNumberOfNodes();
 
-    // Total number of nodes is layers * nodes per layer
     int totalNodes = numLayers * numNodesPerLayer;
     boolean[][] adjacencyMatrix = new boolean[totalNodes][totalNodes];
 
-    // Create nodes for each layer
     int[][] layerNodes = new int[numLayers][numNodesPerLayer];
     for (int layer = 0; layer < numLayers; layer++) {
       for (int nodeIndex = 0; nodeIndex < numNodesPerLayer; nodeIndex++) {
@@ -193,20 +190,16 @@ public class GraphGenerator {
       }
     }
 
-    // Connect nodes between layers, ensuring each node connects to at least 2 nodes in the next
-    // layer.
     for (int layer = 0; layer < numLayers - 1; layer++) {
       for (int nodeIndex = 0; nodeIndex < numNodesPerLayer; nodeIndex++) {
         int currentNode = layerNodes[layer][nodeIndex];
 
-        // Get two random distinct nodes from the next layer
         List<Integer> nextLayerNodes = new ArrayList<>();
         for (int i = 0; i < numNodesPerLayer; i++) {
           nextLayerNodes.add(layerNodes[layer + 1][i]);
         }
         Collections.shuffle(nextLayerNodes);
 
-        // Ensure each node in the current layer is connected to at least 2 nodes in the next.
         for (int i = 0; i < 2; i++) {
           int nextLayerNode = nextLayerNodes.get(i);
           addEdge(graph, Integer.toString(currentNode), Integer.toString(nextLayerNode));
@@ -215,7 +208,6 @@ public class GraphGenerator {
       }
     }
 
-    // Write the stencil graph to a DOT file
     InputOutputParser.writeDOTFile(graph, getFilename(GraphType.STENCIL));
   }
 
