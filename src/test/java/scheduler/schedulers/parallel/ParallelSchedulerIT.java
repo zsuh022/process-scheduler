@@ -54,6 +54,7 @@ public class ParallelSchedulerIT extends BaseSchedulerIT {
 
     for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
 
+      // Set the number of number of cores as a random number between 2 and 9
       byte randomCores = (byte) ThreadLocalRandom.current().nextInt(2, 9);
       arrangeTestCase((byte) processorsAndExpectedValue[0], randomCores);
 
@@ -72,6 +73,7 @@ public class ParallelSchedulerIT extends BaseSchedulerIT {
     setInputAndOutputPaths("Nodes_8_Random.dot");
 
     for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
+      // Set the number of number of cores as a random number between 2 and 9
       byte randomCores = (byte) ThreadLocalRandom.current().nextInt(2, 9);
       arrangeTestCase((byte) processorsAndExpectedValue[0], randomCores);
 
@@ -90,6 +92,8 @@ public class ParallelSchedulerIT extends BaseSchedulerIT {
     setInputAndOutputPaths("Nodes_9_SeriesParallel.dot");
 
     for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
+
+      // Set the number of number of cores as a random number between 2 and 9
       byte randomCores = (byte) ThreadLocalRandom.current().nextInt(2, 9);
       arrangeTestCase((byte) processorsAndExpectedValue[0], randomCores);
 
@@ -108,6 +112,8 @@ public class ParallelSchedulerIT extends BaseSchedulerIT {
     setInputAndOutputPaths("Nodes_10_Random.dot");
 
     for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
+
+      // Set the number of number of cores as a random number between 2 and 9
       byte randomCores = (byte) ThreadLocalRandom.current().nextInt(2, 9);
       arrangeTestCase((byte) processorsAndExpectedValue[0], randomCores);
 
@@ -126,6 +132,8 @@ public class ParallelSchedulerIT extends BaseSchedulerIT {
     setInputAndOutputPaths("Nodes_11_OutTree.dot");
 
     for (int[] processorsAndExpectedValue : processorsAndExpectedValues) {
+
+      // Set the number of number of cores as a random number between 2 and 9
       byte randomCores = (byte) ThreadLocalRandom.current().nextInt(2, 9);
       arrangeTestCase((byte) processorsAndExpectedValue[0], randomCores);
 
@@ -137,6 +145,11 @@ public class ParallelSchedulerIT extends BaseSchedulerIT {
     }
   }
 
+  /**
+   * Set the number of processors based on the target system
+   *
+   * @param graph
+   */
   public void setProcessors(Graph graph) {
     String targetSystem = (String) graph.getAttribute("TargetSystem");
 
