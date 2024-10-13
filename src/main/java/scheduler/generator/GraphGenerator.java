@@ -157,8 +157,8 @@ public class GraphGenerator {
     Graph graph = new SingleGraph("stencil-graph");
 
     // Get random number of layers and nodes per layer
-    int numLayers = getRandomNumberOfLayers(); // Get random number of layers
-    int numNodesPerLayer = getRandomNumberOfNodes(); // Get random number of nodes per layer
+    int numLayers = getRandomNumberOfLayers();
+    int numNodesPerLayer = getRandomNumberOfNodes();
 
     // Total number of nodes is layers * nodes per layer
     int totalNodes = numLayers * numNodesPerLayer;
@@ -175,7 +175,7 @@ public class GraphGenerator {
     }
 
     // Connect nodes between layers, ensuring each node connects to at least 2 nodes in the next
-    // layer
+    // layer.
     for (int layer = 0; layer < numLayers - 1; layer++) {
       for (int nodeIndex = 0; nodeIndex < numNodesPerLayer; nodeIndex++) {
         int currentNode = layerNodes[layer][nodeIndex];
