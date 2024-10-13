@@ -1,15 +1,15 @@
 digraph {
 	"0" ["Start"=0,"Weight"=50,"Processor"=1];
 	"1" ["Start"=50,"Weight"=70,"Processor"=1];
-	"2" ["Start"=57,"Weight"=90,"Processor"=2];
-	"3" ["Start"=54,"Weight"=100,"Processor"=3];
+	"2" ["Start"=57,"Weight"=90,"Processor"=3];
+	"3" ["Start"=54,"Weight"=100,"Processor"=2];
 	"4" ["Start"=120,"Weight"=40,"Processor"=1];
-	"5" ["Start"=127,"Weight"=20,"Processor"=4];
-	"6" ["Start"=147,"Weight"=100,"Processor"=2];
-	"7" ["Start"=152,"Weight"=80,"Processor"=4];
-	"8" ["Start"=154,"Weight"=50,"Processor"=3];
-	"9" ["Start"=160,"Weight"=20,"Processor"=1];
-	"10" ["Start"=180,"Weight"=20,"Processor"=1];
+	"5" ["Start"=154,"Weight"=20,"Processor"=2];
+	"6" ["Start"=125,"Weight"=100,"Processor"=4];
+	"7" ["Start"=147,"Weight"=80,"Processor"=3];
+	"8" ["Start"=160,"Weight"=50,"Processor"=1];
+	"9" ["Start"=174,"Weight"=20,"Processor"=2];
+	"10" ["Start"=194,"Weight"=20,"Processor"=2];
 	"0" -> "1" ["Weight"=9];
 	"0" -> "2" ["Weight"=7];
 	"3" -> "10" ["Weight"=4];

@@ -40,35 +40,35 @@ public class Main {
         String filename = "Random_Graph.dot";
         InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
 
-//        scheduler = new AStarScheduler(graph, arguments.getProcessors());
-//        long startTimeTest = System.currentTimeMillis();
-//        scheduler.schedule();
-//        long endTimeTest = System.currentTimeMillis();
-//        float elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0f;
+        scheduler = new AStarScheduler(graph, arguments.getProcessors());
+        long startTimeTest = System.currentTimeMillis();
+        scheduler.schedule();
+        long endTimeTest = System.currentTimeMillis();
+        float elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0f;
+
+        MetricsModel metricsTest = scheduler.getMetrics();
+        metricsTest.setElapsedTime(elapsedTimeTest);
+        metricsTest.display();
+
+        GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
+        GraphGenerator.displayGraphInformation();
+
+//        for (byte cores = 8; cores <= 8; cores++) {
+//            arguments.setCores(cores);
 //
-//        MetricsModel metricsTest = scheduler.getMetrics();
-//        metricsTest.setElapsedTime(elapsedTimeTest);
-//        metricsTest.display();
+//            scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());
+//            MetricsModel metrics = scheduler.getMetrics();
 //
-//        GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
-//        GraphGenerator.displayGraphInformation();
-
-        for (byte cores = 8; cores <= 8; cores++) {
-            arguments.setCores(cores);
-
-            scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());
-            MetricsModel metrics = scheduler.getMetrics();
-
-            long startTime = System.currentTimeMillis();
-
-            scheduler.schedule();
-
-            long endTime = System.currentTimeMillis();
-            float elapsedTime = (endTime - startTime) / 1000.0f;
-
-            metrics.setElapsedTime(elapsedTime);
-            metrics.display();
-        }
+//            long startTime = System.currentTimeMillis();
+//
+//            scheduler.schedule();
+//
+//            long endTime = System.currentTimeMillis();
+//            float elapsedTime = (endTime - startTime) / 1000.0f;
+//
+//            metrics.setElapsedTime(elapsedTime);
+//            metrics.display();
+//        }
 //
         StateModel bestState = scheduler.getMetrics().getBestState();
         graph.setNodesAndEdgesForState(bestState);
