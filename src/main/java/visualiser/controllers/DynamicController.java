@@ -290,7 +290,7 @@ public class DynamicController {
 
         GanttChart.ExtraData extraData = new GanttChart.ExtraData(length, "JONKLERBLOCK", id);
 
-        series.getData().add(new XYChart.Data<>(startTime, "Processor " + processor, extraData));
+        series.getData().add(new XYChart.Data<>(startTime, "Processor " + (processor+1), extraData));
 
         this.ganttChart.getData().add(series);
     }
