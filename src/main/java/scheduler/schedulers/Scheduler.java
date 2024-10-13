@@ -58,6 +58,9 @@ public abstract class Scheduler {
         this.bottomLevelPathLengths = getBottomLevelPathLengths();
     }
 
+    /**
+     * Starts the actual scheduling process.
+     */
     public abstract void schedule();
 
     /**
@@ -163,12 +166,22 @@ public abstract class Scheduler {
         return bottomLevelPathLengths;
     }
 
+    /**
+     * Finds the critical path length. The critical path length is the maximum bottom level path length.
+     *
+     * @param bottomLevelPathLengths the bottom level path lengths
+     */
     private void findCriticalPathLength(int[] bottomLevelPathLengths) {
         for (int bottomLevelPathLength : bottomLevelPathLengths) {
             this.criticalPathLength = Math.max(this.criticalPathLength, bottomLevelPathLength);
         }
     }
 
+    /**
+     * Returns the critical path length
+     *
+     * @return the critical path length
+     */
     protected int getCriticalPathLength() {
         return this.criticalPathLength;
     }
@@ -204,7 +217,6 @@ public abstract class Scheduler {
             return 0;
         }
 
-        // Get the earliest start time for the current processor
         int earliestStartTime = state.getFinishTime(processor);
 
         for (NodeModel predecessor : node.getPredecessors()) {
@@ -221,6 +233,17 @@ public abstract class Scheduler {
         return earliestStartTime;
     }
 
+    /**
+      * Method calculates the earliest start time for a node on a given processor. This is used for schedule
+      * equivalence pruning.
+      *
+      * @param state represents the current state of the schedule
+      * @param nodeId represents the node to schedule
+      * @param nodeStartTimes the array of node/task start times
+      * @param processor represents the processor to schedule the node on
+      * @param startTime the node's start time
+      * @return the earliest start time for a node on a given processor
+      */
     protected int getEarliestStartTime(StateModel state, byte nodeId, int[] nodeStartTimes, byte processor, int startTime) {
         NodeModel node = this.nodes[nodeId];
 
@@ -259,18 +282,6 @@ public abstract class Scheduler {
         return availableNodes;
     }
 
-    protected List<NodeModel> getScheduledNodes(StateModel state) {
-        List<NodeModel> scheduledNodes = new ArrayList<>();
-
-        for (NodeModel node : this.nodes) {
-            if (state.isNodeScheduled(node)) {
-                scheduledNodes.add(node);
-            }
-        }
-
-        return scheduledNodes;
-    }
-
     /**
      * Method checks if all predecessors have been scheduled.
      *
@@ -288,22 +299,48 @@ public abstract class Scheduler {
         return true;
     }
 
+    /**
+     * Returns the current state
+     *
+     * @return the current state
+     */
     public StateModel getCurrentState() {
         return this.currentState;
     }
 
+    /**
+     * Sets the current state
+     *
+     * @param state the state to be set
+     */
     protected void setCurrentState(StateModel state) {
         this.currentState = state;
     }
 
+    /**
+     * Returns the state/schedule's metrics
+     *
+     * @return the state/schedule's metrics
+     */
     public MetricsModel getMetrics() {
         return this.metrics;
     }
 
+    /**
+     * Return an array of nodes
+     *
+     * @return an array of nodes
+     */
     public NodeModel[] getNodes() {
         return this.nodes;
     }
 
+    /**
+     * Saves the best state, i.e., converts the best state into a graph, then into DOT file format.
+     *
+     * @param arguments the arguments
+     * @throws IOException if the file does not exist
+     */
     public void saveBestState(Arguments arguments) throws IOException {
         this.graph.setNodesAndEdgesForState(this.bestState);
 
