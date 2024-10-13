@@ -90,8 +90,10 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
         }
 
         private void updateBestState(StateModel currentState) {
-            if (currentState.getMaximumFinishTime() < bestState.getMaximumFinishTime()) {
-                bestState = currentState;
+            synchronized (bestStateLock) {
+                if (currentState.getMaximumFinishTime() < bestState.getMaximumFinishTime()) {
+                    bestState = currentState;
+                }
             }
         }
 
