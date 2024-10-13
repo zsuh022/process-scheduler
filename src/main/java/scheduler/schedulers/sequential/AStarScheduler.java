@@ -26,7 +26,7 @@ public class AStarScheduler extends Scheduler {
 
         this.openedStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
 
-        this.bestState = this.getValidSchedule();
+        bestState = getValidSchedule();
     }
 
     /**
@@ -42,17 +42,17 @@ public class AStarScheduler extends Scheduler {
             setCurrentState(state);
 
             if (state.areAllNodesScheduled()) {
-                this.bestState = state;
+                bestState = state;
 
                 break;
             }
 
-            expandStates(state);
+            expandStates(this.openedStates, state);
         }
 
-        setCurrentState(this.bestState);
+        setCurrentState(bestState);
 
-        metrics.setBestState(this.bestState);
+        metrics.setBestState(bestState);
         metrics.setNumberOfClosedStates(closedStates.size());
     }
 
@@ -66,8 +66,28 @@ public class AStarScheduler extends Scheduler {
      * @param processor the processor which the node will be added to
      */
     protected void expandState(PriorityQueue<StateModel> openedStates, StateModel state, NodeModel node, byte processor) {
-        if (isFirstAvailableNode(state, node)) {
+        StateModel nextState = pruneState(state, node, processor);
+
+        if (nextState == null) {
             return;
+        }
+
+        openedStates.add(nextState);
+
+        metrics.incrementNumberOfOpenedStates();
+    }
+
+    /**
+     * Prunes the current state if possible.
+     *
+     * @param state the current state
+     * @param node the current node
+     * @param processor the processor
+     * @return the next state if the current state was not pruned
+     */
+    protected StateModel pruneState(StateModel state, NodeModel node, byte processor) {
+        if (isFirstAvailableNode(state, node)) {
+            return null;
         }
 
         StateModel nextState = state.clone();
@@ -77,15 +97,11 @@ public class AStarScheduler extends Scheduler {
         nextState.addNode(node, processor, earliestStartTime);
         nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
 
-        if (isStateEquivalent(nextState, node, processor)) {
-            return;
+        if (canPruneState(closedStates, nextState)) {
+            return null;
         }
 
-        if (!canPruneState(nextState)) {
-            openedStates.add(nextState);
-
-            metrics.incrementNumberOfOpenedStates();
-        }
+        return (isStateEquivalent(nextState, node, processor)) ? null : nextState;
     }
 
     /**
@@ -141,21 +157,22 @@ public class AStarScheduler extends Scheduler {
     /**
      * Expand the possible states. Fixed task ordering ensures that redundant states are pruned.
      *
+     * @param openedStates the queue of opened states
      * @param state the current state
      */
-    private void expandStates(StateModel state) {
+    protected void expandStates(PriorityQueue<StateModel> openedStates, StateModel state) {
         List<NodeModel> availableNodes = getAvailableNodes(state);
 
         NodeModel fixedNode = getFixedNodeOrder(state, availableNodes);
 
         if (fixedNode != null) {
             for (byte processor = 0; processor < processors; processor++) {
-                expandState(this.openedStates, state, fixedNode, processor);
+                expandState(openedStates, state, fixedNode, processor);
             }
         } else {
             for (NodeModel node : availableNodes) {
                 for (byte processor = 0; processor < processors; processor++) {
-                    expandState(this.openedStates, state, node, processor);
+                    expandState(openedStates, state, node, processor);
                 }
             }
         }
@@ -167,7 +184,7 @@ public class AStarScheduler extends Scheduler {
      * @param state the current state
      * @return if a state can be pruned
      */
-    protected boolean canPruneState(StateModel state) {
+    protected boolean canPruneState(Set<StateModel> closedStates, StateModel state) {
         if (!closedStates.add(state)) {
             return true;
         }

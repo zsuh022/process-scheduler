@@ -53,22 +53,22 @@ public class Main {
         GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
         GraphGenerator.displayGraphInformation();
 
-//        for (byte cores = 8; cores <= 8; cores++) {
-//            arguments.setCores(cores);
-//
-//            scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());
-//            MetricsModel metrics = scheduler.getMetrics();
-//
-//            long startTime = System.currentTimeMillis();
-//
-//            scheduler.schedule();
-//
-//            long endTime = System.currentTimeMillis();
-//            float elapsedTime = (endTime - startTime) / 1000.0f;
-//
-//            metrics.setElapsedTime(elapsedTime);
-//            metrics.display();
-//        }
+        for (byte cores = 1; cores <= 8; cores++) {
+            arguments.setCores(cores);
+
+            scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());
+            MetricsModel metrics = scheduler.getMetrics();
+
+            long startTime = System.currentTimeMillis();
+
+            scheduler.schedule();
+
+            long endTime = System.currentTimeMillis();
+            float elapsedTime = (endTime - startTime) / 1000.0f;
+
+            metrics.setElapsedTime(elapsedTime);
+            metrics.display();
+        }
 //
         StateModel bestState = scheduler.getMetrics().getBestState();
         graph.setNodesAndEdgesForState(bestState);

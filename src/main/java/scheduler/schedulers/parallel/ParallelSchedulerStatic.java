@@ -93,21 +93,6 @@ public class ParallelSchedulerStatic extends AStarScheduler {
     }
 
     /**
-     * Check if we can prune the current state.
-     *
-     * @param state the current state
-     * @return if we can prune the current state
-     */
-    @Override
-    public boolean canPruneState(StateModel state) {
-        if (!this.closedStates.add(state)) {
-            return true;
-        }
-
-        return state.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
-    }
-
-    /**
      * Start the parallel scheduling process.
      */
     @Override
@@ -179,7 +164,7 @@ public class ParallelSchedulerStatic extends AStarScheduler {
         /**
          * Expand the number of states
          *
-         * @param state the
+         * @param state the current state
          */
         private void expandStates(StateModel state) {
             for (NodeModel node : getAvailableNodes(state)) {
@@ -201,6 +186,10 @@ public class ParallelSchedulerStatic extends AStarScheduler {
          * @param processor the processor
          */
         private void expandState(StateModel state, NodeModel node, byte processor) {
+            if (isFirstAvailableNode(state, node)) {
+                return;
+            }
+
             StateModel nextState = state.clone();
 
             int earliestStartTime = getEarliestStartTime(state, node, processor);
@@ -209,6 +198,10 @@ public class ParallelSchedulerStatic extends AStarScheduler {
             nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
 
             if (canPruneState(nextState)) {
+                return;
+            }
+
+            if (isStateEquivalent(nextState, node, processor)) {
                 return;
             }
 
