@@ -1,8 +1,11 @@
 package visualiser.controllers;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -25,6 +28,9 @@ public class StaticController {
 
     @FXML
     private Label coresLabel;
+
+    @FXML
+    private Pane popup;
 
     @FXML
     private Label processorsLabel;
@@ -127,6 +133,36 @@ public class StaticController {
     @FXML
     private void switchToDynamicVisualiser() throws IOException {
         Visualiser.setScene(SceneType.DYNAMIC);
+    }
+
+    @FXML
+    public void closePopup() {
+        DynamicController dynamicController =(DynamicController) Visualiser.getController(SceneType.DYNAMIC);
+        if(dynamicController != null) {
+            dynamicController.closeCurrentPop();
+        }
+        closeCurrentPop();
+    }
+    public void closeCurrentPop(){
+        FadeTransition fade = new FadeTransition();
+
+        fade.setNode(popup);
+        fade.setDuration(Duration.seconds(0.5));
+        fade.setFromValue(1);
+        fade.setToValue(0);
+        fade.setOnFinished(event -> popup.setDisable(true));
+
+        fade.play();
+    }
+
+    public void alertFinish() {
+        TranslateTransition translate = new TranslateTransition();
+
+        translate.setNode(popup);
+        translate.setDuration(Duration.seconds(0.5));
+        translate.setByY(-111);
+
+        translate.play();
     }
 
     private void visualiseGraph() {
