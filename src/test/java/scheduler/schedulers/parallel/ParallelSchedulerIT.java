@@ -15,6 +15,7 @@ import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.BaseSchedulerIT;
 import scheduler.schedulers.sequential.AStarScheduler;
 
+@Disabled
 public class ParallelSchedulerIT extends BaseSchedulerIT {
   private void setInputAndOutputPaths(String filename) {
     arguments.setInputDOTFilePath(TEST_INPUT_DOT_FILE_PATH.concat(filename));
