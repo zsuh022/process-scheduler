@@ -45,16 +45,16 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
     public void schedule() {
         StateModel initialState = new StateModel(this.processors, this.numberOfNodes);
 
-        this.forkJoinPool.invoke(new ParallelScheduler(initialState));
+        this.forkJoinPool.invoke(new ParallelScheduleTask(initialState));
 
         metrics.setBestState(this.bestState);
         metrics.setNumberOfClosedStates(this.closedStates.size());
     }
 
-    private class ParallelScheduler extends RecursiveTask<Void> {
+    private class ParallelScheduleTask extends RecursiveTask<Void> {
         private final StateModel currentState;
 
-        public ParallelScheduler(StateModel state) {
+        public ParallelScheduleTask(StateModel state) {
             this.currentState = state;
         }
 
@@ -78,8 +78,8 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
                         continue;
                     }
 
-                    ParallelScheduler parallelScheduler = new ParallelScheduler(nextState);
-                    parallelScheduler.fork();
+                    ParallelScheduleTask task = new ParallelScheduleTask(nextState);
+                    task.fork();
                 }
             }
 
