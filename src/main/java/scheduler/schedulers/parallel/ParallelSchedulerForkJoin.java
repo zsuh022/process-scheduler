@@ -104,12 +104,12 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
             nextState.addNode(node, processor, earliestStartTime);
             nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
 
-            if (!canPruneState(nextState)) {
-                metrics.incrementNumberOfOpenedStates();
-                return nextState;
+            if (canPruneState(nextState)) {
+                return null;
             }
 
-            return null;
+            metrics.incrementNumberOfOpenedStates();
+            return nextState;
         }
     }
 }
