@@ -1,16 +1,11 @@
 package scheduler;
 
-import static scheduler.constants.Constants.RANDOM_OUTPUT_DOT_FILE_PATH;
-
 import java.io.IOException;
 
-import scheduler.generator.GraphGenerator;
 import scheduler.models.GraphModel;
 import scheduler.models.MetricsModel;
-import scheduler.models.StateModel;
 import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
-import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.Scheduler;
 import scheduler.schedulers.parallel.ParallelSchedulerForkJoin;
 import scheduler.schedulers.sequential.AStarScheduler;
@@ -24,8 +19,6 @@ import visualiser.Visualiser;
 public class Main {
     private static Scheduler scheduler;
 
-    private static GraphModel graph;
-
     /**
      * The runScheduler method is responsible for running the scheduler and outputting the results to the user.
      * Different metrics are displayed such as the make-span, the number of processors used, the number of cores used,
@@ -35,50 +28,21 @@ public class Main {
      * @throws IOException if I/O file does not exist
      */
     private static void runScheduler(Arguments arguments) throws IOException {
-//        graph = new GraphModel(arguments.getInputDOTFilePath());
-        graph = GraphGenerator.getRandomGraph();
-        String filename = "Random_Graph.dot";
-        InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
-
-        scheduler = new AStarScheduler(graph, arguments.getProcessors());
         long startTimeTest = System.currentTimeMillis();
+
         scheduler.schedule();
+
         long endTimeTest = System.currentTimeMillis();
+
         float elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0f;
 
         MetricsModel metricsTest = scheduler.getMetrics();
+
         metricsTest.setElapsedTime(elapsedTimeTest);
         metricsTest.display();
 
-        GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
-        GraphGenerator.displayGraphInformation();
-
-        for (byte cores = 1; cores <= 8; cores++) {
-            arguments.setCores(cores);
-
-            scheduler = new ParallelSchedulerForkJoin(graph, arguments.getProcessors(), arguments.getCores());
-            MetricsModel metrics = scheduler.getMetrics();
-
-            long startTime = System.currentTimeMillis();
-
-            scheduler.schedule();
-
-            long endTime = System.currentTimeMillis();
-            float elapsedTime = (endTime - startTime) / 1000.0f;
-
-            metrics.setElapsedTime(elapsedTime);
-            metrics.display();
-        }
-//
-        StateModel bestState = scheduler.getMetrics().getBestState();
-        graph.setNodesAndEdgesForState(bestState);
-        InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
-        arguments.displayOutputDOTFilePath();
+        scheduler.saveBestState(arguments);
     }
-
-//  private void runScheduler(Scheduler scheduler) throws IOException {
-//
-//  }
 
     /**
      * The initialiseScheduler method is responsible for initialising the scheduler based on the user's input. The
@@ -89,7 +53,7 @@ public class Main {
      * @throws IOException when the I/O file does not exist
      */
     private static void initialiseScheduler(Arguments arguments) throws IOException {
-        graph = new GraphModel(arguments.getInputDOTFilePath());
+        GraphModel graph = new GraphModel(arguments.getInputDOTFilePath());
 
         if (arguments.getCores() == 1) {
             scheduler = new AStarScheduler(graph, arguments.getProcessors());
