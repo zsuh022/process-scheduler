@@ -74,8 +74,6 @@ public class Main {
         graph.setNodesAndEdgesForState(bestState);
         InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
         arguments.displayOutputDOTFilePath();
-
-
     }
 
 //  private void runScheduler(Scheduler scheduler) throws IOException {

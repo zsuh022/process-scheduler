@@ -2,7 +2,6 @@ package scheduler.schedulers.sequential;
 
 import java.util.*;
 
-import scheduler.models.EdgeModel;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
@@ -72,12 +71,10 @@ public class AStarScheduler extends Scheduler {
         List<NodeModel> equivalentNodeGroup = graph.getEquivalentNodeGroup(node.getGroupId());
 
         for (NodeModel equivalentNode : equivalentNodeGroup) {
-            // both tasks are both the same, so we can continue with scheduling it
             if (equivalentNode.equals(node)) {
                 return false;
             }
 
-            // if there is an earlier equivalent task that is not scheduled
             if (!state.isNodeScheduled(equivalentNode)) {
                 return true;
             }

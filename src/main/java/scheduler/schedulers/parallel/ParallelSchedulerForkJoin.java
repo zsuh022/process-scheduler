@@ -35,7 +35,6 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
     @Override
     public boolean canPruneState(StateModel currentState) {
         if (!this.closedStates.add(currentState)) {
-            // prune if already in closed states
             return true;
         }
 
@@ -65,11 +64,7 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
         protected Void compute() {
             if (currentState.areAllNodesScheduled()) {
                 updateBestState(currentState);
-                isBestStateFound.set(true);
-                return null;
-            }
 
-            if (isBestStateFound.get()) {
                 return null;
             }
 

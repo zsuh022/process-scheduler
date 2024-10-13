@@ -143,27 +143,9 @@ public class StateModel {
         return (this.numberOfScheduledNodes == 0);
     }
 
-    /**
-     * Returns the number of nodes that have been scheduled so far.
-     *
-     * @return the number of scheduled nodes
-     */
-    public byte getNumberOfScheduledNodes() {
-        return this.numberOfScheduledNodes;
-    }
-
     public int[] getNodeStartTimes() {
         return this.nodeStartTimes;
     }
-
-    public int[] getNodeStartTimesCopy() {
-        return this.nodeStartTimes.clone();
-    }
-
-    public byte[] getNodeProcessors() {
-        return this.nodeProcessors;
-    }
-
 
     public int getParentMaximumBottomLevelPathLength() {
         return this.parentMaximumBottomLevelPathLength;
@@ -179,15 +161,6 @@ public class StateModel {
 
     public int getMaximumBottomLevelPathLength() {
         return this.maximumBottomLevelPathLength;
-    }
-
-    /**
-     * Returns an array indicating which nodes have been scheduled.
-     *
-     * @return an array of scheduled nodes
-     */
-    public byte[] getScheduledNodes() {
-        return this.scheduledNodes;
     }
 
     /**
@@ -234,10 +207,6 @@ public class StateModel {
      */
     public boolean areAllNodesScheduled() {
         return (this.numberOfScheduledNodes == this.numberOfNodes);
-    }
-
-    public int getNodeFinishTime(NodeModel node) {
-        return this.getNodeStartTime(node) + node.getWeight();
     }
 
     /**
@@ -318,15 +287,6 @@ public class StateModel {
     }
 
     /**
-     * Returns the finish times of the processors.
-     *
-     * @return the finish time of the processors
-     */
-    public int[] getFinishTimes() {
-        return this.finishTimes;
-    }
-
-    /**
      * Returns the processor assigned to the specified node.
      *
      * @param node the node whose processor is requested
@@ -334,10 +294,6 @@ public class StateModel {
      */
     public byte getNodeProcessor(NodeModel node) {
         return this.nodeProcessors[node.getByteId()];
-    }
-
-    public byte getNodeProcessor(byte nodeId) {
-        return this.nodeProcessors[nodeId];
     }
 
     public List<Byte> getNodesOnSameProcessorSortedOnStartTime(byte processor) {
@@ -365,9 +321,5 @@ public class StateModel {
 
     public void setFCost(int fCost) {
         this.fCost = fCost;
-    }
-
-    public int getFCost() {
-        return this.fCost;
     }
 }
