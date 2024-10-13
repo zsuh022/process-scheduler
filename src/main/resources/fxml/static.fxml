@@ -172,9 +172,9 @@
             </HBox>
          </children>
       </VBox>
-      <Pane fx:id="popup" layoutX="927.0" layoutY="740.0" onMousePressed="#closePopup" prefHeight="94.0" prefWidth="355.0">
+      <Pane fx:id="popup" disable="true" layoutX="925.0" layoutY="629.0" onMousePressed="#closePopup" opacity="0.0" prefHeight="94.0" prefWidth="355.0">
          <children>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#001840" height="96.0" layoutX="-3.0" layoutY="-3.0" stroke="BLACK" strokeType="INSIDE" width="359.0">
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#001840" height="96.0" stroke="BLACK" strokeType="INSIDE" width="359.0">
                <cursor>
                   <Cursor fx:constant="DEFAULT" />
                </cursor>

@@ -1,7 +1,6 @@
 package visualiser.controllers;
 
 import javafx.animation.FadeTransition;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -310,13 +309,13 @@ public class DynamicController {
      * Alerts the user that the task is done through a popup
      */
     private void alertFinish() {
-        TranslateTransition translate = new TranslateTransition();
-
-        translate.setNode(popup);
-        translate.setDuration(Duration.seconds(0.5));
-        translate.setByY(-125);
-
-        translate.play();
+        FadeTransition fadein = new FadeTransition();
+        fadein.setNode(popup);
+        fadein.setDuration(Duration.seconds(0.5));
+        fadein.setFromValue(0);
+        fadein.setToValue(1);
+        fadein.setOnFinished(event -> popup.setDisable(false));
+        fadein.play();
     }
 
     /**
