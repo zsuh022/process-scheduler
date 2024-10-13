@@ -238,26 +238,33 @@ public class DynamicController {
 
         schedulingTask.setOnSucceeded(event -> {
             try {
-                updateGanttChart();
-
-                this.scheduler.saveBestState(this.arguments);
-
-                this.ganttChartTimer.cancel();
-                this.cpuAndRamUsageTimer.cancel();
-
-                
-                StaticController staticController =(StaticController) Visualiser.getController(SceneType.STATIC);
-                if (staticController != null) {
-                    staticController.alertFinish();
-                }
-                this.alertFinish();
-                
+               updateElementsUponScheduleCompletion();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
 
         return schedulingTask;
+    }
+
+    /**
+     * Updates all the elements on schedule completion
+     */
+    private void updateElementsUponScheduleCompletion() throws IOException {
+        updateGanttChart();
+
+        this.scheduler.saveBestState(this.arguments);
+
+        this.ganttChartTimer.cancel();
+        this.cpuAndRamUsageTimer.cancel();
+
+        StaticController staticController = (StaticController) Visualiser.getController(SceneType.STATIC);
+
+        if (staticController != null) {
+            staticController.alertFinish();
+        }
+
+        this.alertFinish();
     }
 
     /**
@@ -274,12 +281,15 @@ public class DynamicController {
      */
     @FXML
     public void closePopup() {
-        StaticController staticController =(StaticController) Visualiser.getController(SceneType.STATIC);
+        StaticController staticController = (StaticController) Visualiser.getController(SceneType.STATIC);
+
         if (staticController != null) {
             staticController.closeCurrentPop();
         }
+
         closeCurrentPop();
     }
+
 
     /**
      * Closes the popup in the current scene
@@ -304,7 +314,7 @@ public class DynamicController {
 
         translate.setNode(popup);
         translate.setDuration(Duration.seconds(0.5));
-        translate.setByY(-111);
+        translate.setByY(-125);
 
         translate.play();
     }
@@ -316,11 +326,11 @@ public class DynamicController {
         float cpuUsage = Utility.getCpuUsage();
         float ramUsage = Utility.getRamUsage();
 
-        this.timeElapsed += CPU_AND_RAM_UPDATE_INTERVAL;
-
         double timeInSeconds = this.timeElapsed / 1000.0;
 
         Platform.runLater(() -> plotNewPointsOnCpuAndRamCharts(cpuUsage, ramUsage, timeInSeconds));
+
+        this.timeElapsed += CPU_AND_RAM_UPDATE_INTERVAL;
     }
 
     private void plotNewPointsOnCpuAndRamCharts(float cpuUsage, float ramUsage, double timeInSeconds) {
@@ -355,7 +365,7 @@ public class DynamicController {
 
         GanttChart.ExtraData extraData = new GanttChart.ExtraData(length, "JONKLERBLOCK", id);
 
-        series.getData().add(new XYChart.Data<>(startTime, "Processor " + processor, extraData));
+        series.getData().add(new XYChart.Data<>(startTime, "Processor " + (processor+1), extraData));
 
         this.ganttChart.getData().add(series);
     }

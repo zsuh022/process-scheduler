@@ -156,6 +156,7 @@ public class StaticController {
         initialiseLabel(this.processorsLabel, this.processorsPane, String.valueOf(this.arguments.getProcessors()));
     }
 
+
     /**
      * Initializes a label with the given text and centers it in the pane.
      * 
@@ -195,10 +196,12 @@ public class StaticController {
      */
     @FXML
     public void closePopup() {
-        DynamicController dynamicController =(DynamicController) Visualiser.getController(SceneType.DYNAMIC);
+        DynamicController dynamicController = (DynamicController) Visualiser.getController(SceneType.DYNAMIC);
+
         if(dynamicController != null) {
             dynamicController.closeCurrentPop();
         }
+
         closeCurrentPop();
     }
 
@@ -225,7 +228,7 @@ public class StaticController {
 
         translate.setNode(popup);
         translate.setDuration(Duration.seconds(0.5));
-        translate.setByY(-111);
+        translate.setByY(-125);
 
         translate.play();
     }
