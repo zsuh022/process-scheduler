@@ -30,4 +30,21 @@ public class ParallelSchedulerFork extends AStarScheduler {
 
         this.bestStateLock = new Object();
     }
+
+    @Override
+    public boolean canPruneState(StateModel state) {
+        if (!this.closedStates.add(state)) {
+            return true;
+        }
+
+        return state.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
+    }
+
+    @Override
+    public void schedule() {
+        // fork join
+
+        metrics.setBestState(this.bestState);
+        metrics.setNumberOfClosedStates(this.closedStates.size());
+    }
 }
