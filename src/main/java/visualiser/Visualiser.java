@@ -79,11 +79,7 @@ public class Visualiser extends Application {
     }
 
     public static Object getController(SceneType scene) {
-        if (controllers.containsKey(scene)) {
-          return controllers.get(scene);
-        } else {
-          return null;
-        }
+        return controllers.getOrDefault(scene, null);
       }
 
     @Override
@@ -92,8 +88,11 @@ public class Visualiser extends Application {
         controllers = new EnumMap<>(SceneType.class);
 
         scene = new Scene(loadFxml(SceneType.DYNAMIC), WINDOW_WIDTH, WINDOW_HEIGHT);
+
         loadFxml(SceneType.STATIC);
+
         stage.setResizable(false);
+
         stage.setOnCloseRequest(e -> {
             Platform.exit();
             System.exit(0);
