@@ -28,6 +28,8 @@ public class Visualiser extends Application {
 
     private static Map<SceneType, Parent> scenes;
 
+    private static Map<SceneType, Object> controllers;
+
     public static void run(Arguments arguments, Scheduler scheduler) {
         Visualiser.arguments = arguments;
         Visualiser.scheduler = scheduler;
@@ -54,11 +56,13 @@ public class Visualiser extends Application {
 
         if (sceneType == SceneType.DYNAMIC) {
             DynamicController controller = loader.getController();
+            controllers.put(sceneType,controller);
 
             controller.setArguments(arguments);
             controller.setScheduler(scheduler);
         } else {
             StaticController controller = loader.getController();
+            controllers.put(sceneType,controller);
 
             controller.setArguments(arguments);
 
@@ -74,11 +78,21 @@ public class Visualiser extends Application {
         scene.setRoot(loadFxml(sceneType));
     }
 
+    public static Object getController(SceneType scene) {
+        if (controllers.containsKey(scene)) {
+          return controllers.get(scene);
+        } else {
+          return null;
+        }
+      }
+
     @Override
     public void start(Stage stage) throws IOException {
         scenes = new EnumMap<>(SceneType.class);
+        controllers = new EnumMap<>(SceneType.class);
 
         scene = new Scene(loadFxml(SceneType.DYNAMIC), WINDOW_WIDTH, WINDOW_HEIGHT);
+        loadFxml(SceneType.STATIC);
         stage.setResizable(false);
         stage.setOnCloseRequest(e -> {
             Platform.exit();
