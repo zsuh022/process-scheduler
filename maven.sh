@@ -15,7 +15,7 @@ if [ "$1" = "main" ]; then
     if [ $# -eq 3 ]; then
         java -jar -Xmx4G target/scheduler.jar "$2" "$3"
     else
-        java -jar -Xmx4G target/scheduler.jar "${INPUT_DOT_FILE}" "${PROCESSORS}"
+        java -jar -Xmx4G target/scheduler.jar "${INPUT_DOT_FILE}" "${PROCESSORS}" -v
     fi
 else
     echo "Invalid command"
