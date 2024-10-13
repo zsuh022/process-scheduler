@@ -4,8 +4,6 @@ package scheduler.constants;
  * This class defines constants that are used throughout the project
  */
 public class Constants {
-    public static final String MUSIC_PATH = "src/main/resources/sound/musics/";
-
     public static final String TEST_INPUT_DOT_FILE_PATH = "src/test/resources/dotfiles/input/";
     public static final String TEST_OUTPUT_DOT_FILE_PATH = "src/test/resources/dotfiles/output/";
     public static final String RANDOM_OUTPUT_DOT_FILE_PATH = "src/main/resources/dotfiles/random/";

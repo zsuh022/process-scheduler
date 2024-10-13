@@ -214,7 +214,7 @@ public abstract class Scheduler {
                 earliestStartTime = Math.max(earliestStartTime, finishTime);
             } else {
                 EdgeModel edge = getEdge(predecessor, node);
-                earliestStartTime = Math.max(earliestStartTime, finishTime + edge.getWeight());
+                earliestStartTime = Math.max(earliestStartTime, finishTime + edge.weight());
             }
         }
 
@@ -233,7 +233,7 @@ public abstract class Scheduler {
                 earliestStartTime = Math.max(earliestStartTime, finishTime);
             } else {
                 EdgeModel edge = getEdge(predecessor, node);
-                earliestStartTime = Math.max(earliestStartTime, finishTime + edge.getWeight());
+                earliestStartTime = Math.max(earliestStartTime, finishTime + edge.weight());
             }
         }
 

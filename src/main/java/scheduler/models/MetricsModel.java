@@ -1,12 +1,5 @@
 package scheduler.models;
 
-import java.lang.management.ManagementFactory;
-import com.sun.management.OperatingSystemMXBean;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 // refactor later, maybe make it a singleton?
@@ -49,10 +42,6 @@ public class MetricsModel {
      */
     public void incrementNumberOfOpenedStates() {
         this.numberOfOpenedStates.getAndIncrement();
-    }
-
-    public void incrementNumberOfClosedStates() {
-        this.numberOfClosedStates.getAndIncrement();
     }
 
     /**

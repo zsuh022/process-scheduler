@@ -15,7 +15,6 @@ public class GraphModel {
     private final Graph graph;
 
     private int numberOfNodes;
-    private int numberOfEdges;
     private int totalNodeWeight;
 
     private Map<String, NodeModel> nodes;
@@ -106,8 +105,6 @@ public class GraphModel {
 
             source.addSuccessor(destination);
             destination.addPredecessor(source);
-
-            ++this.numberOfEdges;
         });
 
         this.edges = edges;
@@ -176,8 +173,8 @@ public class GraphModel {
 
     private boolean arePredecessorEdgeWeightsEquivalent(NodeModel nodeA, NodeModel nodeB) {
         for (NodeModel predecessor : nodeA.getPredecessors()) {
-            int weightA = getEdge(predecessor, nodeA).getWeight();
-            int weightB = getEdge(predecessor, nodeB).getWeight();
+            int weightA = getEdge(predecessor, nodeA).weight();
+            int weightB = getEdge(predecessor, nodeB).weight();
 
             if (weightA != weightB) {
                 return false;
@@ -189,8 +186,8 @@ public class GraphModel {
 
     private boolean areSuccessorEdgeWeightsEquivalent(NodeModel nodeA, NodeModel nodeB) {
         for (NodeModel successor : nodeA.getSuccessors()) {
-            int weightA = getEdge(nodeA, successor).getWeight();
-            int weightB = getEdge(nodeB, successor).getWeight();
+            int weightA = getEdge(nodeA, successor).weight();
+            int weightB = getEdge(nodeB, successor).weight();
 
             if (weightA != weightB) {
                 return false;
@@ -198,10 +195,6 @@ public class GraphModel {
         }
 
         return true;
-    }
-
-    public List<List<NodeModel>> getEquivalentNodes() {
-        return this.equivalentNodes;
     }
 
     /**
@@ -220,10 +213,6 @@ public class GraphModel {
      */
     public int getNumberOfNodes() {
         return this.numberOfNodes;
-    }
-
-    public int getNumberOfEdges() {
-        return this.numberOfEdges;
     }
 
     /**

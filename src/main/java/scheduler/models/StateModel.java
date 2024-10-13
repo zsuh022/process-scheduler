@@ -23,8 +23,9 @@ public class StateModel {
     private final int[] nodeStartTimes;
 
     private final byte[] nodeProcessors;
-    private final byte[] scheduledNodes;
     private final byte[] normalisedProcessors;
+
+    private final boolean[] scheduledNodes;
 
     /**
      * Constructs a new {@code StateModel} with the specified number of processors and nodes.
@@ -47,8 +48,9 @@ public class StateModel {
         this.nodeStartTimes = new int[numberOfNodes];
 
         this.nodeProcessors = new byte[numberOfNodes];
-        this.scheduledNodes = new byte[numberOfNodes];
         this.normalisedProcessors = new byte[numberOfNodes];
+
+        this.scheduledNodes = new boolean[numberOfNodes];
 
         Arrays.fill(this.nodeProcessors, (byte) -1);
         Arrays.fill(this.normalisedProcessors, (byte) -1);
@@ -169,7 +171,7 @@ public class StateModel {
      * @param nodeId the byte ID of the node to mark as scheduled
      */
     public void scheduleNode(byte nodeId) {
-        this.scheduledNodes[nodeId] = 1;
+        this.scheduledNodes[nodeId] = true;
     }
 
     /**
@@ -197,7 +199,7 @@ public class StateModel {
      * @return true if the node is scheduled; false otherwise
      */
     public boolean isNodeScheduled(NodeModel node) {
-        return (this.scheduledNodes[node.getByteId()] == 1);
+        return this.scheduledNodes[node.getByteId()];
     }
 
     /**
@@ -267,9 +269,13 @@ public class StateModel {
     }
 
     public boolean isNodeScheduled(int nodeId) {
-        return (this.scheduledNodes[nodeId] == 1);
+        return this.scheduledNodes[nodeId];
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int hashCode() {
         int result = Objects.hash(this.numberOfNodes, this.numberOfScheduledNodes);

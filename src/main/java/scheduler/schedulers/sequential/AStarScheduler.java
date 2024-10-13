@@ -251,7 +251,7 @@ public class AStarScheduler extends Scheduler {
     private int getDataArrivalTime(NodeModel nodeA, NodeModel nodeB, int[] nodeStartTimes) {
         int finishTime = nodeStartTimes[nodeA.getByteId()] + nodeA.getWeight();
 
-        return finishTime + getEdge(nodeA, nodeB).getWeight();
+        return finishTime + getEdge(nodeA, nodeB).weight();
     }
 
     protected int getFCost(StateModel state) {
@@ -392,7 +392,7 @@ public class AStarScheduler extends Scheduler {
             return 0;
         }
 
-        return getEdge(node, node.getSuccessor(0)).getWeight();
+        return getEdge(node, node.getSuccessor(0)).weight();
     }
 
     protected int getDataReadyTime(StateModel state, NodeModel node) {
@@ -412,7 +412,7 @@ public class AStarScheduler extends Scheduler {
             return dataReadyTime;
         }
 
-        return dataReadyTime + getEdge(predecessor, node).getWeight();
+        return dataReadyTime + getEdge(predecessor, node).weight();
     }
 
     protected int getMinimumDataReadyTime(StateModel state, NodeModel node) {
