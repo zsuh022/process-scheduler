@@ -23,8 +23,9 @@ public class StateModel {
     private final int[] nodeStartTimes;
 
     private final byte[] nodeProcessors;
-    private final byte[] scheduledNodes;
     private final byte[] normalisedProcessors;
+
+    private final boolean[] scheduledNodes;
 
     /**
      * Constructs a new {@code StateModel} with the specified number of processors and nodes.
@@ -47,8 +48,9 @@ public class StateModel {
         this.nodeStartTimes = new int[numberOfNodes];
 
         this.nodeProcessors = new byte[numberOfNodes];
-        this.scheduledNodes = new byte[numberOfNodes];
         this.normalisedProcessors = new byte[numberOfNodes];
+
+        this.scheduledNodes = new boolean[numberOfNodes];
 
         Arrays.fill(this.nodeProcessors, (byte) -1);
         Arrays.fill(this.normalisedProcessors, (byte) -1);
@@ -106,6 +108,10 @@ public class StateModel {
         ++this.numberOfScheduledNodes;
     }
 
+    /**
+     * Each time a task is added, we re-normalise the processors. This could be optimised further, but due to time
+     * constraints, we were not able to provide a novel implementation.
+     */
     private void normaliseProcessors() {
         byte[] nodeProcessorNormalisationIndices = new byte[this.numberOfProcessors];
 
@@ -113,7 +119,7 @@ public class StateModel {
 
         Arrays.fill(nodeProcessorNormalisationIndices, (byte) -1);
 
-        for (int nodeId = 0; nodeId < this.numberOfNodes; nodeId++) {
+        for (byte nodeId = 0; nodeId < this.numberOfNodes; nodeId++) {
             if (isNodeScheduled(nodeId)) {
                 byte nodeProcessorIndex = this.nodeProcessors[nodeId];
 
@@ -126,10 +132,21 @@ public class StateModel {
         }
     }
 
+    /**
+     * Updates the total idle time based on dynamic programming approach.
+     *
+     * @param processor the processor
+     * @param startTime the start time
+     */
     public void updateTotalIdleTime(int processor, int startTime) {
         this.totalIdleTime += Math.max(0, startTime - this.finishTimes[processor]);
     }
 
+    /**
+     * Returns the total idle time for the current state/schedule.
+     *
+     * @return the total idle time
+     */
     public int getTotalIdleTime() {
         return this.totalIdleTime;
     }
@@ -144,50 +161,49 @@ public class StateModel {
     }
 
     /**
-     * Returns the number of nodes that have been scheduled so far.
+     * Returns the list of node/task start times.
      *
-     * @return the number of scheduled nodes
+     * @return an array of node/task start times
      */
-    public byte getNumberOfScheduledNodes() {
-        return this.numberOfScheduledNodes;
-    }
-
     public int[] getNodeStartTimes() {
         return this.nodeStartTimes;
     }
 
-    public int[] getNodeStartTimesCopy() {
-        return this.nodeStartTimes.clone();
-    }
-
-    public byte[] getNodeProcessors() {
-        return this.nodeProcessors;
-    }
-
-
+    /**
+     * Returns the parent state's maximum bottom level path length.
+     *
+     * @return the parent state's maximum bottom level path length
+     */
     public int getParentMaximumBottomLevelPathLength() {
         return this.parentMaximumBottomLevelPathLength;
     }
 
-    public void setParentMaximumBottomLevelPathLength(int bottomLevelPathLength) {
-        this.parentMaximumBottomLevelPathLength = bottomLevelPathLength;
+    /**
+     * Sets the parent state's maximum bottom level path length.
+     *
+     * @param maximumBottomLevelPathLength the maximum bottom level path length
+     */
+    public void setParentMaximumBottomLevelPathLength(int maximumBottomLevelPathLength) {
+        this.parentMaximumBottomLevelPathLength = maximumBottomLevelPathLength;
     }
 
+    /**
+     * Sets the maximum bottom level path length for the current state/schedule.
+     *
+     * @param maximumBottomLevelPathLength the maximum bottom level path length
+     */
     public void setMaximumBottomLevelPathLength(int maximumBottomLevelPathLength) {
         this.maximumBottomLevelPathLength = maximumBottomLevelPathLength;
     }
 
+    /**
+     * Retrieves the maximum bottom level path length for the current state/schedule. This optimised our
+     * algorithm from O(|free(s) * |P|) to O(1). However, that increased the memory usage by n + 9 bytes.
+     *
+     * @return the maximum bottom level path length
+     */
     public int getMaximumBottomLevelPathLength() {
         return this.maximumBottomLevelPathLength;
-    }
-
-    /**
-     * Returns an array indicating which nodes have been scheduled.
-     *
-     * @return an array of scheduled nodes
-     */
-    public byte[] getScheduledNodes() {
-        return this.scheduledNodes;
     }
 
     /**
@@ -196,7 +212,7 @@ public class StateModel {
      * @param nodeId the byte ID of the node to mark as scheduled
      */
     public void scheduleNode(byte nodeId) {
-        this.scheduledNodes[nodeId] = 1;
+        this.scheduledNodes[nodeId] = true;
     }
 
     /**
@@ -209,10 +225,21 @@ public class StateModel {
         return this.nodeStartTimes[node.getByteId()];
     }
 
+    /**
+     * Returns the start time for a node for the corresponding node id.
+     *
+     * @param nodeId the node id
+     * @return node start time
+     */
     public int getNodeStartTime(byte nodeId) {
         return this.nodeStartTimes[nodeId];
     }
 
+    /**
+     * Retrieves the last node scheduled.
+     *
+     * @return the last node scheduled
+     */
     public byte getLastNode() {
         return this.lastNodeId;
     }
@@ -224,7 +251,7 @@ public class StateModel {
      * @return true if the node is scheduled; false otherwise
      */
     public boolean isNodeScheduled(NodeModel node) {
-        return (this.scheduledNodes[node.getByteId()] == 1);
+        return this.scheduledNodes[node.getByteId()];
     }
 
     /**
@@ -234,10 +261,6 @@ public class StateModel {
      */
     public boolean areAllNodesScheduled() {
         return (this.numberOfScheduledNodes == this.numberOfNodes);
-    }
-
-    public int getNodeFinishTime(NodeModel node) {
-        return this.getNodeStartTime(node) + node.getWeight();
     }
 
     /**
@@ -297,10 +320,21 @@ public class StateModel {
         return true;
     }
 
+    /**
+     * Checks if a node is scheduled for the corresponding id.
+     *
+     * @param nodeId the node's id to check
+     * @return is the node scheduled
+     */
     public boolean isNodeScheduled(int nodeId) {
-        return (this.scheduledNodes[nodeId] == 1);
+        return this.scheduledNodes[nodeId];
     }
 
+    /**
+     * Returns the hash code for this class. It ensures correctness in the schedule expansion.
+     *
+     * @return the hash code of the class
+     */
     @Override
     public int hashCode() {
         int result = Objects.hash(this.numberOfNodes, this.numberOfScheduledNodes);
@@ -312,18 +346,14 @@ public class StateModel {
         return result;
     }
 
+    /**
+     * Creates a cloned state model
+     *
+     * @return the cloned state model
+     */
     @Override
     public StateModel clone() {
         return new StateModel(this);
-    }
-
-    /**
-     * Returns the finish times of the processors.
-     *
-     * @return the finish time of the processors
-     */
-    public int[] getFinishTimes() {
-        return this.finishTimes;
     }
 
     /**
@@ -336,10 +366,13 @@ public class StateModel {
         return this.nodeProcessors[node.getByteId()];
     }
 
-    public byte getNodeProcessor(byte nodeId) {
-        return this.nodeProcessors[nodeId];
-    }
-
+    /**
+     * Returns a list of nodes on the same processor sorted by their start time. It is used for schedule equivalence
+     * pruning.
+     *
+     * @param processor the processor to check
+     * @return a list of nodes on the same processor sorted by their start time
+     */
     public List<Byte> getNodesOnSameProcessorSortedOnStartTime(byte processor) {
         List<Byte> nodesOnSameProcessor = new ArrayList<>();
 
@@ -363,11 +396,12 @@ public class StateModel {
         return this.finishTimes[processor];
     }
 
+    /**
+     * Sets the f-cost of the current state/schedule.
+     *
+     * @param fCost the f-cost to be set
+     */
     public void setFCost(int fCost) {
         this.fCost = fCost;
-    }
-
-    public int getFCost() {
-        return this.fCost;
     }
 }

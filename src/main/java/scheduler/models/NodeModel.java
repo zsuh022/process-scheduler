@@ -46,10 +46,20 @@ public class NodeModel {
         this.predecessors = new ArrayList<>();
     }
 
+    /**
+     * Returns the group ID of this node. This is for node equivalence.
+     *
+     * @return the group ID this node
+     */
     public int getGroupId() {
         return this.groupId;
     }
 
+    /**
+     * Sets the node's group ID.
+     *
+     * @param groupId the node's group ID
+     */
     public void setGroupId(int groupId) {
         this.groupId = groupId;
     }
@@ -173,12 +183,24 @@ public class NodeModel {
         return this.inDegree;
     }
 
-    public NodeModel getPredecessor(int id) {
-        return this.predecessors.get(id);
+    /**
+     * Returns the predecessor node with the corresponding index.
+     *
+     * @param index the node index
+     * @return the predecessor node with the corresponding index
+     */
+    public NodeModel getPredecessor(int index) {
+        return this.predecessors.get(index);
     }
 
-    public NodeModel getSuccessor(int id) {
-        return this.successors.get(id);
+    /**
+     * Returns the successor node with the corresponding index.
+     *
+     * @param index the node index
+     * @return the successor node with the corresponding index
+     */
+    public NodeModel getSuccessor(int index) {
+        return this.successors.get(index);
     }
 
     /**
@@ -209,11 +231,14 @@ public class NodeModel {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!(obj instanceof NodeModel))
+        }
+
+        if (!(obj instanceof NodeModel other)) {
             return false;
-        NodeModel other = (NodeModel) obj;
+        }
+
         return this.id.equals(other.id);
     }
 }

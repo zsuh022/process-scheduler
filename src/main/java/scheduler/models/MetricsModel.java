@@ -1,15 +1,11 @@
 package scheduler.models;
 
-import java.lang.management.ManagementFactory;
-import com.sun.management.OperatingSystemMXBean;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-// refactor later, maybe make it a singleton?
+/**
+ * The MetricsModel class contains all the necessary information pertaining the scheduler itself. It contains metrics
+ * for the number of opened and closed states, as well as the real time elapsed to compute the optimal schedule.
+ */
 public class MetricsModel {
     private StateModel bestState;
 
@@ -49,10 +45,6 @@ public class MetricsModel {
      */
     public void incrementNumberOfOpenedStates() {
         this.numberOfOpenedStates.getAndIncrement();
-    }
-
-    public void incrementNumberOfClosedStates() {
-        this.numberOfClosedStates.getAndIncrement();
     }
 
     /**

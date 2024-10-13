@@ -54,13 +54,19 @@ public class InputOutputParser {
         writeDOTFile(graphStream, filename);
     }
 
+    /**
+     * Writes a graph to a file in valid DOT format.
+     *
+     * @param graph the input graph
+     * @param filename the file to write to
+     * @throws IOException if the file does not exist
+     */
     public static void writeDOTFile(Graph graph, String filename) throws IOException {
         FileSinkDOT fileSinkDOT = new FileSinkDOT();
         fileSinkDOT.setDirected(true);
 
         fileSinkDOT.writeAll(graph, new FileWriter(filename));
     }
-
 
     /**
      * Converts a graph model instance to a graph stream instance.
@@ -108,12 +114,12 @@ public class InputOutputParser {
      */
     private static void addEdgeModelsToGraphStream(Graph graph, Map<String, EdgeModel> edges) {
         edges.forEach((id, edge) -> {
-            NodeModel source = edge.getSource();
-            NodeModel destination = edge.getDestination();
+            NodeModel source = edge.source();
+            NodeModel destination = edge.destination();
 
             graph.addEdge(id, source.getId(), destination.getId(), true);
 
-            graph.getEdge(id).setAttribute("Weight", edge.getWeight());
+            graph.getEdge(id).setAttribute("Weight", edge.weight());
         });
     }
 }

@@ -2,7 +2,6 @@ package scheduler.schedulers.sequential;
 
 import java.util.*;
 
-import scheduler.models.EdgeModel;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
@@ -10,17 +9,29 @@ import scheduler.schedulers.Scheduler;
 
 import static scheduler.constants.Constants.INFINITY_32;
 
+/**
+ * The AStarScheduler class contains all the necessary logic for finding an optimal schedule.
+ */
 public class AStarScheduler extends Scheduler {
     private final PriorityQueue<StateModel> openedStates;
 
+    /**
+     * The AStarScheduler constructor
+     *
+     * @param graph the input graph
+     * @param processors the number of processors
+     */
     public AStarScheduler(GraphModel graph, byte processors) {
         super(graph, processors);
 
         this.openedStates = new PriorityQueue<>(Comparator.comparingInt(this::getFCost));
 
-        this.bestState = this.getValidSchedule();
+        bestState = getValidSchedule();
     }
 
+    /**
+     * Perform the A star scheduling.
+     */
     @Override
     public void schedule() {
         this.openedStates.add(new StateModel(processors, numberOfNodes));
@@ -31,23 +42,52 @@ public class AStarScheduler extends Scheduler {
             setCurrentState(state);
 
             if (state.areAllNodesScheduled()) {
-                this.bestState = state;
+                bestState = state;
 
                 break;
             }
 
-            expandStates(state);
+            expandStates(this.openedStates, state);
         }
 
-        setCurrentState(this.bestState);
+        setCurrentState(bestState);
 
-        metrics.setBestState(this.bestState);
+        metrics.setBestState(bestState);
         metrics.setNumberOfClosedStates(closedStates.size());
     }
 
-    private void expandState(StateModel state, NodeModel node, byte processor) {
-        if (isFirstAvailableNode(state, node)) {
+    /**
+     * Expand the current state. Pruning techniques are applied here to ensure that redundant states are not
+     * added to the queue of opened states.
+     *
+     * @param openedStates the queue of opened states
+     * @param state the current state
+     * @param node the current node
+     * @param processor the processor which the node will be added to
+     */
+    protected void expandState(PriorityQueue<StateModel> openedStates, StateModel state, NodeModel node, byte processor) {
+        StateModel nextState = pruneState(state, node, processor);
+
+        if (nextState == null) {
             return;
+        }
+
+        openedStates.add(nextState);
+
+        metrics.incrementNumberOfOpenedStates();
+    }
+
+    /**
+     * Prunes the current state if possible.
+     *
+     * @param state the current state
+     * @param node the current node
+     * @param processor the processor
+     * @return the next state if the current state was not pruned
+     */
+    protected StateModel pruneState(StateModel state, NodeModel node, byte processor) {
+        if (isFirstAvailableNode(state, node)) {
+            return null;
         }
 
         StateModel nextState = state.clone();
@@ -57,27 +97,28 @@ public class AStarScheduler extends Scheduler {
         nextState.addNode(node, processor, earliestStartTime);
         nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
 
-        if (isStateEquivalent(nextState, node, processor)) {
-            return;
+        if (canPruneState(closedStates, nextState)) {
+            return null;
         }
 
-        if (!canPruneState(nextState)) {
-            this.openedStates.add(nextState);
-
-            metrics.incrementNumberOfOpenedStates();
-        }
+        return (isStateEquivalent(nextState, node, processor)) ? null : nextState;
     }
 
+    /**
+     * Checks if the current node is the first available node to be scheduled.
+     *
+     * @param state the current state
+     * @param node the current node
+     * @return if the current node is the first available node
+     */
     protected boolean isFirstAvailableNode(StateModel state, NodeModel node) {
         List<NodeModel> equivalentNodeGroup = graph.getEquivalentNodeGroup(node.getGroupId());
 
         for (NodeModel equivalentNode : equivalentNodeGroup) {
-            // both tasks are both the same, so we can continue with scheduling it
             if (equivalentNode.equals(node)) {
                 return false;
             }
 
-            // if there is an earlier equivalent task that is not scheduled
             if (!state.isNodeScheduled(equivalentNode)) {
                 return true;
             }
@@ -86,6 +127,11 @@ public class AStarScheduler extends Scheduler {
         return false;
     }
 
+    /**
+     * Returns a feasible schedule based on the greedy algorithm in Oliver Sinnen's research paper.
+     *
+     * @return a feasible schedule
+     */
     protected StateModel getValidSchedule() {
         StateModel state = new StateModel(processors, numberOfNodes);
 
@@ -108,25 +154,37 @@ public class AStarScheduler extends Scheduler {
         return state;
     }
 
-    private void expandStates(StateModel state) {
+    /**
+     * Expand the possible states. Fixed task ordering ensures that redundant states are pruned.
+     *
+     * @param openedStates the queue of opened states
+     * @param state the current state
+     */
+    protected void expandStates(PriorityQueue<StateModel> openedStates, StateModel state) {
         List<NodeModel> availableNodes = getAvailableNodes(state);
 
         NodeModel fixedNode = getFixedNodeOrder(state, availableNodes);
 
         if (fixedNode != null) {
             for (byte processor = 0; processor < processors; processor++) {
-                expandState(state, fixedNode, processor);
+                expandState(openedStates, state, fixedNode, processor);
             }
         } else {
             for (NodeModel node : availableNodes) {
                 for (byte processor = 0; processor < processors; processor++) {
-                    expandState(state, node, processor);
+                    expandState(openedStates, state, node, processor);
                 }
             }
         }
     }
 
-    protected boolean canPruneState(StateModel state) {
+    /**
+     * Checks whether a state can be pruned or not
+     *
+     * @param state the current state
+     * @return if a state can be pruned
+     */
+    protected boolean canPruneState(Set<StateModel> closedStates, StateModel state) {
         if (!closedStates.add(state)) {
             return true;
         }
@@ -134,6 +192,14 @@ public class AStarScheduler extends Scheduler {
         return state.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
     }
 
+    /**
+     * Checks if the current state is equivalent to any other state.
+     *
+     * @param state the current state
+     * @param node the current node
+     * @param processor the processor
+     * @return if the current state is equivalent to any other state
+     */
     protected boolean isStateEquivalent(StateModel state, NodeModel node, byte processor) {
         List<Byte> nodesOnSameProcessor = state.getNodesOnSameProcessorSortedOnStartTime(processor);
 
@@ -150,7 +216,6 @@ public class AStarScheduler extends Scheduler {
                 break;
             }
 
-            // swap node m and node ni
             nodesOnSameProcessor.set(nodeIndex - 1, nodeAId);
             nodesOnSameProcessor.set(nodeIndex, nodeBId);
 
@@ -163,28 +228,66 @@ public class AStarScheduler extends Scheduler {
 
             copyNodeStartTimes[nodeAId] = getEarliestStartTime(state, nodeAId, copyNodeStartTimes, processor, startTime);
 
-            // Schedule m and ni, nl-1 each as early as possible
-            for (int index = nodeIndex; index < nodesOnSameProcessor.size(); index++) {
-                byte nodeId = nodesOnSameProcessor.get(index);
-                byte previousNodeId = nodesOnSameProcessor.get(index - 1);
+            updateNodeStartTimes(state, nodeIndex, nodesOnSameProcessor, copyNodeStartTimes, processor);
 
-                int currentStartTime = copyNodeStartTimes[previousNodeId] + nodes[nodeId].getWeight();
-
-                copyNodeStartTimes[nodeId] = getEarliestStartTime(state, nodeId, copyNodeStartTimes, processor, currentStartTime);
-            }
-
-            byte lastNodeId = nodesOnSameProcessor.get(nodesOnSameProcessor.size() - 1);
-
-            int lastNodeFinishTime = copyNodeStartTimes[lastNodeId] + nodes[lastNodeId].getWeight();
-
-            if (lastNodeFinishTime <= maximumFinishTime && isOutgoingCommunicationsOk(state, nodeIndex, nodesOnSameProcessor, copyNodeStartTimes, processor)) {
+            if (isValidFinishTime(state, nodeIndex,nodesOnSameProcessor, copyNodeStartTimes, maximumFinishTime, processor)) {
                 return true;
             }
+
         }
 
         return false;
     }
 
+    /**
+     * Updates the node start times for the equivalent schedule pruning
+     *
+     * @param state the current state
+     * @param nodeIndex the current node index
+     * @param nodesOnSameProcessor the list of nodes on the same processor
+     * @param nodeStartTimes the node start times
+     * @param processor the processor
+     */
+    private void updateNodeStartTimes(StateModel state, int nodeIndex, List<Byte> nodesOnSameProcessor, int[] nodeStartTimes, byte processor) {
+        for (int index = nodeIndex; index < nodesOnSameProcessor.size(); index++) {
+            byte nodeId = nodesOnSameProcessor.get(index);
+            byte previousNodeId = nodesOnSameProcessor.get(index - 1);
+
+            int currentStartTime = nodeStartTimes[previousNodeId] + nodes[nodeId].getWeight();
+
+            nodeStartTimes[nodeId] = getEarliestStartTime(state, nodeId, nodeStartTimes, processor, currentStartTime);
+        }
+    }
+
+    /**
+     * Checks if the finish time is valid for equivalent scheduling.
+     *
+     * @param state the current state
+     * @param nodeIndex the current node index
+     * @param nodesOnSameProcessor the list of nodes on the same processor
+     * @param nodeStartTimes array of node start times
+     * @param maximumFinishTime the maximum finish time
+     * @param processor the processor
+     * @return if the finish time is valid
+     */
+    private boolean isValidFinishTime(StateModel state, int nodeIndex, List<Byte> nodesOnSameProcessor, int[] nodeStartTimes, int maximumFinishTime, byte processor) {
+        byte lastNodeId = nodesOnSameProcessor.get(nodesOnSameProcessor.size() - 1);
+
+        int lastNodeFinishTime = nodeStartTimes[lastNodeId] + nodes[lastNodeId].getWeight();
+
+        return lastNodeFinishTime <= maximumFinishTime && isOutgoingCommunicationsOk(state, nodeIndex, nodesOnSameProcessor, nodeStartTimes, processor);
+    }
+
+    /**
+     * Checks if the outgoing communication is fine.
+     *
+     * @param state the current state
+     * @param nodeIndex the current node index
+     * @param nodesOnSameProcessor the list of nodes on the same processor
+     * @param nodeStartTimes array of node start times
+     * @param processor the processor
+     * @return if the outgoing communication is fine
+     */
     protected boolean isOutgoingCommunicationsOk(StateModel state, int nodeIndex, List<Byte> nodesOnSameProcessor, int[] nodeStartTimes, byte processor) {
         for (int index = nodeIndex; index < nodesOnSameProcessor.size(); index++) {
             byte nodeId = nodesOnSameProcessor.get(index);
@@ -203,6 +306,15 @@ public class AStarScheduler extends Scheduler {
         return true;
     }
 
+    /**
+     * Check if the successor node is delayed due to swapping
+     *
+     * @param state the current state
+     * @param node the current node
+     * @param nodeStartTimes array of node start times
+     * @param processor the processor
+     * @return if the successor node is delayed
+     */
     private boolean isSuccessorDelayed(StateModel state, NodeModel node, int[] nodeStartTimes, byte processor) {
         for (NodeModel successor : node.getSuccessors()) {
             int dataArrivalTime = getDataArrivalTime(node, successor, nodeStartTimes);
@@ -224,6 +336,16 @@ public class AStarScheduler extends Scheduler {
         return false;
     }
 
+    /**
+     * Checks whether a node that is not scheduled yet is swappable with its successor node.
+     *
+     * @param node the current node
+     * @param successor the node's successor
+     * @param nodeStartTimes array of node start times
+     * @param dataArrivalTime the data arrival time
+     * @param processor the processor
+     * @return if the unscheduled node is swappable
+     */
     private boolean isUnscheduledNodeSwappable(NodeModel node, NodeModel successor, int[] nodeStartTimes, int dataArrivalTime, byte processor) {
         for (byte processorIndex = 0; processorIndex < processors; processorIndex++) {
             if (processorIndex == processor) {
@@ -251,12 +373,26 @@ public class AStarScheduler extends Scheduler {
         return true;
     }
 
+    /**
+     * Returns the data arrival time of a node.
+     *
+     * @param nodeA the first node (source)
+     * @param nodeB the second node (destination)
+     * @param nodeStartTimes array of node start times
+     * @return the data arrival time
+     */
     private int getDataArrivalTime(NodeModel nodeA, NodeModel nodeB, int[] nodeStartTimes) {
         int finishTime = nodeStartTimes[nodeA.getByteId()] + nodeA.getWeight();
 
-        return finishTime + getEdge(nodeA, nodeB).getWeight();
+        return finishTime + getEdge(nodeA, nodeB).weight();
     }
 
+    /**
+     * Returns the f-cost of the current state and is used in the A star.
+     *
+     * @param state the current state
+     * @return the f-cost of the current state
+     */
     protected int getFCost(StateModel state) {
         if (state.isEmpty()) {
             return getLowerBound();
@@ -274,18 +410,35 @@ public class AStarScheduler extends Scheduler {
         return fCost;
     }
 
+    /**
+     * Returns the lower bound of graph, which is the load balanced time.
+     *
+     * @return the lower bound value
+     */
     private int getLowerBound() {
         double loadBalancedTime = (double) graph.getTotalNodeWeight() / processors;
 
         return (int) Math.max(Math.ceil(loadBalancedTime), getCriticalPathLength());
     }
 
+    /**
+     * Returns the idle time of the current state. Used in h-cost calculation.
+     *
+     * @param state the current state
+     * @return the idle time
+     */
     protected int getIdleTime(StateModel state) {
         double totalWeight = (double) graph.getTotalNodeWeight() + state.getTotalIdleTime();
 
         return (int) Math.ceil(totalWeight / processors);
     }
 
+    /**
+     * Returns the maximum bottom level path length for the current state. Used for the h-cost.
+     *
+     * @param state the current state
+     * @return the maximum bottom level path length
+     */
      protected int getMaximumBottomLevelPathLength(StateModel state) {
         if (state.isEmpty()) {
             return 0;
@@ -299,6 +452,12 @@ public class AStarScheduler extends Scheduler {
         return Math.max(parentBottomLevelPathLength, estimatedFinishTime);
     }
 
+    /**
+     * Returns the maximum data ready time used for the h-cost.
+     *
+     * @param state the current state
+     * @return the maximum data ready time
+     */
     protected int getMaximumDataReadyTime(StateModel state) {
         int maximumDataReadyTime = 0;
 
@@ -310,6 +469,13 @@ public class AStarScheduler extends Scheduler {
         return maximumDataReadyTime;
     }
 
+    /**
+     * Returns a single node based on the fixed task ordering conditions
+     *
+     * @param state the current state
+     * @param availableNodes the list of available nodes
+     * @return a single node
+     */
     protected NodeModel getFixedNodeOrder(StateModel state, List<NodeModel> availableNodes) {
         Set<NodeModel> availableSuccessors = new HashSet<>();
         Set<NodeModel> availablePredecessors = new HashSet<>();
@@ -351,6 +517,14 @@ public class AStarScheduler extends Scheduler {
         return getSortedNode(state, availableNodes);
     }
 
+    /**
+     * Get a single sorted node from the fixed task ordering. This is inefficient, however, due to time constraints
+     * we were unable to provide a better approach.
+     *
+     * @param state the current state
+     * @param availableNodes the list of available nodes
+     * @return a single sorted node
+     */
     protected NodeModel getSortedNode(StateModel state, List<NodeModel> availableNodes) {
         List<NodeModel> sortedNodes = getSortedNodes(state, availableNodes);
 
@@ -369,7 +543,15 @@ public class AStarScheduler extends Scheduler {
 
         return sortedNodes.get(0);
     }
-    
+
+    /**
+     * Get a list of sorted nodes based on fixed task ordering condition. Ties are broken by comparing the
+     * node-successor edge cost.
+     *
+     * @param state the current state
+     * @param availableNodes the list of available nodes
+     * @return the list of sorted nodes
+     */
     private List<NodeModel> getSortedNodes(StateModel state, List<NodeModel> availableNodes) {
         List<NodeModel> sortedNodes = new ArrayList<>(availableNodes);
 
@@ -390,14 +572,27 @@ public class AStarScheduler extends Scheduler {
         return sortedNodes;
     }
 
+    /**
+     * Returns the successor and parent edge cost.
+     *
+     * @param node the parent
+     * @return the edge cost between successor and parent node
+     */
     protected int getSuccessorEdgeCost(NodeModel node) {
         if (node.getOutDegree() == 0) {
             return 0;
         }
 
-        return getEdge(node, node.getSuccessor(0)).getWeight();
+        return getEdge(node, node.getSuccessor(0)).weight();
     }
 
+    /**
+     * Returns the data ready time (or earliest start time) for the current state and node.
+     *
+     * @param state the current state
+     * @param node the current node
+     * @return the data ready time
+     */
     protected int getDataReadyTime(StateModel state, NodeModel node) {
         if (node.getInDegree() == 0) {
             return 0;
@@ -415,9 +610,16 @@ public class AStarScheduler extends Scheduler {
             return dataReadyTime;
         }
 
-        return dataReadyTime + getEdge(predecessor, node).getWeight();
+        return dataReadyTime + getEdge(predecessor, node).weight();
     }
 
+    /**
+     * Returns the minimum data ready time for the current state and node/task.
+     *
+     * @param state the current state
+     * @param node the current node
+     * @return the minimum data ready time
+     */
     protected int getMinimumDataReadyTime(StateModel state, NodeModel node) {
         int minimumDataReadyTime = INFINITY_32;
 

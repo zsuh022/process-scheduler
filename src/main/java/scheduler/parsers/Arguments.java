@@ -111,6 +111,9 @@ public class Arguments {
         this.isVisualiseSearch = isVisualiseSearch;
     }
 
+    /**
+     * Displays the path to the output DOT file.
+     */
     public void displayOutputDOTFilePath() {
         System.out.println("\nOutput written to " + getOutputDOTFilePath());
     }
