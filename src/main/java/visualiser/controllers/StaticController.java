@@ -161,7 +161,7 @@ public class StaticController {
 
         translate.setNode(popup);
         translate.setDuration(Duration.seconds(0.5));
-        translate.setByY(-111);
+        translate.setByY(-125);
 
         translate.play();
     }
