@@ -57,13 +57,15 @@ public class ParallelSchedulerStatic extends AStarScheduler {
      * Runs the A star with heuristic, i.e., we set an upper limit for the number of states in the queue.
      */
     private void runAStarScheduleWithHeuristic() {
-        this.initialStates.add(new StateModel(this.processors, this.numberOfNodes));
+        this.initialStates.add(new StateModel(processors, numberOfNodes));
 
-        while (!this.initialStates.isEmpty() && this.initialStates.size() < this.numberOfNodes * this.cores) {
+        while (!this.initialStates.isEmpty() && this.initialStates.size() < numberOfNodes * this.cores) {
             StateModel state = this.initialStates.poll();
 
+            setCurrentState(state);
+
             if (state.areAllNodesScheduled()) {
-                this.bestState = state;
+                bestState = state;
 
                 break;
             }
@@ -74,6 +76,8 @@ public class ParallelSchedulerStatic extends AStarScheduler {
                 }
             }
         }
+
+        setCurrentState(bestState);
     }
 
     /**
@@ -137,6 +141,8 @@ public class ParallelSchedulerStatic extends AStarScheduler {
         private void processPendingStates() {
             while (!this.openedStates.isEmpty()) {
                 StateModel state = this.openedStates.poll();
+
+                setCurrentState(state);
 
                 if (state.areAllNodesScheduled()) {
                     updateBestState(state);

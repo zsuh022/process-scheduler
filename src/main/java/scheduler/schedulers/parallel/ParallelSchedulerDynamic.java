@@ -104,8 +104,10 @@ public class ParallelSchedulerDynamic extends AStarScheduler {
             this.threadPool.shutdown();
         }
 
-        metrics.setBestState(this.bestState);
-        metrics.setNumberOfClosedStates(this.closedStates.size());
+        setCurrentState(bestState);
+
+        metrics.setBestState(bestState);
+        metrics.setNumberOfClosedStates(closedStates.size());
     }
 
     /**
@@ -169,6 +171,8 @@ public class ParallelSchedulerDynamic extends AStarScheduler {
         private void processPendingStates() {
             while (!this.openedStates.isEmpty()) {
                 StateModel state = this.openedStates.poll();
+
+                setCurrentState(state);
 
                 if (state.areAllNodesScheduled()) {
                     updateBestState(state);
