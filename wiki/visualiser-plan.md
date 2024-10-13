@@ -10,15 +10,15 @@ Key metrics we knew we wanted to show were:
  - Schedule time
  - Elapsed time
  - RAM and CPU graphs
- - Processors used
+ - The number of processors to schedule the tasks on
 
 Eventually, we decided to add content for the following, to enhance the user understanding and experience:
  - Input graph nodes and edges
  - Input graph visualiser
- - Cores
+ - The number of cores or threads used
 
 ## Implementation
-Implementation for the Gantt chart was our main priority.
+Implementation for the Gantt chart (the schedule visualiser) was our main priority.
 
 Originally, we created the chart using a JavaFX canvas. This method retrieved information from the output dot file, which was then used to manually draw the Gantt chart onto the canvas. This came with several problems:
  - Firstly, the canvas was limited in size, meaning that for larger graphs with larger process times, the canvas needed a large amount of horizontal room which could not be accomodated for, even with scrolling. This caused errors.

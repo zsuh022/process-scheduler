@@ -1,6 +1,12 @@
 # Scheduler
 
 ## Algorithm
-We used the A* algorithm to try and create the most optimal schedule for any given graph. Different heuristics were experimented with to improve the algorithm's speed and ultimately chose the f value using a combination of including maximum data ready time, maximum bottom level length, and idle time to guide our state exploration, as well as load-balancing to optimise our search. This gave us a significant speed-up while maintaining solution accuracy. We are also optimising the search by using two pruning strategies, processor normalisation and node equivalence.
+We implemented the A* algorithm to generate the most optimal schedule for any given graph. Various heuristics were tested to enhance the algorithm's efficiency, ultimately selecting an f-value based on a combination of maximum data ready time, maximum bottom-level length, idle time, and load-balanced time as a lower bound to guide state exploration. These choices significantly improved the algorithm's speed while preserving the accuracy of the solution. 
 
-Additionally, we parallelised the algorithm to further improve the exceution speed. By utilizing multithreading, we can distribute the workload across multiple cores, allowing for parallel exploration of the search space. To evaluate the effectiveness of our parallelized search, we developed a random Directed Acyclic Graph (DAG) generator that produces a range of graphs, from sparse to dense.
+To further optimise performance, we employed several pruning strategies, including node equivalence, processor normalisation, fixed task order pruning, and schedule equivalence, resulting in reduced memory usage.
+
+We also parallelised the algorithm to boost execution speed. By leveraging multithreading, we distributed the workload across multiple cores, enabling parallel exploration of the search space. To assess the effectiveness of this parallelised approach, we developed a random Directed Acyclic Graph (DAG) generator capable of producing a wide range of graph types, from sparse to dense.
+
+## Additional Things We Would Implement
+- Optimisation of data structures to reduce overhead
+- Refinements to existing pruning strategies for better efficiency
