@@ -93,7 +93,7 @@
                         </Rectangle>
                         <LineChart fx:id="lineChartRam" stylesheets="@../css/linechart.css" title="RAM" StackPane.alignment="CENTER">
                           <xAxis>
-                            <CategoryAxis label="Time (s)" side="BOTTOM" />
+                            <CategoryAxis gapStartAndEnd="false" label="Time (s)" side="BOTTOM" />
                           </xAxis>
                           <yAxis>
                             <NumberAxis label="Memory (MB)" side="LEFT" />
@@ -124,7 +124,7 @@
                         </Rectangle>
                         <LineChart fx:id="lineChartCpu" stylesheets="@../css/linechart.css" title="CPU" StackPane.alignment="CENTER">
                            <xAxis>
-                              <CategoryAxis label="Time (s)" side="BOTTOM" />
+                              <CategoryAxis gapStartAndEnd="false" label="Time (s)" side="BOTTOM" />
                            </xAxis>
                            <yAxis>
                               <NumberAxis label="CPU (%)" side="LEFT" />
