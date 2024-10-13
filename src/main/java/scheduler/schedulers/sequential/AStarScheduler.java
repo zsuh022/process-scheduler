@@ -60,11 +60,12 @@ public class AStarScheduler extends Scheduler {
      * Expand the current state. Pruning techniques are applied here to ensure that redundant states are not
      * added to the queue of opened states.
      *
+     * @param openedStates the queue of opened states
      * @param state the current state
      * @param node the current node
      * @param processor the processor which the node will be added to
      */
-    private void expandState(StateModel state, NodeModel node, byte processor) {
+    protected void expandState(PriorityQueue<StateModel> openedStates, StateModel state, NodeModel node, byte processor) {
         if (isFirstAvailableNode(state, node)) {
             return;
         }
@@ -81,7 +82,7 @@ public class AStarScheduler extends Scheduler {
         }
 
         if (!canPruneState(nextState)) {
-            this.openedStates.add(nextState);
+            openedStates.add(nextState);
 
             metrics.incrementNumberOfOpenedStates();
         }
@@ -149,12 +150,12 @@ public class AStarScheduler extends Scheduler {
 
         if (fixedNode != null) {
             for (byte processor = 0; processor < processors; processor++) {
-                expandState(state, fixedNode, processor);
+                expandState(this.openedStates, state, fixedNode, processor);
             }
         } else {
             for (NodeModel node : availableNodes) {
                 for (byte processor = 0; processor < processors; processor++) {
-                    expandState(state, node, processor);
+                    expandState(this.openedStates, state, node, processor);
                 }
             }
         }

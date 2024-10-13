@@ -14,6 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Parallel scheduler using static load distribution.
+ */
 public class ParallelSchedulerStatic extends AStarScheduler {
     private final ExecutorService threadPool;
 
@@ -27,6 +30,13 @@ public class ParallelSchedulerStatic extends AStarScheduler {
 
     private final byte cores;
 
+    /**
+     * Constructor for ParallelSchedulerStatic class
+     *
+     * @param graph the input graph
+     * @param processors the number of processors
+     * @param cores the number of cores/threads
+     */
     public ParallelSchedulerStatic(GraphModel graph, byte processors, byte cores) {
         super(graph, processors);
 
@@ -43,6 +53,9 @@ public class ParallelSchedulerStatic extends AStarScheduler {
         this.cores = cores;
     }
 
+    /**
+     * Runs the A star with heuristic, i.e., we set an upper limit for the number of states in the queue.
+     */
     private void runAStarScheduleWithHeuristic() {
         this.initialStates.add(new StateModel(this.processors, this.numberOfNodes));
 
@@ -57,31 +70,15 @@ public class ParallelSchedulerStatic extends AStarScheduler {
 
             for (NodeModel node : getAvailableNodes(state)) {
                 for (byte processor = 0; processor < processors; processor++) {
-                    expandState(state, node, processor);
+                    expandState(this.initialStates, state, node, processor);
                 }
             }
         }
     }
 
-    private void expandState(StateModel state, NodeModel node, byte processor) {
-        if (isFirstAvailableNode(state, node)) {
-            return;
-        }
-
-        StateModel nextState = state.clone();
-
-        int earliestStartTime = getEarliestStartTime(state, node, processor);
-
-        nextState.addNode(node, processor, earliestStartTime);
-        nextState.setParentMaximumBottomLevelPathLength(state.getMaximumBottomLevelPathLength());
-
-        if (!canPruneState(nextState)) {
-            this.initialStates.add(nextState);
-
-            metrics.incrementNumberOfOpenedStates();
-        }
-    }
-
+    /**
+     * Assigns initial workload to workers
+     */
     public void assignWorkToWorkers() {
         for (byte workerId = 0; workerId < this.cores; workerId++) {
             this.workers[workerId] = new Worker();
@@ -95,6 +92,12 @@ public class ParallelSchedulerStatic extends AStarScheduler {
         }
     }
 
+    /**
+     * Check if we can prune the current state.
+     *
+     * @param state the current state
+     * @return if we can prune the current state
+     */
     @Override
     public boolean canPruneState(StateModel state) {
         if (!this.closedStates.add(state)) {
@@ -104,6 +107,9 @@ public class ParallelSchedulerStatic extends AStarScheduler {
         return state.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
     }
 
+    /**
+     * Start the parallel scheduling process.
+     */
     @Override
     public void schedule() {
         runAStarScheduleWithHeuristic();
@@ -122,9 +128,17 @@ public class ParallelSchedulerStatic extends AStarScheduler {
         metrics.setNumberOfClosedStates(this.closedStates.size());
     }
 
+    /**
+     * Worker class
+     */
     private class Worker implements Callable<Void> {
         private final PriorityQueue<StateModel> openedStates = new PriorityQueue<>(Comparator.comparingInt(ParallelSchedulerStatic.this::getFCost));
 
+        /**
+         * Start worker thread.
+         *
+         * @return nothing
+         */
         @Override
         public Void call() {
             processPendingStates();
@@ -132,6 +146,9 @@ public class ParallelSchedulerStatic extends AStarScheduler {
             return null;
         }
 
+        /**
+         * Process the pending states for the current worker.
+         */
         private void processPendingStates() {
             while (!this.openedStates.isEmpty()) {
                 StateModel state = this.openedStates.poll();
@@ -146,6 +163,11 @@ public class ParallelSchedulerStatic extends AStarScheduler {
             }
         }
 
+        /**
+         * Update the best state.
+         *
+         * @param state the current state to be set as the best state
+         */
         private void updateBestState(StateModel state) {
             synchronized (bestStateLock) {
                 if (state.getMaximumFinishTime() < bestState.getMaximumFinishTime()) {
@@ -154,6 +176,11 @@ public class ParallelSchedulerStatic extends AStarScheduler {
             }
         }
 
+        /**
+         * Expand the number of states
+         *
+         * @param state the
+         */
         private void expandStates(StateModel state) {
             for (NodeModel node : getAvailableNodes(state)) {
                 if (isFirstAvailableNode(state, node)) {
@@ -166,6 +193,13 @@ public class ParallelSchedulerStatic extends AStarScheduler {
             }
         }
 
+        /**
+         * Expand current state.
+         *
+         * @param state the current state
+         * @param node the current node
+         * @param processor the processor
+         */
         private void expandState(StateModel state, NodeModel node, byte processor) {
             StateModel nextState = state.clone();
 
@@ -183,6 +217,12 @@ public class ParallelSchedulerStatic extends AStarScheduler {
             metrics.incrementNumberOfOpenedStates();
         }
 
+        /**
+         * Checks if a state can be pruned.
+         *
+         * @param state the current state
+         * @return if a state can be pruned
+         */
         private boolean canPruneState(StateModel state) {
             if (!closedStates.add(state)) {
                 return true;
@@ -191,6 +231,11 @@ public class ParallelSchedulerStatic extends AStarScheduler {
             return state.getMaximumFinishTime() >= getBestStateFinishTime();
         }
 
+        /**
+         * Get the best state finish time
+         *
+         * @return the best state finish time
+         */
         private int getBestStateFinishTime() {
             synchronized (bestStateLock) {
                 return bestState.getMaximumFinishTime();
