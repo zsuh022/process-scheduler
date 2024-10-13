@@ -91,7 +91,6 @@ public class DynamicController {
 
         this.ganttChart = new GanttChart<>(xAxis, new CategoryAxis());
 
-
         this.ganttChart.setPrefHeight(GANTT_CHART_WIDTH);
         this.ganttChart.setPrefWidth(GANTT_CHART_HEIGHT);
 

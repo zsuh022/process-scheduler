@@ -74,7 +74,7 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
             }
 
             for (NodeModel node : getAvailableNodes(currentState)) {
-                for (int processor = 0; processor < processors; processor++) {
+                for (byte processor = 0; processor < processors; processor++) {
                     StateModel nextState = expandState(currentState, node, processor);
 
                     if (nextState == null) {
@@ -97,7 +97,7 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
             }
         }
 
-        private StateModel expandState(StateModel state, NodeModel node, int processor) {
+        private StateModel expandState(StateModel state, NodeModel node, byte processor) {
             if (isFirstAvailableNode(state, node)) {
                 return null;
             }
