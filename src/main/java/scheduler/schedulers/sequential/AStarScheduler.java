@@ -134,12 +134,10 @@ public class AStarScheduler extends Scheduler {
         return state.getMaximumFinishTime() >= this.bestState.getMaximumFinishTime();
     }
 
-    // State is the partial state
     protected boolean isStateEquivalent(StateModel state, NodeModel node, byte processor) {
-        int maximumFinishTime = state.getNodeStartTime(node) + node.getWeight();
-
-        // get the nodes on the same processor (byte id for optimal memory instead of entire node object)
         List<Byte> nodesOnSameProcessor = state.getNodesOnSameProcessorSortedOnStartTime(processor);
+
+        int maximumFinishTime = state.getNodeStartTime(node) + node.getWeight();
 
         int[] originalNodeStartTimes = state.getNodeStartTimes();
         int[] copyNodeStartTimes = originalNodeStartTimes.clone();
@@ -187,56 +185,76 @@ public class AStarScheduler extends Scheduler {
         return false;
     }
 
-    public boolean isOutgoingCommunicationsOk(StateModel state, int nodeIndex, List<Byte> nodesOnSameProcessor, int[] nodeStartTimes, byte processor) {
+    protected boolean isOutgoingCommunicationsOk(StateModel state, int nodeIndex, List<Byte> nodesOnSameProcessor, int[] nodeStartTimes, byte processor) {
         for (int index = nodeIndex; index < nodesOnSameProcessor.size(); index++) {
             byte nodeId = nodesOnSameProcessor.get(index);
 
             NodeModel node = nodes[nodeId];
 
-            // Check only if nk starts later
-            if (nodeStartTimes[nodeId] > state.getNodeStartTime(nodeId)) {
-                // for each child
-                for (NodeModel successor : node.getSuccessors()) {
-                    // remote data arrival from nk
-                    int finishTime = nodeStartTimes[nodeId] + node.getWeight();
-                    int edgeCost = getEdge(node, successor).getWeight();
+            if (nodeStartTimes[nodeId] <= state.getNodeStartTime(nodeId)) {
+                continue;
+            }
 
-                    int dataArrivalTime = finishTime + edgeCost;
-
-                    if (state.isNodeScheduled(successor)) {
-                        // Check if on same processor
-                        if (nodeStartTimes[successor.getByteId()] > dataArrivalTime && state.getNodeProcessor(successor) != processor) {
-                            return false;
-                        }
-                    } else {
-                        for (byte processorIndex = 0; processorIndex < processors; processorIndex++) {
-                            if (processorIndex == processor) {
-                                continue;
-                            }
-
-                            boolean atLeastOneLater = false;
-
-                            for (NodeModel predecessor : successor.getPredecessors()) {
-                                if (predecessor.getByteId() == node.getByteId()) {
-                                    continue;
-                                }
-
-                                if (nodeStartTimes[predecessor.getByteId()] + predecessor.getWeight() >= dataArrivalTime) {
-                                    atLeastOneLater = true;
-                                    break;
-                                }
-                            }
-
-                            if (!atLeastOneLater) {
-                                return false;
-                            }
-                        }
-                    }
-                }
+            if (isSuccessorDelayed(state, node, nodeStartTimes, processor)) {
+                return false;
             }
         }
 
         return true;
+    }
+
+    private boolean isSuccessorDelayed(StateModel state, NodeModel node, int[] nodeStartTimes, byte processor) {
+        for (NodeModel successor : node.getSuccessors()) {
+            int dataArrivalTime = getDataArrivalTime(node, successor, nodeStartTimes);
+
+            if (state.isNodeScheduled(successor)) {
+                boolean isSuccessorStartTimeValid = (nodeStartTimes[successor.getByteId()] <= dataArrivalTime);
+                boolean isSuccessorScheduledOnSameProcessor = (state.getNodeProcessor(successor) != processor);
+
+                if (!(isSuccessorStartTimeValid || isSuccessorScheduledOnSameProcessor)) {
+                    return true;
+                }
+            } else {
+                if (!isUnscheduledNodeSwappable(node, successor, nodeStartTimes, dataArrivalTime, processor)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isUnscheduledNodeSwappable(NodeModel node, NodeModel successor, int[] nodeStartTimes, int dataArrivalTime, byte processor) {
+        for (byte processorIndex = 0; processorIndex < processors; processorIndex++) {
+            if (processorIndex == processor) {
+                continue;
+            }
+
+            boolean canNodeBeScheduledLater = false;
+
+            for (NodeModel predecessor : successor.getPredecessors()) {
+                if (predecessor.getByteId() == node.getByteId()) {
+                    continue;
+                }
+
+                if (getDataArrivalTime(predecessor, successor, nodeStartTimes) >= dataArrivalTime) {
+                    canNodeBeScheduledLater = true;
+                    break;
+                }
+            }
+
+            if (!canNodeBeScheduledLater) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private int getDataArrivalTime(NodeModel nodeA, NodeModel nodeB, int[] nodeStartTimes) {
+        int finishTime = nodeStartTimes[nodeA.getByteId()] + nodeA.getWeight();
+
+        return finishTime + getEdge(nodeA, nodeB).getWeight();
     }
 
     protected int getFCost(StateModel state) {
@@ -296,14 +314,11 @@ public class AStarScheduler extends Scheduler {
         Set<NodeModel> availableSuccessors = new HashSet<>();
         Set<NodeModel> availablePredecessors = new HashSet<>();
 
-        // For each free node
         for (NodeModel node : availableNodes) {
-            // Free node must have at most one parent and child
             if (node.getInDegree() > 1 || node.getOutDegree() > 1) {
                 return null;
             }
 
-            // get parent and children
             if (node.getInDegree() > 0) {
                 availablePredecessors.add(node.getPredecessor(0));
             }
@@ -313,12 +328,10 @@ public class AStarScheduler extends Scheduler {
             }
         }
 
-        //2. if tasks have children, they all must share the same child
         if (availableSuccessors.size() > 1) {
             return null;
         }
 
-        //3. if tasks have parents, they must be scheduled on the same processor
         if (!availablePredecessors.isEmpty()) {
             Set<Byte> predecessorProcessors = new HashSet<>();
 
@@ -335,30 +348,12 @@ public class AStarScheduler extends Scheduler {
             }
         }
 
-        // return the fixed order nodes if parents are not scheduled on the same processor
         return getSortedNode(state, availableNodes);
     }
 
     protected NodeModel getSortedNode(StateModel state, List<NodeModel> availableNodes) {
-        List<NodeModel> sortedNodes = new ArrayList<>(availableNodes);
+        List<NodeModel> sortedNodes = getSortedNodes(state, availableNodes);
 
-        sortedNodes.sort((nodeA, nodeB) -> {
-            int dataReadyTimeA = getDataReadyTime(state, nodeA);
-            int dataReadyTimeB = getDataReadyTime(state, nodeB);
-
-            // Non-increasing drt
-            if (dataReadyTimeA != dataReadyTimeB) {
-                return Integer.compare(dataReadyTimeA, dataReadyTimeB);
-            }
-
-            // There is a tie, so we break it by using decreasing child edge cost
-            int successorEdgeCostA = getSuccessorEdgeCost(nodeA);
-            int successorEdgeCostB = getSuccessorEdgeCost(nodeB);
-
-            return Integer.compare(successorEdgeCostB, successorEdgeCostA);
-        });
-
-        // Verify that the tasks are in decreasing child edge cost order
         for (int nodeId = 1; nodeId < sortedNodes.size(); nodeId++) {
             int currentEdgeCost = getSuccessorEdgeCost(sortedNodes.get(nodeId));
             int previousEdgeCost = getSuccessorEdgeCost(sortedNodes.get(nodeId - 1));
@@ -373,6 +368,26 @@ public class AStarScheduler extends Scheduler {
         }
 
         return sortedNodes.get(0);
+    }
+    
+    private List<NodeModel> getSortedNodes(StateModel state, List<NodeModel> availableNodes) {
+        List<NodeModel> sortedNodes = new ArrayList<>(availableNodes);
+
+        sortedNodes.sort((nodeA, nodeB) -> {
+            int dataReadyTimeA = getDataReadyTime(state, nodeA);
+            int dataReadyTimeB = getDataReadyTime(state, nodeB);
+
+            if (dataReadyTimeA != dataReadyTimeB) {
+                return Integer.compare(dataReadyTimeA, dataReadyTimeB);
+            }
+
+            int successorEdgeCostA = getSuccessorEdgeCost(nodeA);
+            int successorEdgeCostB = getSuccessorEdgeCost(nodeB);
+
+            return Integer.compare(successorEdgeCostB, successorEdgeCostA);
+        });
+
+        return sortedNodes;
     }
 
     protected int getSuccessorEdgeCost(NodeModel node) {
