@@ -108,6 +108,10 @@ public class StateModel {
         ++this.numberOfScheduledNodes;
     }
 
+    /**
+     * Each time a task is added, we re-normalise the processors. This could be optimised further, but due to time
+     * constraints, we were not able to provide a novel implementation.
+     */
     private void normaliseProcessors() {
         byte[] nodeProcessorNormalisationIndices = new byte[this.numberOfProcessors];
 
@@ -115,7 +119,7 @@ public class StateModel {
 
         Arrays.fill(nodeProcessorNormalisationIndices, (byte) -1);
 
-        for (int nodeId = 0; nodeId < this.numberOfNodes; nodeId++) {
+        for (byte nodeId = 0; nodeId < this.numberOfNodes; nodeId++) {
             if (isNodeScheduled(nodeId)) {
                 byte nodeProcessorIndex = this.nodeProcessors[nodeId];
 
@@ -128,10 +132,21 @@ public class StateModel {
         }
     }
 
+    /**
+     * Updates the total idle time based on dynamic programming approach.
+     *
+     * @param processor the processor
+     * @param startTime the start time
+     */
     public void updateTotalIdleTime(int processor, int startTime) {
         this.totalIdleTime += Math.max(0, startTime - this.finishTimes[processor]);
     }
 
+    /**
+     * Returns the total idle time for the current state/schedule.
+     *
+     * @return the total idle time
+     */
     public int getTotalIdleTime() {
         return this.totalIdleTime;
     }
@@ -145,22 +160,48 @@ public class StateModel {
         return (this.numberOfScheduledNodes == 0);
     }
 
+    /**
+     * Returns the list of node/task start times.
+     *
+     * @return an array of node/task start times
+     */
     public int[] getNodeStartTimes() {
         return this.nodeStartTimes;
     }
 
+    /**
+     * Returns the parent state's maximum bottom level path length.
+     *
+     * @return the parent state's maximum bottom level path length
+     */
     public int getParentMaximumBottomLevelPathLength() {
         return this.parentMaximumBottomLevelPathLength;
     }
 
-    public void setParentMaximumBottomLevelPathLength(int bottomLevelPathLength) {
-        this.parentMaximumBottomLevelPathLength = bottomLevelPathLength;
+    /**
+     * Sets the parent state's maximum bottom level path length.
+     *
+     * @param maximumBottomLevelPathLength the maximum bottom level path length
+     */
+    public void setParentMaximumBottomLevelPathLength(int maximumBottomLevelPathLength) {
+        this.parentMaximumBottomLevelPathLength = maximumBottomLevelPathLength;
     }
 
+    /**
+     * Sets the maximum bottom level path length for the current state/schedule.
+     *
+     * @param maximumBottomLevelPathLength the maximum bottom level path length
+     */
     public void setMaximumBottomLevelPathLength(int maximumBottomLevelPathLength) {
         this.maximumBottomLevelPathLength = maximumBottomLevelPathLength;
     }
 
+    /**
+     * Retrieves the maximum bottom level path length for the current state/schedule. This optimised our
+     * algorithm from O(|free(s) * |P|) to O(1). However, that increased the memory usage by n + 9 bytes.
+     *
+     * @return the maximum bottom level path length
+     */
     public int getMaximumBottomLevelPathLength() {
         return this.maximumBottomLevelPathLength;
     }
@@ -184,10 +225,21 @@ public class StateModel {
         return this.nodeStartTimes[node.getByteId()];
     }
 
+    /**
+     * Returns the start time for a node for the corresponding node id.
+     *
+     * @param nodeId the node id
+     * @return node start time
+     */
     public int getNodeStartTime(byte nodeId) {
         return this.nodeStartTimes[nodeId];
     }
 
+    /**
+     * Retrieves the last node scheduled.
+     *
+     * @return the last node scheduled
+     */
     public byte getLastNode() {
         return this.lastNodeId;
     }
@@ -268,13 +320,20 @@ public class StateModel {
         return true;
     }
 
+    /**
+     * Checks if a node is scheduled for the corresponding id.
+     *
+     * @param nodeId the node's id to check
+     * @return is the node scheduled
+     */
     public boolean isNodeScheduled(int nodeId) {
         return this.scheduledNodes[nodeId];
     }
 
     /**
+     * Returns the hash code for this class. It ensures correctness in the schedule expansion.
      *
-     * @return
+     * @return the hash code of the class
      */
     @Override
     public int hashCode() {
@@ -287,6 +346,11 @@ public class StateModel {
         return result;
     }
 
+    /**
+     * Creates a cloned state model
+     *
+     * @return the cloned state model
+     */
     @Override
     public StateModel clone() {
         return new StateModel(this);
@@ -302,6 +366,13 @@ public class StateModel {
         return this.nodeProcessors[node.getByteId()];
     }
 
+    /**
+     * Returns a list of nodes on the same processor sorted by their start time. It is used for schedule equivalence
+     * pruning.
+     *
+     * @param processor the processor to check
+     * @return a list of nodes on the same processor sorted by their start time
+     */
     public List<Byte> getNodesOnSameProcessorSortedOnStartTime(byte processor) {
         List<Byte> nodesOnSameProcessor = new ArrayList<>();
 
@@ -325,6 +396,11 @@ public class StateModel {
         return this.finishTimes[processor];
     }
 
+    /**
+     * Sets the f-cost of the current state/schedule.
+     *
+     * @param fCost the f-cost to be set
+     */
     public void setFCost(int fCost) {
         this.fCost = fCost;
     }

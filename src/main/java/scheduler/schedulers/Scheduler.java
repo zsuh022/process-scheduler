@@ -304,10 +304,6 @@ public abstract class Scheduler {
         return this.nodes;
     }
 
-    public StateModel getBestState() {
-        return this.bestState;
-    }
-
     public void saveBestState(Arguments arguments) throws IOException {
         this.graph.setNodesAndEdgesForState(this.bestState);
 

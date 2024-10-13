@@ -2,7 +2,10 @@ package scheduler.models;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-// refactor later, maybe make it a singleton?
+/**
+ * The MetricsModel class contains all the necessary information pertaining the scheduler itself. It contains metrics
+ * for the number of opened and closed states, as well as the real time elapsed to compute the optimal schedule.
+ */
 public class MetricsModel {
     private StateModel bestState;
 

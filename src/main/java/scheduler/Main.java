@@ -13,7 +13,6 @@ import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.Scheduler;
 import scheduler.schedulers.parallel.ParallelSchedulerDynamic;
-import scheduler.schedulers.parallel.ParallelSchedulerForkJoin;
 import scheduler.schedulers.sequential.AStarScheduler;
 import visualiser.Visualiser;
 
@@ -37,26 +36,27 @@ public class Main {
      */
     private static void runScheduler(Arguments arguments) throws IOException {
         graph = new GraphModel(arguments.getInputDOTFilePath());
+//        graph = GraphGenerator.getRandomGraph();
         String filename = "Random_Graph.dot";
         InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
 
-        scheduler = new AStarScheduler(graph, arguments.getProcessors());
-        long startTimeTest = System.currentTimeMillis();
-        scheduler.schedule();
-        long endTimeTest = System.currentTimeMillis();
-        float elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0f;
+//        scheduler = new AStarScheduler(graph, arguments.getProcessors());
+//        long startTimeTest = System.currentTimeMillis();
+//        scheduler.schedule();
+//        long endTimeTest = System.currentTimeMillis();
+//        float elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0f;
+//
+//        MetricsModel metricsTest = scheduler.getMetrics();
+//        metricsTest.setElapsedTime(elapsedTimeTest);
+//        metricsTest.display();
+//
+//        GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
+//        GraphGenerator.displayGraphInformation();
 
-        MetricsModel metricsTest = scheduler.getMetrics();
-        metricsTest.setElapsedTime(elapsedTimeTest);
-        metricsTest.display();
-
-        GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
-        GraphGenerator.displayGraphInformation();
-
-        for (byte cores = 1; cores <= 8; cores++) {
+        for (byte cores = 8; cores <= 8; cores++) {
             arguments.setCores(cores);
 
-            scheduler = new ParallelSchedulerForkJoin(graph, arguments.getProcessors(), arguments.getCores());
+            scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());
             MetricsModel metrics = scheduler.getMetrics();
 
             long startTime = System.currentTimeMillis();
@@ -69,7 +69,7 @@ public class Main {
             metrics.setElapsedTime(elapsedTime);
             metrics.display();
         }
-
+//
         StateModel bestState = scheduler.getMetrics().getBestState();
         graph.setNodesAndEdgesForState(bestState);
         InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
