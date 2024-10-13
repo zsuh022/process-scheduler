@@ -36,50 +36,21 @@ public class Main {
      * @throws IOException if I/O file does not exist
      */
     private static void runScheduler(Arguments arguments) throws IOException {
-//        graph = new GraphModel(arguments.getInputDOTFilePath());
-        graph = GraphGenerator.getRandomGraph();
-        String filename = "Random_Graph.dot";
-        InputOutputParser.outputDOTFile(graph, RANDOM_OUTPUT_DOT_FILE_PATH.concat(filename));
-
-        scheduler = new AStarScheduler(graph, arguments.getProcessors());
         long startTimeTest = System.currentTimeMillis();
+
         scheduler.schedule();
+
         long endTimeTest = System.currentTimeMillis();
+
         float elapsedTimeTest = (endTimeTest - startTimeTest) / 1000.0f;
 
         MetricsModel metricsTest = scheduler.getMetrics();
+
         metricsTest.setElapsedTime(elapsedTimeTest);
         metricsTest.display();
 
-        GraphGenerator.setNumberOfProcessors(arguments.getProcessors());
-        GraphGenerator.displayGraphInformation();
-
-        for (byte cores = 1; cores <= 8; cores++) {
-            arguments.setCores(cores);
-
-            scheduler = new ParallelSchedulerForkJoin(graph, arguments.getProcessors(), arguments.getCores());
-            MetricsModel metrics = scheduler.getMetrics();
-
-            long startTime = System.currentTimeMillis();
-
-            scheduler.schedule();
-
-            long endTime = System.currentTimeMillis();
-            float elapsedTime = (endTime - startTime) / 1000.0f;
-
-            metrics.setElapsedTime(elapsedTime);
-            metrics.display();
-        }
-//
-        StateModel bestState = scheduler.getMetrics().getBestState();
-        graph.setNodesAndEdgesForState(bestState);
-        InputOutputParser.outputDOTFile(graph, arguments.getOutputDOTFilePath());
-        arguments.displayOutputDOTFilePath();
+        scheduler.saveBestState(arguments);
     }
-
-//  private void runScheduler(Scheduler scheduler) throws IOException {
-//
-//  }
 
     /**
      * The initialiseScheduler method is responsible for initialising the scheduler based on the user's input. The
