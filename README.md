@@ -23,9 +23,19 @@ Optional Parameters:
 - `-v`: Visualise the search.
 - `-o` OUTPUT: The output file is named OUTPUT (default is INPUT-output.dot).
 
+## Visualiser
+When the visualise option is chosen, a JavaFX based application launches displaying metrics on the schedule, and provides a Gantt chart of said schedule that updates live.
+
+Below is the Schedule Visualiser.
+<img width="959" alt="image" src="https://github.com/user-attachments/assets/9cdfcbb9-a8cb-4219-a756-e67903c6d410">
+
+Below is the Input Graph Visualiser. This contains information on the input graph as well as an interactable graph model.
+<img width="959" alt="image" src="https://github.com/user-attachments/assets/59f36662-8142-41dc-b2b2-d99d3ae522ac">
+
+
 ## Algorithm progress
-- The A* algorithm is currently being developed in the `SequentialScheduler.java` file.
-- Meanwhile, the `DFSScheduler.java` file contains a working algorithm that produces valid and optimal task schedules.
+- The A* algorithm has been developed in the `AStarScheduler.java` file, and is our current algorithm of choice.
+- Meanwhile, the `DFSScheduler.java` file contains a working algorithm that produces valid and optimal task schedules. This is not in use as it is considerably slower.
 
 ## Team
 
