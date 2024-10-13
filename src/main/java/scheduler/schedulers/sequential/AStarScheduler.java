@@ -148,6 +148,10 @@ public class AStarScheduler extends Scheduler {
             byte nodeAId = nodesOnSameProcessor.get(nodeIndex);
             byte nodeBId = nodesOnSameProcessor.get(nodeIndex - 1);
 
+            if (nodeAId >= nodeBId) {
+                break;
+            }
+
             // swap node m and node ni
             nodesOnSameProcessor.set(nodeIndex - 1, nodeAId);
             nodesOnSameProcessor.set(nodeIndex, nodeBId);
@@ -187,10 +191,10 @@ public class AStarScheduler extends Scheduler {
         for (int index = nodeIndex; index < nodesOnSameProcessor.size(); index++) {
             byte nodeId = nodesOnSameProcessor.get(index);
 
+            NodeModel node = nodes[nodeId];
+
             // Check only if nk starts later
             if (nodeStartTimes[nodeId] > state.getNodeStartTime(nodeId)) {
-                NodeModel node = nodes[nodeId];
-
                 // for each child
                 for (NodeModel successor : node.getSuccessors()) {
                     // remote data arrival from nk
@@ -204,7 +208,7 @@ public class AStarScheduler extends Scheduler {
                         if (nodeStartTimes[successor.getByteId()] > dataArrivalTime && state.getNodeProcessor(successor) != processor) {
                             return false;
                         }
-                    } else { // not scheduled
+                    } else {
                         for (byte processorIndex = 0; processorIndex < processors; processorIndex++) {
                             if (processorIndex == processor) {
                                 continue;
