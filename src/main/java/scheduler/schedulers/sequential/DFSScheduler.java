@@ -5,8 +5,6 @@ import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
 import scheduler.schedulers.Scheduler;
 
-import java.util.*;
-
 /**
  * This class implements the Depth First Search (DFS) Branch And Bound search algorithm. The algorithm
  * searches all branches in the tree and prunes branches when a better solution is found.
@@ -58,7 +56,7 @@ public class DFSScheduler extends Scheduler {
         closedStates.add(state);
 
         for (NodeModel node : getAvailableNodes(state)) {
-            for (int processor = 0; processor < processors; processor++) {
+            for (byte processor = 0; processor < processors; processor++) {
                 StateModel nextState = state.clone();
 
                 int earliestStartTime = getEarliestStartTime(state, node, processor);

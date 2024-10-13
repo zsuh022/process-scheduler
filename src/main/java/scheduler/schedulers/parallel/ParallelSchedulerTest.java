@@ -112,13 +112,13 @@ public class ParallelSchedulerTest extends AStarScheduler {
                     continue;
                 }
 
-                for (int processor = 0; processor < processors; processor++) {
+                for (byte processor = 0; processor < processors; processor++) {
                     expandState(state, node, processor);
                 }
             }
         }
 
-        private void expandState(StateModel state, NodeModel node, int processor) {
+        private void expandState(StateModel state, NodeModel node, byte processor) {
             StateModel nextState = state.clone();
 
             int earliestStartTime = getEarliestStartTime(state, node, processor);
@@ -190,7 +190,7 @@ public class ParallelSchedulerTest extends AStarScheduler {
         private int getMinimumDataReadyTime(StateModel state, NodeModel node) {
             int minimumDataReadyTime = INFINITY_32;
 
-            for (int processor = 0; processor < processors; processor++) {
+            for (byte processor = 0; processor < processors; processor++) {
                 int dataReadyTime = getEarliestStartTime(state, node, processor);
                 minimumDataReadyTime = Math.min(minimumDataReadyTime, dataReadyTime);
             }
