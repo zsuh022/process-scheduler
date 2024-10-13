@@ -12,7 +12,6 @@ import scheduler.parsers.Arguments;
 import scheduler.parsers.CLIParser;
 import scheduler.parsers.InputOutputParser;
 import scheduler.schedulers.Scheduler;
-import scheduler.schedulers.parallel.ParallelSchedulerDynamic;
 import scheduler.schedulers.parallel.ParallelSchedulerForkJoin;
 import scheduler.schedulers.sequential.AStarScheduler;
 import visualiser.Visualiser;
@@ -95,7 +94,7 @@ public class Main {
         if (arguments.getCores() == 1) {
             scheduler = new AStarScheduler(graph, arguments.getProcessors());
         } else {
-            scheduler = new ParallelSchedulerDynamic(graph, arguments.getProcessors(), arguments.getCores());
+            scheduler = new ParallelSchedulerForkJoin(graph, arguments.getProcessors(), arguments.getCores());
         }
     }
 
