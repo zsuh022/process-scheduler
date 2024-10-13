@@ -3,6 +3,7 @@ package scheduler.schedulers.parallel;
 import scheduler.models.GraphModel;
 import scheduler.models.NodeModel;
 import scheduler.models.StateModel;
+import scheduler.schedulers.Scheduler;
 import scheduler.schedulers.sequential.AStarScheduler;
 
 import java.util.Set;
@@ -60,12 +61,34 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
 
         @Override
         protected Void compute() {
+            if (currentState.areAllNodesScheduled()) {
+                isBestStateFound.set(true);
+                return null;
+            }
+
+            if (isBestStateFound.get()) {
+                return null;
+            }
+
+            for (NodeModel node : getAvailableNodes(currentState)) {
+                for (int processor = 0; processor < processors; processor++) {
+                    StateModel nextState = expandState(currentState, node, processor);
+
+                    if (nextState == null) {
+                        continue;
+                    }
+
+                    ParallelScheduler parallelScheduler = new ParallelScheduler(nextState);
+                    parallelScheduler.fork();
+                }
+            }
+
             return null;
         }
 
-        private void expandState(StateModel state, NodeModel node, int processor) {
+        private StateModel expandState(StateModel state, NodeModel node, int processor) {
             if (isFirstAvailableNode(state, node)) {
-                return;
+                return null;
             }
 
             StateModel nextState = state.clone();
@@ -77,7 +100,10 @@ public class ParallelSchedulerForkJoin extends AStarScheduler {
 
             if (!canPruneState(nextState)) {
                 metrics.incrementNumberOfOpenedStates();
+                return nextState;
             }
+
+            return null;
         }
     }
 }
