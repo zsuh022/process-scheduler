@@ -19,6 +19,10 @@ import visualiser.Visualiser;
 
 import java.io.IOException;
 
+/**
+ * The controller for static visualiser.
+ * This class is responsible for managing the static visualiser's logic.
+ */
 public class StaticController {
     @FXML
     private Label nodesLabel;
@@ -54,15 +58,30 @@ public class StaticController {
 
     private Graph graph;
 
+    /**
+     * Sets the arguments for the static visualiser.
+     * 
+     * @param arguments the arguments for the static visualiser
+     */
     public void setArguments(Arguments arguments) {
         this.arguments = arguments;
     }
 
+    /**
+     * Initialises the static visualiser by loading graphs and labels.
+     * 
+     * @throws IOException if the input file is not found
+     */
     public void initialise() throws IOException {
         initialiseGraph();
         initialiseLabels();
     }
 
+    /**
+     * Initialises the graph for the static visualiser.
+     * 
+     * @throws IOException if the input file is not found
+     */
     private void initialiseGraph() throws IOException {
         this.graph = InputOutputParser.readDOTFile(this.arguments.getInputDOTFilePath());
 
@@ -72,6 +91,9 @@ public class StaticController {
         visualiseGraph();
     }
 
+    /**
+     * Applies the style to the nodes in the graph.
+     */
     private void applyNodeStyle() {
         for (Node node : this.graph) {
             node.setAttribute("ui.label", node.getId());
@@ -79,12 +101,20 @@ public class StaticController {
         }
     }
 
+    /**
+     * Applies the style to the edges in the graph.
+     */
     private void applyEdgeStyle() {
         this.graph.edges().forEach(edge -> {
             edge.setAttribute("ui.style", getEdgeStyle());
         });
     }
 
+    /**
+     * Generates and returns the CSS style of the nodes.
+     * 
+     * @return the node style as a string
+     */
     private String getNodeStyle() {
         int[] rgb = Utility.getRandomRgb();
 
@@ -103,6 +133,11 @@ public class StaticController {
         );
     }
 
+    /**
+     * Returns the CSS styling for the edges of the graph
+     * 
+     * @return the edge styling as a string
+     */
     private String getEdgeStyle() {
         return "size: 1px;" +
                 "fill-color: black;" +
@@ -111,6 +146,9 @@ public class StaticController {
                 "stroke-width: 1px;";
     }
 
+    /**
+     * Initializes the labels displaying the number of nodes, edges, cores, and processors.
+     */
     private void initialiseLabels() {
         initialiseLabel(this.nodesLabel, this.nodesPane, String.valueOf(this.graph.getNodeCount()));
         initialiseLabel(this.edgesLabel, this.edgesPane, String.valueOf(this.graph.getEdgeCount()));
@@ -118,23 +156,43 @@ public class StaticController {
         initialiseLabel(this.processorsLabel, this.processorsPane, String.valueOf(this.arguments.getProcessors()));
     }
 
-
+    /**
+     * Initializes a label with the given text and centers it in the pane.
+     * 
+     * @param label the label to initialize
+     * @param pane the pane to center the label in
+     * @param text the text to display in the label
+     */
     private void initialiseLabel(Label label, Pane pane, String text) {
         label.setText(text);
 
         centerLabel(label, pane);
     }
 
+    /**
+     * Centers a label in a pane.
+     * 
+     * @param label the label to center
+     * @param pane the pane to center the label in
+     */
     private void centerLabel(Label label, Pane pane) {
         label.layoutXProperty().bind(pane.widthProperty().subtract(label.widthProperty()).divide(2));
         label.layoutYProperty().bind(pane.heightProperty().subtract(label.heightProperty()).divide(2));
     }
 
+    /**
+     * Switches the scene to the dynamic visualiser scene.
+     * 
+     * @throws IOException if the scene can't be loaded
+     */
     @FXML
     private void switchToDynamicVisualiser() throws IOException {
         Visualiser.setScene(SceneType.DYNAMIC);
     }
 
+    /**
+     * Closes the notification popup of when the task is done
+     */
     @FXML
     public void closePopup() {
         DynamicController dynamicController =(DynamicController) Visualiser.getController(SceneType.DYNAMIC);
@@ -143,6 +201,10 @@ public class StaticController {
         }
         closeCurrentPop();
     }
+
+    /**
+     * Closes the popup in the current scene
+     */
     public void closeCurrentPop(){
         FadeTransition fade = new FadeTransition();
 
@@ -155,6 +217,9 @@ public class StaticController {
         fade.play();
     }
 
+    /**
+     * Alerts the user that the task is done through a popup
+     */
     public void alertFinish() {
         TranslateTransition translate = new TranslateTransition();
 
@@ -165,6 +230,10 @@ public class StaticController {
         translate.play();
     }
 
+    /**
+     * Visualizes the graph using the GraphStream FxViewer.
+     * The graph is displayed in the graph pane and automatically laid out.
+     */
     private void visualiseGraph() {
         FxViewer viewer = new FxViewer(this.graph, FxViewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
 
